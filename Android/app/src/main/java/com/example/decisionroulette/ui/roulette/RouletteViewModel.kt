@@ -28,4 +28,15 @@ class RouletteViewModel: ViewModel() {
         _uiState.value = _uiState.value.copy(isSpinning = false)
         // TODO:- 최종 결과 팝업 같은거 띄우기
     }
+
+    fun addDummyItem() {
+        // 현재 아이템 리스트 가져오기
+        val currentItems = _uiState.value.items.toMutableList()
+
+        // 새 아이템 추가 (예: 메뉴 6, 메뉴 7...)
+        currentItems.add("메뉴 ${currentItems.size + 1}")
+
+        // 상태 업데이트 -> 화면이 자동으로 다시 그려짐!
+        _uiState.value = _uiState.value.copy(items = currentItems)
+    }
 }

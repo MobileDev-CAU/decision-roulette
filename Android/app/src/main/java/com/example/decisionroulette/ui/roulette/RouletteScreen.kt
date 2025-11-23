@@ -50,7 +50,7 @@ fun RouletteScreen(
 
     LaunchedEffect(uiState.isSpinning) {
         if (uiState.isSpinning) {
-            val targetAngle = 360f * 5 + (0..360).random()
+            val targetAngle = rotation.value + 360f * 5 + (0..360).random()
             rotation.animateTo(
                 targetValue = targetAngle,
                 animationSpec = tween(durationMillis = 3000, easing = FastOutSlowInEasing)
@@ -84,6 +84,10 @@ fun RouletteScreen(
         )
 
         Spacer(modifier = Modifier.weight(1f))
+
+        Button(onClick = { viewModel.addDummyItem() }) {
+            Text("테스트: 메뉴 추가하기 (+)")
+        }
     }
 }
 
