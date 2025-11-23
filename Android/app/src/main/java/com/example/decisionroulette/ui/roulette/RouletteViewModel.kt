@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class RouletteViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(RouletteUiState())
@@ -24,9 +25,47 @@ class RouletteViewModel: ViewModel() {
     }
 
     fun onSpinFinished() {
-        // 애니메이션 끝나면 상태 복구
-        _uiState.value = _uiState.value.copy(isSpinning = false)
-        // TODO:- 최종 결과 팝업 같은거 띄우기
+        val randomResult = _uiState.value.items.random()
+
+        _uiState.update {
+            it.copy(
+                isSpinning = false,
+                spinResult = randomResult,
+                showResultDialog = true
+            )
+        }
+    }
+
+    fun closeDialog() {
+        _uiState.update { it.copy(showResultDialog = false) }
+    }
+
+    // [버튼 1] 선택 확정하기
+    fun saveFinalChoice(finalChoice: String) {
+        closeDialog()
+
+        // 1. 룰렛 결과: _uiState.value.spinResult
+        // 2. 최종 선택: finalChoice
+        // 3. 비교: 만약 둘이 다르면 -> "사용자가 룰렛을 거부함" 데이터 기록
+
+        println("룰렛 결과: ${_uiState.value.spinResult}, 사용자의 선택: $finalChoice")
+
+        // TODO: 여기서 백엔드 API 호출 (finalChoice 전송)
+    }
+//    fun confirmSelection() {
+//        closeDialog()
+//        // TODO: 서버에 확정 API 보내기
+//    }
+
+    // [버튼 2] 룰렛 다시 돌리기 (팝업 닫고 바로 다시 스핀)
+    fun retrySpin() {
+        closeDialog()
+    }
+
+    // [버튼 3] 유저 투표 올리기
+    fun uploadVote() {
+        closeDialog()
+        // TODO: 투표 화면으로 이동
     }
 
     fun addDummyItem() {

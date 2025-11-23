@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.math.cos
 import kotlin.math.sin
+import com.example.decisionroulette.ui.roulette.components.RouletteResultDialog
 
 // 룰렛 색상 팔레트
 val RouletteColors = listOf(
@@ -88,6 +89,18 @@ fun RouletteScreen(
         Button(onClick = { viewModel.addDummyItem() }) {
             Text("테스트: 메뉴 추가하기 (+)")
         }
+    }
+
+    if (uiState.showResultDialog && uiState.spinResult != null) {
+        RouletteResultDialog(
+            resultName = uiState.spinResult!!,
+            onDismiss = { viewModel.closeDialog() },
+            onRetry = { viewModel.retrySpin() },
+            onVote = { viewModel.uploadVote() },
+            onFinalConfirm = { finalChoice ->
+                viewModel.saveFinalChoice(finalChoice)
+            }
+        )
     }
 }
 
