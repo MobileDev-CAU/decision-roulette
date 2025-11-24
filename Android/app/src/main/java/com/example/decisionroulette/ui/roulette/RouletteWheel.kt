@@ -32,16 +32,15 @@ import com.example.decisionroulette.ui.roulette.RouletteColors
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import com.example.decisionroulette.data.RouletteItem
 
 @Composable
 fun RouletteWheel(
-    items: List<String>,
+    items: List<RouletteItem>,
     rotationValue: Float, // 애니메이션 각도를 밖에서 받아옴
     onStartClick: () -> Unit // 클릭 이벤트를 밖으로 전달
 ) {
-    Box(
-        contentAlignment = Alignment.Center
-    ) {
+    Box(contentAlignment = Alignment.Center) {
         // 3-1. 돌아가는 원판
         Canvas(
             modifier = Modifier
@@ -49,47 +48,52 @@ fun RouletteWheel(
                 .rotate(rotationValue)
         ) {
             if (items.isNotEmpty()) {
-                val sweepAngle = 360f / items.size
-                val radius = size.width / 2
+                // 1. 전체 가중치 합 구하기 (예: 0.4 + 0.3 + 0.3 = 1.0)
+                val totalWeight = items.map { it.weight }.sum()
 
-                // (A) 부채꼴 색상 그리기
-                items.forEachIndexed { index, _ ->
+                // 2. 시작 각도 추적 변수 (12시 방향 -90도부터 시작)
+                var currentStartAngle = -90f
+
+                items.forEachIndexed { index, item ->
+                    // 3. 내 지분에 따른 각도 계산 (360 * 비율)
+                    val sweepAngle = (item.weight / totalWeight) * 360f
+
+                    val radius = size.width / 2
+
+                    // (A) 부채꼴 그리기
                     drawArc(
                         color = RouletteColors[index % RouletteColors.size],
-                        startAngle = index * sweepAngle - 90f,
+                        startAngle = currentStartAngle,
                         sweepAngle = sweepAngle,
                         useCenter = true,
                         size = Size(size.width, size.height)
                     )
-                }
 
-                // (B) 글자 그리기 (Native Canvas 사용)
-                drawIntoCanvas { canvas ->
-                    val paint = Paint().apply {
-                        color = android.graphics.Color.BLACK
-                        textSize = 40f // 글자 크기
-                        textAlign = Paint.Align.CENTER
-                        typeface = Typeface.DEFAULT_BOLD
-                    }
+                    // (B) 글자 그리기
+                    drawIntoCanvas { canvas ->
+                        val paint = Paint().apply {
+                            color = android.graphics.Color.BLACK
+                            textSize = 40f
+                            textAlign = Paint.Align.CENTER
+                            typeface = Typeface.DEFAULT_BOLD
+                        }
 
-                    items.forEachIndexed { index, item ->
-                        // 각 조각의 중앙 각도 계산 (Radian)
-                        // -90도를 해주는 이유는 12시 방향이 0도가 되게 맞추기 위함
-                        val angleRad = (index * sweepAngle + sweepAngle / 2 - 90) * (PI / 180f)
+                        // 글자는 부채꼴의 정중앙에 위치해야 함
+                        val textAngleRad = (currentStartAngle + sweepAngle / 2) * (PI / 180f)
+                        val x = (center.x + radius * 0.6f * cos(textAngleRad)).toFloat()
+                        val y = (center.y + radius * 0.6f * sin(textAngleRad)).toFloat()
 
-                        // 글자가 위치할 좌표 계산 (중심에서 60% 지점)
-                        val x = (center.x + radius * 0.6f * cos(angleRad)).toFloat()
-                        val y = (center.y + radius * 0.6f * sin(angleRad)).toFloat()
-
-                        // 텍스트 회전 (글자가 중심을 바라보게)
                         canvas.save()
                         canvas.rotate(
-                            index * sweepAngle + sweepAngle / 2, // 회전 각도
-                            x, y // 회전 기준점 (글자 위치)
+                            currentStartAngle + sweepAngle / 2 + 90, // 글자 회전 각도
+                            x, y
                         )
-                        canvas.nativeCanvas.drawText(item, x, y + 15f, paint) // y+15f는 수직 중앙 정렬 보정
+                        canvas.nativeCanvas.drawText(item.name, x, y + 15f, paint)
                         canvas.restore()
                     }
+
+                    // 4. 다음 아이템을 위해 시작 각도 업데이트 (누적)
+                    currentStartAngle += sweepAngle
                 }
             }
         }

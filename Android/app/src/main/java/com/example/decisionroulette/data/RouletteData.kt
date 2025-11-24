@@ -1,5 +1,10 @@
 package com.example.decisionroulette.data
 
+data class RouletteItem(
+    val name: String,
+    val weight: Float = 1.0f // 기본값 1.0 (비율이 같을 때 사용)
+)
+
 // 1. 룰렛 생성 요청
 data class RouletteCreateRequest(
     val title: String,

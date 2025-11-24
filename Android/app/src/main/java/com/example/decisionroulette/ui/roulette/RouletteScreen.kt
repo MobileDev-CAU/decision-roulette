@@ -45,9 +45,21 @@ fun RouletteScreen(
     viewModel: RouletteViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    // 애니메이션 로직은 "상태"를 관리하는 이곳(Screen)에 남겨두는 게 좋습니다.
     val rotation = remember { Animatable(0f) }
+
+    LaunchedEffect(uiState.isSpinning) {
+        if (uiState.isSpinning) {
+            // 뷰모델이 계산해준 정확한 각도만큼 더함
+            // rotation.value (현재 위치) + uiState.targetRotation (추가 회전량)
+            val finalTarget = rotation.value + uiState.targetRotation
+
+            rotation.animateTo(
+                targetValue = finalTarget,
+                animationSpec = tween(durationMillis = 3000, easing = FastOutSlowInEasing)
+            )
+            viewModel.onSpinFinished()
+        }
+    }
 
     LaunchedEffect(uiState.isSpinning) {
         if (uiState.isSpinning) {
@@ -69,6 +81,10 @@ fun RouletteScreen(
         // 1. 헤더 컴포넌트 호출
         RouletteHeader(title = uiState.title)
 
+        ModeToggleSwitch(
+            isVoteMode = uiState.isVoteMode,
+            onToggle = { isVote -> viewModel.toggleMode(isVote) }
+        )
         Spacer(modifier = Modifier.height(30.dp))
 
         // 2. 통계 박스 컴포넌트 호출
@@ -81,7 +97,7 @@ fun RouletteScreen(
         RouletteWheel(
             items = uiState.items,
             rotationValue = rotation.value,
-            onStartClick = { viewModel.startSpin() }
+            onStartClick = { viewModel.startSpin(rotation.value) }
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -120,6 +136,49 @@ fun RouletteHeader(title: String) {
             contentDescription = "Edit",
             modifier = Modifier.align(Alignment.CenterEnd)
         )
+    }
+}
+
+@Composable
+fun ModeToggleSwitch(
+    isVoteMode: Boolean,
+    onToggle: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .background(Color(0xFFEEEEEE), RoundedCornerShape(50))
+            .padding(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 기본 모드 버튼
+        ToggleButton(
+            text = "기본 (1/N)",
+            isSelected = !isVoteMode,
+            onClick = { onToggle(false) }
+        )
+
+        // 투표 반영 버튼
+        ToggleButton(
+            text = "투표 반영",
+            isSelected = isVoteMode,
+            onClick = { onToggle(true) }
+        )
+    }
+}
+
+@Composable
+fun ToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected) Color.White else Color.Transparent,
+            contentColor = if (isSelected) Color.Black else Color.Gray
+        ),
+        elevation = if (isSelected) ButtonDefaults.buttonElevation(defaultElevation = 2.dp) else null,
+        shape = RoundedCornerShape(50),
+        modifier = Modifier.height(36.dp)
+    ) {
+        Text(text, fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
 }
 

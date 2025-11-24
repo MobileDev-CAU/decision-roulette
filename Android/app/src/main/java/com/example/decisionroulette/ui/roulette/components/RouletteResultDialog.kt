@@ -156,13 +156,6 @@ fun RouletteResultDialog(
                         }
                     }
                 }
-
-                // 3. 버튼 3개 (회색 둥근 버튼들)
-//                ResultButton(text = "선택 확정하기", onClick = onConfirm)
-//                Spacer(modifier = Modifier.height(12.dp))
-//                ResultButton(text = "룰렛 다시 돌리기", onClick = onRetry)
-//                Spacer(modifier = Modifier.height(12.dp))
-//                ResultButton(text = "유저 투표 올리기", onClick = onVote)
             }
         }
     }
