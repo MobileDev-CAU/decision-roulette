@@ -12,12 +12,23 @@ import kotlin.collections.toMutableList
 class RouletteViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(RouletteUiState())
     val uiState: StateFlow<RouletteUiState> = _uiState.asStateFlow()
+//    private val rawVoteItems = listOf(
+//        RouletteItem("파스타", 0.2f), // 20%
+//        RouletteItem("국밥", 0.2f),   // 20%
+//        RouletteItem("돈까스", 0.2f),  // 20%
+//        RouletteItem("김밥", 0.2f),   // 20%
+//        RouletteItem("초밥", 0.2f),   // 20%
+//    )
+
     private val rawVoteItems = listOf(
-        RouletteItem("파스타", 0.2f), // 20%
-        RouletteItem("국밥", 0.2f),   // 20%
-        RouletteItem("돈까스", 0.2f),  // 20%
-        RouletteItem("김밥", 0.2f),   // 20%
-        RouletteItem("초밥", 0.2f),   // 20%
+        RouletteItem("파스타", 0.1f),
+        RouletteItem("1", 0.1f),
+        RouletteItem("2", 0.1f),
+        RouletteItem("3", 0.1f),
+        RouletteItem("4", 0.1f),
+        RouletteItem("5", 0.1f),
+        RouletteItem("김밥", 0.2f),
+        RouletteItem("초밥", 0.2f),
     )
 
     init {

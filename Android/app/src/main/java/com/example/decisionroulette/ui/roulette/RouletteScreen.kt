@@ -61,17 +61,6 @@ fun RouletteScreen(
         }
     }
 
-    LaunchedEffect(uiState.isSpinning) {
-        if (uiState.isSpinning) {
-            val targetAngle = rotation.value + 360f * 5 + (0..360).random()
-            rotation.animateTo(
-                targetValue = targetAngle,
-                animationSpec = tween(durationMillis = 3000, easing = FastOutSlowInEasing)
-            )
-            viewModel.onSpinFinished()
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
