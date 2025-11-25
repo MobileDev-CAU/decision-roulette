@@ -122,6 +122,7 @@ fun AppScreen(
                         popUpTo(navController.graph.id) { inclusive = true }
                     }
                 }
+
                 AuthUiEvent.NavigateToSignUp -> navController.navigate(Routes.SIGN_UP)
                 AuthUiEvent.NavigateToLogin -> navController.navigate(Routes.LOGIN)
 
@@ -138,6 +139,7 @@ fun AppScreen(
                 HomeUiEvent.NavigateToTopicList -> {
                     navController.navigate(Routes.TOPIC_LIST)
                 }
+
                 else -> {}
             }
         }
@@ -150,6 +152,7 @@ fun AppScreen(
                 TopicListUiEvent.NavigateToAddTopic -> {
                     navController.navigate(Routes.TOPIC_CREATE)
                 }
+
                 else -> {}
             }
         }
@@ -162,10 +165,12 @@ fun AppScreen(
                 TopicCreateUiEvent.NavigateToCreateOption -> {
                     navController.navigate(Routes.OPTION_CREATE)
                 }
+
                 TopicCreateUiEvent.NavigateToRoulette -> {
                     navController.navigate(Routes.ROULETTE)
                 }
-                TopicCreateUiEvent.NavigateToBack-> {
+
+                TopicCreateUiEvent.NavigateToBack -> {
                     navController.navigate(Routes.TOPIC_LIST)
                 }
             }
@@ -179,10 +184,12 @@ fun AppScreen(
                 OptionCreateUiEvent.NavigateToRoulette -> {
                     navController.navigate(Routes.ROULETTE)
                 }
+
                 OptionCreateUiEvent.NavigateAi -> {
                     navController.navigate(Routes.AI)
                 }
-                OptionCreateUiEvent.NavigateToBack-> {
+
+                OptionCreateUiEvent.NavigateToBack -> {
                     navController.navigate(Routes.TOPIC_CREATE)
                 }
             }
@@ -194,6 +201,7 @@ fun AppScreen(
                 VoteListUiEvent.NavigateToVoteStatus -> {
                     navController.navigate(Routes.VOTE_STATUS_MY)
                 }
+
                 else -> {}
             }
         }
@@ -207,8 +215,7 @@ fun AppScreen(
 //            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-    }
-    else {
+    } else {
         Image(
             painter = painterResource(id = R.drawable.basic_background),
             contentDescription = null,
@@ -302,7 +309,7 @@ fun AppScreen(
                     // 💡 onNavigateToVoteList 콜백 연결 유지
                     onNavigateToVoteList = {
                         navController.navigate(Routes.VOTE_LIST)
-                    }                )
+                    })
             }
 
             composable(Routes.VOTE_LIST) {
@@ -321,3 +328,4 @@ fun AppScreen(
             }
         }
     }
+}
