@@ -1,0 +1,163 @@
+package com.example.decisionroulette.ui.topiccreate
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect // ⬅️ 추가
+import androidx.compose.runtime.collectAsState // ⬅️ 제거
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.decisionroulette.ui.reusable.TopicField
+import TopicButton
+import com.example.decisionroulette.ui.reusable.BackButton
+import kotlinx.coroutines.flow.collectLatest
+import com.example.decisionroulette.ui.reusable.VerticalScrollbarThumb
+
+
+
+@Composable
+fun TopicCreateScreen(
+    onNavigateToCreateOption: () -> Unit,
+    onNavigateToRoulette: () -> Unit,
+    onNavigateToBack:()->Unit,
+    viewModel: TopicCreateViewModel = viewModel()
+) {
+    val state = viewModel.uiState
+    val currentInputValue by viewModel.currentInput
+    val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collectLatest { event ->
+            when (event) {
+                TopicCreateUiEvent.NavigateToCreateOption -> onNavigateToCreateOption()
+                TopicCreateUiEvent.NavigateToRoulette -> onNavigateToRoulette()
+                TopicCreateUiEvent.NavigateToBack -> onNavigateToBack()
+            }
+        }
+    }
+
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Spacer(modifier = Modifier.height(40.dp))
+        BackButton(onClick = viewModel::onBackButtonClicked)
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // ---------------------------------------------------------
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(text = "What are your concerns today?", fontSize = 20.sp)
+        Text(
+            text = "Please choose a topic",
+            color = Color.Gray,
+            modifier = Modifier.padding(bottom = 36.dp),
+            fontSize = 15.sp
+        )
+
+        // ---------------------------------------------------------
+
+        val listScrollState = rememberScrollState() // 스크롤 상태 정의
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 250.dp)  // 보이는 최대 스크롤바 박스 높이
+                .padding(bottom = 32.dp),
+        ) {
+            // 1. Scrollable Column (주제 버튼 목록)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(listScrollState)
+                    .padding(end = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // 1. 기존 주제 버튼 (rouletteId를 사용)
+                state.existingTopics.forEach { topic ->
+                    val isSelected = state.selectedTopicId == topic.rouletteId
+                    TopicButton(
+                        title = topic.title,
+                        isSelected = isSelected,
+                        onClick = { viewModel.toggleTopicSelection(topic.rouletteId) }
+                    )
+                }
+
+                // 2. 사용자가 새로 생성한 주제 버튼 (tempId를 사용)
+                state.userCreatedTopics.forEach { userTopic -> // ⬅️ userCreatedOptions 대신 userCreatedTopics 사용
+                    val isSelected = state.selectedTopicId == userTopic.tempId
+                    TopicButton(
+                        title = userTopic.title,
+                        isSelected = isSelected,
+                        onClick = { viewModel.toggleTopicSelection(userTopic.tempId) }
+                    )
+                }
+            }
+            // 2. Scroll Bar Thumb
+            VerticalScrollbarThumb(
+                listScrollState = listScrollState,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
+
+        // ---------------------------------------------------------
+        // 새 주제 입력 필드
+        TopicField(
+            value = currentInputValue,
+            onValueChange = viewModel::updateCurrentInput,
+            label = "Enter a new topic and press the Enter key",
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    viewModel.addTopicFromInput()
+                    focusManager.clearFocus()
+                }
+            )
+        )
+
+        Spacer(modifier = Modifier.height(48.dp))
+
+        // choice 버튼
+        Button(
+            onClick = viewModel::onChoiceButtonClicked,
+            enabled = state.selectedTopicId != null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black
+            )
+        )
+        {
+            Text("choice", color = Color.White, style = MaterialTheme.typography.titleMedium)
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
