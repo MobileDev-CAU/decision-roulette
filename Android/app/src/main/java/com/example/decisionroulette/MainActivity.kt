@@ -7,6 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +25,8 @@ import com.example.decisionroulette.ui.home.HomeUiEvent
 import com.example.decisionroulette.ui.optioncreate.OptionCreateScreen
 import com.example.decisionroulette.ui.optioncreate.OptionCreateUiEvent
 import com.example.decisionroulette.ui.optioncreate.OptionCreateViewModel
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.decisionroulette.ui.roulette.RouletteScreen
 import com.example.decisionroulette.ui.theme.DecisionRouletteTheme
 import com.example.decisionroulette.ui.topiccreate.TopicCreateScreen
 import com.example.decisionroulette.ui.topiccreate.TopicCreateUiEvent
@@ -53,10 +58,16 @@ object Routes {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         setContent {
             DecisionRouletteTheme {
                 AppScreen()
+//                 Surface(
+//                     modifier = Modifier.fillMaxSize(),
+//                     color = MaterialTheme.colorScheme.background
+//                 ) {
+//                     RouletteScreen()
+//                 }
             }
         }
     }
