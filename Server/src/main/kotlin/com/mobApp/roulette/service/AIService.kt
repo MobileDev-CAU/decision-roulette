@@ -10,18 +10,20 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
+import org.springframework.beans.factory.annotation.Value
 
 @Service
-class AIService {
+class AIService(
+    // 설정 파일(application.properties)에서 값을 가져옵니다.
+    @Value("\${gemini.api.key}")
+    private val apiKey: String
+){
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
-
-    // 보안상 API 키는 나중에 꼭 가려야함
-    private val apiKey = "AIzaSyBvfdtJp5UdNsW4nRtk7eZF9eY1zfu5aw8"
 
     fun recommend(req: AIRecommendRequest): AIRecommendResponse {
 
