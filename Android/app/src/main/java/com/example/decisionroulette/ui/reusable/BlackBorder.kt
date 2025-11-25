@@ -21,6 +21,10 @@ fun BlackBorder (
 ) {
     Button(
         onClick = onClick,
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 8.dp, // 평상시 높이
+            pressedElevation = 2.dp  // 눌렀을 때 낮아지는 높이 (눌리는 효과)
+        ),
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.buttonColors(

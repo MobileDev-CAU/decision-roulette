@@ -1,5 +1,6 @@
 package com.example.decisionroulette.ui.roulette
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -42,7 +43,8 @@ val RouletteColors = listOf(
 
 @Composable
 fun RouletteScreen(
-    viewModel: RouletteViewModel = viewModel()
+    viewModel: RouletteViewModel = viewModel(),
+    onNavigateToVoteList: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val rotation = remember { Animatable(0f) }
@@ -101,8 +103,19 @@ fun RouletteScreen(
             resultName = uiState.spinResult!!,
             onDismiss = { viewModel.closeDialog() },
             onRetry = { viewModel.retrySpin() },
-            onVote = { viewModel.uploadVote() },
-            onFinalConfirm = { finalChoice ->
+
+            // 💡 2. onVote 콜백에 네비게이션과 닫기 로직 결합
+            onVote = {
+                Log.d("VOTE_DEBUG", "2. RouletteScreen 콜백 시작: 네비게이션 함수 호출 예정")
+                onNavigateToVoteList() // MainActivity의 navController.navigate() 실행
+
+                // 네비게이션 호출 후 바로 닫기 직전 로그
+                Log.d("VOTE_DEBUG", "3. RouletteScreen 콜백: 다이얼로그 닫기 실행 예정")
+                viewModel.closeDialog() // showResultDialog = false
+
+                Log.d("VOTE_DEBUG", "4. RouletteScreen 콜백 종료.")
+            },
+            onFinalConfirm ={ finalChoice ->
                 viewModel.saveFinalChoice(finalChoice)
             }
         )

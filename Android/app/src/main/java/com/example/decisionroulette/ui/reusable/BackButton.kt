@@ -49,12 +49,10 @@ fun BackButton(  onClick: () -> Unit,
                 text = "<",
                 fontSize = 20.sp // 텍스트 크기 조정
             )
-            // 💡 참고: 실제 앱에서는 Text 대신 Icon을 사용하는 것이 좋습니다.
-            // Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+
         }
 
         // 2. 📝 Title Text (가운데 정렬)
-        // Modifier.weight(1f)를 사용하여 남은 공간을 차지하게 하고, Text의 Modifier로 중앙 정렬합니다.
         Text(
             text = "Create roulette",
             style = MaterialTheme.typography.titleLarge,

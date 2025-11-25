@@ -56,6 +56,7 @@ fun HomeScreen (
                 .padding(top = 40.dp),
 
             onClick = onNavigateToTopicList,
+
             text = "spin"
         )
     }

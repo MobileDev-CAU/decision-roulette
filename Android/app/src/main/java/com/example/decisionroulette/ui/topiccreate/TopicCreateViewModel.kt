@@ -21,7 +21,7 @@ sealed interface TopicCreateUiEvent {
 // 초기 더미 데이터 (실제로는 Repository를 통해 서버에서 로드됩니다)
 private val initialExistingTopics = listOf(
     RouletteList(rouletteId = 10, title = "점심 메뉴", itemCount = 3),
-    RouletteList(rouletteId = 20, title = "오늘 할 일", itemCount = 0), // 옵션이 없는 주제
+    RouletteList(rouletteId = 20, title = "오늘 할 일", itemCount = 5), // 옵션이 없는 주제
     RouletteList(rouletteId = 30, title = "입을 옷", itemCount = 5)
 )
 
