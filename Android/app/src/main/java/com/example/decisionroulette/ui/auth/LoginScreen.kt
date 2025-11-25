@@ -12,6 +12,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.decisionroulette.ui.theme.Galmuri
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -78,7 +79,7 @@ fun LoginScreen(
                     strokeWidth = 3.dp
                 )
             } else {
-                Text("Login")
+                Text("Login", fontFamily = Galmuri)
             }
         }
 
@@ -87,7 +88,8 @@ fun LoginScreen(
 
         // 회원가입 링크
         TextButton(onClick = viewModel::navigateToSignUpScreen) {
-            Text("Join membership")
+            Text(
+                "Join membership", fontFamily = Galmuri)
         }
     }
 }

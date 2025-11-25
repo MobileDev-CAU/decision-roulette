@@ -12,6 +12,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.decisionroulette.ui.theme.Galmuri
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -73,7 +74,7 @@ fun SignUpScreen(
             if (state.isLoginLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
             } else {
-                Text("Sign Up Completed")
+                Text("Sign Up Completed", fontFamily = Galmuri)
             }
         }
 
@@ -81,7 +82,7 @@ fun SignUpScreen(
 
         // 로그인 화면으로 돌아가기
         TextButton(onClick = viewModel::navigateToLoginScreen) {
-            Text("Login")
+            Text("Login", fontFamily = Galmuri)
         }
     }
 }

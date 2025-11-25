@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.decisionroulette.ui.theme.Galmuri
 
 // 검정색 테두리 있는 버튼 컴포넌트 재사용
 @Composable
@@ -33,6 +34,7 @@ fun BlackBorder (
         Text(
             text = text,
             fontSize = 24.sp,
+            fontFamily = Galmuri
         )
     }
 }

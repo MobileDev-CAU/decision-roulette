@@ -33,6 +33,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 import com.example.decisionroulette.data.RouletteItem
+import com.example.decisionroulette.ui.theme.Galmuri
 
 @Composable
 fun RouletteWheel(
@@ -116,7 +117,7 @@ fun RouletteWheel(
                 .size(80.dp)
                 .border(4.dp, Color.Black, CircleShape)
         ) {
-            Text("start", color = Color.Black, fontWeight = FontWeight.Bold)
+            Text("start", color = Color.Black, fontWeight = FontWeight.Bold, fontFamily = Galmuri)
         }
 
         // 3-4. 화살표 핀
