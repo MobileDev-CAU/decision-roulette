@@ -1,5 +1,6 @@
 package com.example.decisionroulette.ui.roulette.components
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,11 +23,12 @@ import androidx.compose.ui.window.Dialog
 
 @Composable
 fun RouletteResultDialog(
-    resultName: String,     // 결과 (예: "치킨")
-    onDismiss: () -> Unit,  // 팝업 닫기 (배경 클릭 등)
-    onRetry: () -> Unit,    // 다시 돌리기
-    onVote: () -> Unit,     // 투표 올리기
-    onFinalConfirm: (String) -> Unit // 최종 선택한 메뉴를 서버로 보냄
+    resultName: String,
+    onDismiss: () -> Unit,
+    onRetry: () -> Unit,
+    onVote: () -> Unit,
+    onFinalConfirm: (String) -> Unit
+    // viewModel: RouletteViewModel = viewModel()
 ) {
     var step by remember { mutableIntStateOf(1) }
     var manualInputText by remember { mutableStateOf("") }
@@ -85,7 +87,10 @@ fun RouletteResultDialog(
                         Spacer(modifier = Modifier.height(12.dp))
                         ResultButton(text = "룰렛 다시 돌리기", onClick = onRetry)
                         Spacer(modifier = Modifier.height(12.dp))
-                        ResultButton(text = "유저 투표 올리기", onClick = onVote)
+                        ResultButton(text = "유저 투표 올리기", onClick = {
+                            Log.d("VOTE_DEBUG", "1. 다이얼로그 버튼 클릭 감지: onVote 콜백 호출 시작")
+                            onVote()
+                        })
                     }
 
                     2 -> {

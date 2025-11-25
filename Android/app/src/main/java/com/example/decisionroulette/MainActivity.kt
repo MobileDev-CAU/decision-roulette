@@ -1,6 +1,7 @@
 package com.example.decisionroulette
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -43,6 +44,12 @@ import com.example.decisionroulette.ui.auth.LoginScreen
 import com.example.decisionroulette.ui.auth.SignUpScreen
 import com.example.decisionroulette.ui.auth.AuthUiEvent
 import com.example.decisionroulette.ui.reusable.BottomNavigationBar
+import com.example.decisionroulette.ui.mypage.MyPageScreen // ⬅️ MyPageScreen Import 추가 (가정)
+import com.example.decisionroulette.ui.roulette.RouletteViewModel
+import com.example.decisionroulette.ui.topiclist.VoteListScreen
+import com.example.decisionroulette.ui.vote.MyVoteScreen
+import com.example.decisionroulette.ui.votelist.VoteListUiEvent
+import com.example.decisionroulette.ui.votelist.VoteListViewModel
 import com.example.decisionroulette.ui.mypage.MyPageScreen
 import androidx.compose.foundation.Image
 
@@ -58,6 +65,13 @@ object Routes {
     const val SIGN_UP = "sign_up_route"
     const val LOGIN = "login_route"
     const val USER_PAGE="user_page_route"
+    const val VOTE_LIST="vote_list_route"
+    const val VOTE_STATUS_MY = "vote_status_my_route"
+    const val VOTE_STATUS_OTHER = "vote_status_other_route"
+
+
+
+
 }
 
 class MainActivity : ComponentActivity() {
@@ -84,7 +98,10 @@ fun AppScreen(
     topicListViewModel: TopicListViewModel = viewModel(),
     topicCreateViewModel: TopicCreateViewModel = viewModel(),
     optionCreateViewModel: OptionCreateViewModel=viewModel(),
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
+    //rouletteViewModel: RouletteViewModel =viewModel()
+    voteListViewModel: VoteListViewModel=viewModel()
+
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -92,7 +109,7 @@ fun AppScreen(
 
     // 하단바 생성: 필요한 화면만 포함 (LOGIN, SIGN_UP은 제외)
     // TODO 투표리스트 포함해야함
-    val BOTTOM_NAV_SCREENS = listOf(Routes.HOME, Routes.USER_PAGE)
+    val BOTTOM_NAV_SCREENS = listOf(Routes.HOME, Routes.USER_PAGE, Routes.VOTE_LIST)
 
 
     // ------------------------------------------------------------------
@@ -121,6 +138,7 @@ fun AppScreen(
                 HomeUiEvent.NavigateToTopicList -> {
                     navController.navigate(Routes.TOPIC_LIST)
                 }
+                else -> {}
             }
         }
     }
@@ -132,6 +150,7 @@ fun AppScreen(
                 TopicListUiEvent.NavigateToAddTopic -> {
                     navController.navigate(Routes.TOPIC_CREATE)
                 }
+                else -> {}
             }
         }
     }
@@ -166,6 +185,16 @@ fun AppScreen(
                 OptionCreateUiEvent.NavigateToBack-> {
                     navController.navigate(Routes.TOPIC_CREATE)
                 }
+            }
+        }
+    }
+    LaunchedEffect(voteListViewModel.events) {
+        voteListViewModel.events.collect { event ->
+            when (event) {
+                VoteListUiEvent.NavigateToVoteStatus -> {
+                    navController.navigate(Routes.VOTE_STATUS_MY)
+                }
+                else -> {}
             }
         }
     }
@@ -209,15 +238,15 @@ fun AppScreen(
             composable(Routes.LOGIN) {
                 LoginScreen(
                     // 로그인 성공/회원가입 이동은 ViewModel 이벤트로 처리됨
-                    onNavigateToUserPage = { navController.navigate(Routes.USER_PAGE)},
-                    onNavigateToSignUp ={ navController.navigate(Routes.SIGN_UP)}
+                    onNavigateToUserPage = { navController.navigate(Routes.USER_PAGE) },
+                    onNavigateToSignUp = { navController.navigate(Routes.SIGN_UP) }
                 )
             }
 
             // 🚨 2. 회원가입 화면 (하단 바 없음)
             composable(Routes.SIGN_UP) {
                 SignUpScreen(
-                    onNavigateToLogin = { navController.navigate(Routes.LOGIN)}
+                    onNavigateToLogin = { navController.navigate(Routes.LOGIN) }
                 )
             }
 
@@ -267,10 +296,28 @@ fun AppScreen(
                     onNavigateToBack = { navController.popBackStack() }
                 )
             }
-
+            // 8. 룰렛 돌아가기
             composable(Routes.ROULETTE) {
-                RouletteScreen()
+                RouletteScreen(
+                    // 💡 onNavigateToVoteList 콜백 연결 유지
+                    onNavigateToVoteList = {
+                        navController.navigate(Routes.VOTE_LIST)
+                    }                )
+            }
+
+            composable(Routes.VOTE_LIST) {
+                VoteListScreen(
+
+                    onNavigateToVoteStatus = voteListViewModel::onVoteItemClicked
+
+
+                )
+            }
+
+            composable(Routes.VOTE_STATUS_MY) {
+                MyVoteScreen(
+
+                )
             }
         }
     }
-}

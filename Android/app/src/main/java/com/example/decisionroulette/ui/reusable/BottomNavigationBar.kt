@@ -36,7 +36,6 @@ fun BottomNavigationBar(
 ) {
     // 🚨 내비게이션 아이템 목록 정의 (Routes에 정의된 라우트 사용)
     val items = listOf(
-        // TODO: Routes.HOME, Routes.VOTE_LIST, Routes.MY_PAGE 등 실제 라우트 사용
         BottomNavItem(
             name = "Home",
             route = "home_route", // ⬅️ 실제 라우트와 일치시켜야 합니다. (예: Routes.HOME)
@@ -45,7 +44,7 @@ fun BottomNavigationBar(
         ),
         BottomNavItem(
             name = "Vote",
-            route = "vote_route", // ⬅️ 실제 라우트와 일치시켜야 합니다. (예: Routes.VOTE_LIST)
+            route = "vote_list_route", // ⬅️ 실제 라우트와 일치시켜야 합니다. (예: Routes.VOTE_LIST)
             selectedIcon = Icons.Filled.Poll, // ⬅️ Poll 아이콘 사용
             unselectedIcon = Icons.Outlined.Poll
         ),
