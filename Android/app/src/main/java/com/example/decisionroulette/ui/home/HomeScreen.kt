@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.example.decisionroulette.R
 import com.example.decisionroulette.ui.reusable.BlackBorder
 import androidx.compose.foundation.layout.width
+import com.example.decisionroulette.ui.theme.Galmuri
 
 @Composable
 fun HomeScreen (
@@ -28,7 +29,7 @@ fun HomeScreen (
 
 
         Text(
-            text = "Today's roulette",
+            text = "Today's Roulette",
             modifier = Modifier
                 .padding(top=120.dp),
             fontSize =36.sp
@@ -38,7 +39,6 @@ fun HomeScreen (
 
 
         Image(
-
             painter = painterResource(id = R.drawable.roulette),
             contentDescription = "룰렛 휠 이미지",
             modifier = Modifier
@@ -56,7 +56,7 @@ fun HomeScreen (
                 .padding(top = 40.dp),
 
             onClick = onNavigateToTopicList,
-            text = "spin"
+            text = "START"
         )
     }
 }

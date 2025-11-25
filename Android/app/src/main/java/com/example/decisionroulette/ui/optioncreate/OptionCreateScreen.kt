@@ -54,7 +54,7 @@ fun OptionCreateScreen(
         ) {
 
             Spacer(modifier = Modifier.height(40.dp))
-            BackButton(onClick = viewModel::onBackButtonClicked)
+            BackButton(title = "옵션 선택", onClick = viewModel::onBackButtonClicked)
 
             Spacer(modifier = Modifier.height(40.dp))
 

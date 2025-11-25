@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.max
 
-// 🚨 LocalContext, LocalDensity 오류를 해결하고 Scrollbar Thumb의 위치와 크기를 계산하여 그리는 컴포넌트입니다.
+// LocalContext, LocalDensity 오류를 해결하고 Scrollbar Thumb의 위치와 크기를 계산하여 그리는 컴포넌트입니다.
 @Composable
 fun VerticalScrollbarThumb(
     listScrollState: ScrollState,

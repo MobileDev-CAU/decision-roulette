@@ -1,5 +1,6 @@
 package com.example.decisionroulette.ui.topiclist
 
+import android.R.attr.start
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.ui.reusable.TopicItem
 import com.example.decisionroulette.ui.reusable.BlackBorder
+import com.example.decisionroulette.ui.reusable.BackButton
 
 
 // ⬅️ 상수 정의
@@ -26,6 +28,7 @@ private val MAX_CONTAINER_WIDTH = 400.dp
 @Composable
 fun TopicListScreen (
     onNavigateToCreateTopic: () -> Unit,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TopicListViewModel = viewModel()
 ){
@@ -40,14 +43,14 @@ fun TopicListScreen (
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .fillMaxHeight(),
+            .fillMaxHeight()
+            .padding(horizontal = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        Text(
-            text = "My Roulette List",
-            modifier = Modifier.padding(top = 150.dp),
-            fontSize = 36.sp
+        BackButton(
+            title = "My Roulette List", // 원하는 제목 입력
+            onClick = onNavigateBack    // 클릭 시 뒤로 가기
         )
 
         // -----------------------------------------------------------------
@@ -91,7 +94,8 @@ fun TopicListScreen (
         BlackBorder(
             modifier = Modifier
                 .width(350.dp)
-                .padding(top = 24.dp, bottom = 40.dp),
+                .padding(top = 24.dp, bottom = 40.dp)
+                .padding(horizontal = 10.dp),
             onClick = onNavigateToCreateTopic,
             text = "+"
         )

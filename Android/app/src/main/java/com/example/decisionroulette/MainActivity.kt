@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.content.MediaType.Companion.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -14,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -39,7 +43,8 @@ import com.example.decisionroulette.ui.auth.LoginScreen
 import com.example.decisionroulette.ui.auth.SignUpScreen
 import com.example.decisionroulette.ui.auth.AuthUiEvent
 import com.example.decisionroulette.ui.reusable.BottomNavigationBar
-import com.example.decisionroulette.ui.mypage.MyPageScreen // ⬅️ MyPageScreen Import 추가 (가정)
+import com.example.decisionroulette.ui.mypage.MyPageScreen
+import androidx.compose.foundation.Image
 
 
 // 화면 경로(Route)를 정의하는 상수 객체
@@ -85,12 +90,13 @@ fun AppScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // 🚨 하단바 생성: 필요한 화면만 포함 (LOGIN, SIGN_UP은 제외)
-    val BOTTOM_NAV_SCREENS = listOf(Routes.HOME, Routes.TOPIC_LIST, Routes.USER_PAGE)
+    // 하단바 생성: 필요한 화면만 포함 (LOGIN, SIGN_UP은 제외)
+    // TODO 투표리스트 포함해야함
+    val BOTTOM_NAV_SCREENS = listOf(Routes.HOME, Routes.USER_PAGE)
 
 
     // ------------------------------------------------------------------
-    // 🚨 0. 인증 (로그인/회원가입) 네비게이션 처리
+    // 0. 인증 (로그인/회원가입) 네비게이션 처리
     LaunchedEffect(authViewModel.events) {
         authViewModel.events.collect { event ->
             when (event) {
@@ -164,9 +170,27 @@ fun AppScreen(
         }
     }
 
+    // TODO 투표리스트 일때도 이 배경화면이도록
+    if (BOTTOM_NAV_SCREENS.contains(currentRoute)) {
+        Image(
+            painter = painterResource(id = R.drawable.home_background5),
+            contentDescription = null,
+//            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+    else {
+        Image(
+            painter = painterResource(id = R.drawable.basic_background),
+            contentDescription = null,
+//            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        containerColor = Color.Transparent,
         // 🚨 조건부 bottomBar 렌더링
         bottomBar = {
             if (BOTTOM_NAV_SCREENS.contains(currentRoute)) {
@@ -177,7 +201,7 @@ fun AppScreen(
 
         NavHost(
             navController = navController,
-            startDestination = Routes.HOME, // ⬅️ 앱 시작 화면을 HOME으로 유지
+            startDestination = Routes.HOME, // 앱 시작 화면을 HOME으로 유지
             modifier = Modifier.padding(innerPadding)
         ) {
 
@@ -207,7 +231,8 @@ fun AppScreen(
             // 4. 주제 목록 (하단 바 있음)
             composable(Routes.TOPIC_LIST) {
                 TopicListScreen(
-                    onNavigateToCreateTopic = topicListViewModel::onAddListButtonClicked
+                    onNavigateToCreateTopic = topicListViewModel::onAddListButtonClicked,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 
@@ -230,7 +255,7 @@ fun AppScreen(
                 TopicCreateScreen(
                     onNavigateToCreateOption = { navController.navigate(Routes.OPTION_CREATE) },
                     onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) },
-                    onNavigateToBack = { navController.navigate(Routes.TOPIC_LIST) }
+                    onNavigateToBack = { navController.popBackStack() }
                 )
             }
 
@@ -239,11 +264,13 @@ fun AppScreen(
                 OptionCreateScreen(
                     onNavigateToAi = { navController.navigate(Routes.AI) },
                     onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) },
-                    onNavigateToBack = { navController.navigate(Routes.TOPIC_CREATE) }
+                    onNavigateToBack = { navController.popBackStack() }
                 )
             }
 
-            // TODO: ROULETTE 및 AI 화면 composable 추가 필요
+            composable(Routes.ROULETTE) {
+                RouletteScreen()
+            }
         }
     }
 }
