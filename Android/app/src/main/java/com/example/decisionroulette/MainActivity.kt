@@ -171,7 +171,7 @@ fun AppScreen(
     }
 
     // TODO 투표리스트 일때도 이 배경화면이도록
-    if (currentRoute == Routes.HOME || currentRoute == Routes.USER_PAGE) {
+    if (BOTTOM_NAV_SCREENS.contains(currentRoute)) {
         Image(
             painter = painterResource(id = R.drawable.home_background5),
             contentDescription = null,
@@ -201,7 +201,7 @@ fun AppScreen(
 
         NavHost(
             navController = navController,
-            startDestination = Routes.HOME, // ⬅️ 앱 시작 화면을 HOME으로 유지
+            startDestination = Routes.HOME, // 앱 시작 화면을 HOME으로 유지
             modifier = Modifier.padding(innerPadding)
         ) {
 
@@ -231,7 +231,8 @@ fun AppScreen(
             // 4. 주제 목록 (하단 바 있음)
             composable(Routes.TOPIC_LIST) {
                 TopicListScreen(
-                    onNavigateToCreateTopic = topicListViewModel::onAddListButtonClicked
+                    onNavigateToCreateTopic = topicListViewModel::onAddListButtonClicked,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 
@@ -254,7 +255,7 @@ fun AppScreen(
                 TopicCreateScreen(
                     onNavigateToCreateOption = { navController.navigate(Routes.OPTION_CREATE) },
                     onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) },
-                    onNavigateToBack = { navController.navigate(Routes.TOPIC_LIST) }
+                    onNavigateToBack = { navController.popBackStack() }
                 )
             }
 
@@ -263,7 +264,7 @@ fun AppScreen(
                 OptionCreateScreen(
                     onNavigateToAi = { navController.navigate(Routes.AI) },
                     onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) },
-                    onNavigateToBack = { navController.navigate(Routes.TOPIC_CREATE) }
+                    onNavigateToBack = { navController.popBackStack() }
                 )
             }
 

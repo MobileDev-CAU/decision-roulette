@@ -1,11 +1,13 @@
 package com.example.decisionroulette.ui.reusable
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,42 +26,43 @@ import androidx.compose.ui.unit.sp
 import com.example.decisionroulette.ui.theme.Galmuri
 
 @Composable
-fun BackButton(  onClick: () -> Unit,
-
+fun BackButton(
+    title: String,
+    onClick: () -> Unit,
 ) {
-    Row(
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth() // Row가 화면 너비를 모두 차지하도록 설정
+//            .padding(top = 80.dp),
+//        verticalAlignment = Alignment.CenterVertically // 텍스트와 버튼을 수직 중앙 정렬
+//    ) {
+    Box(
         modifier = Modifier
-            .fillMaxWidth() // Row가 화면 너비를 모두 차지하도록 설정
-            .padding(top = 16.dp), // 상단 패딩 추가 (선택 사항)
-        verticalAlignment = Alignment.CenterVertically // 텍스트와 버튼을 수직 중앙 정렬
+            .fillMaxWidth()
+            .padding(top = 80.dp)
     ) {
         TextButton(
             onClick = onClick,
             colors = ButtonDefaults.textButtonColors(
-                contentColor = Color.Black // 텍스트 색상만 지정
+                contentColor = Color.Black
             ),
-            contentPadding = PaddingValues(0.dp), // 패딩 제거
-            modifier = Modifier.size(width = 60.dp, height = 60.dp) // 터치 영역 확보
+            contentPadding = PaddingValues(start = 0.dp),
+            modifier = Modifier.size(width = 60.dp, height = 60.dp).align(Alignment.CenterStart)
         ) {
             Text(
                 text = "<",
                 fontSize = 40.sp,
                 fontFamily = Galmuri,
-                // 텍스트 위치 보정이 필요할 수 있습니다.
-//                modifier = Modifier.padding(bottom = 10.dp)
             )
         }
 
-        // 2. 📝 Title Text (가운데 정렬)
-        // Modifier.weight(1f)를 사용하여 남은 공간을 차지하게 하고, Text의 Modifier로 중앙 정렬합니다.
+        // 2. Title Text (가운데 정렬)
         Text(
-            text = "Create roulette",
+            text = title,
             style = MaterialTheme.typography.titleLarge,
             fontSize = 28.sp,
             textAlign = TextAlign.Center, // 텍스트 자체를 중앙 정렬
-            modifier = Modifier
-                .weight(1f) // 남은 공간을 모두 차지
-                .padding(end = 48.dp) // 버튼 크기만큼 오른쪽 여백을 주어 시각적 중앙에 맞춤
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }
