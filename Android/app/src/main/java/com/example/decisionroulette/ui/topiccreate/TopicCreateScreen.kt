@@ -60,14 +60,15 @@ fun TopicCreateScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+//            .padding(horizontal = 16.dp)
+            .padding(horizontal = 30.dp)
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.height(40.dp))
-        BackButton(onClick = viewModel::onBackButtonClicked)
-        Spacer(modifier = Modifier.height(40.dp))
+//        Spacer(modifier = Modifier.height(40.dp))
+        BackButton(title = "Create New Topic", onClick = viewModel::onBackButtonClicked)
+//        Spacer(modifier = Modifier.height(40.dp))
 
         // ---------------------------------------------------------
 
@@ -89,14 +90,15 @@ fun TopicCreateScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = 250.dp)  // 보이는 최대 스크롤바 박스 높이
-                .padding(bottom = 32.dp),
+                .padding(bottom = 32.dp)
+                .padding(horizontal = 10.dp)
         ) {
             // 1. Scrollable Column (주제 버튼 목록)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(listScrollState)
-                    .padding(end = 12.dp),
+                    .verticalScroll(listScrollState),
+//                    .padding(end = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // 1. 기존 주제 버튼 (rouletteId를 사용)
@@ -127,19 +129,21 @@ fun TopicCreateScreen(
         }
 
         // ---------------------------------------------------------
-        // 새 주제 입력 필드
-        TopicField(
-            value = currentInputValue,
-            onValueChange = viewModel::updateCurrentInput,
-            label = "Enter a new topic and press the Enter key",
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    viewModel.addTopicFromInput()
-                    focusManager.clearFocus()
-                }
+        Box(modifier = Modifier.padding(horizontal = 10.dp)) {
+            // 새 주제 입력 필드
+            TopicField(
+                value = currentInputValue,
+                onValueChange = viewModel::updateCurrentInput,
+                label = "Enter a new topic.",
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        viewModel.addTopicFromInput()
+                        focusManager.clearFocus()
+                    }
+                )
             )
-        )
+        }
 
         Spacer(modifier = Modifier.height(48.dp))
 

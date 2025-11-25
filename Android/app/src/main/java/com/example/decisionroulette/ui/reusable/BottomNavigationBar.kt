@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState // ⬅️ 현재 라우트를 얻기 위해 필요
 import androidx.compose.material.icons.filled.Poll // ⬅️ 투표 아이콘 (채워진)
 import androidx.compose.material.icons.outlined.Poll // ⬅️ 투표 아이콘 (테두리)
+import com.example.decisionroulette.ui.theme.Galmuri
 
 // 각 내비게이션 아이템의 정보를 담는 데이터 클래스
 data class BottomNavItem(
@@ -61,7 +62,7 @@ fun BottomNavigationBar(
 
     NavigationBar(
         modifier = modifier,
-        containerColor = Color.White // 하단 바 배경색
+        containerColor = Color.White.copy(alpha = 0.0f)
     ) {
         items.forEach { item ->
             val selected = currentRoute == item.route
@@ -89,7 +90,8 @@ fun BottomNavigationBar(
                 label = {
                     Text(
                         text = item.name,
-                        color = if (selected) Color.Black else Color.Gray // ⬅️ 텍스트 색상도 변경
+                        color = if (selected) Color.Black else Color.Gray, // ⬅️ 텍스트 색상도 변경,
+                        fontFamily = Galmuri
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(

@@ -34,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.math.cos
 import kotlin.math.sin
 import com.example.decisionroulette.ui.roulette.components.RouletteResultDialog
+import com.example.decisionroulette.ui.theme.Galmuri
 
 // 룰렛 색상 팔레트
 val RouletteColors = listOf(
@@ -180,7 +181,7 @@ fun ToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
         shape = RoundedCornerShape(50),
         modifier = Modifier.height(36.dp)
     ) {
-        Text(text, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        Text(text, fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = Galmuri)
     }
 }
 
