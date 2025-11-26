@@ -1,6 +1,6 @@
 package com.mobApp.roulette.service
 
-import com.mobApp.roulette.dto.Top3ItemResponse
+/*import com.mobApp.roulette.dto.Top3ItemResponse
 import com.mobApp.roulette.dto.RouletteTop3Response
 import com.mobApp.roulette.repository.FinalSelectionRepository
 import jakarta.persistence.Id
@@ -22,4 +22,4 @@ class RouletteAnalysisService(
                 top3 = top3
         )
     }
-}
+}*/
