@@ -34,6 +34,8 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.google.firebase:firebase-admin:9.2.0")
+	implementation("com.squareup.okhttp3:okhttp:4.12.0")
+	implementation("org.json:json:20231013")
 
 }
 
