@@ -31,6 +31,9 @@ class RouletteController(
     @PostMapping("/ai/recommend")
     fun recommend(@RequestBody req: AIRecommendRequest): ResponseEntity<AIRecommendResponse> =
             ResponseEntity.ok(aiService.recommend(req))
+    @PostMapping("/ai/analyze")
+    fun analyze(@RequestBody req: AIAnalyzeRequest): ResponseEntity<AIAnalysisResponse> =
+        ResponseEntity.ok(aiService.analyzeItems(req.items))
     @GetMapping("{Id}")
     fun detail(@PathVariable id : Long): ResponseEntity<RouletteDetailResponse> =
             ResponseEntity.ok(rouletteService.getDetail(id))
