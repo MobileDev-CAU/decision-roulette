@@ -35,8 +35,8 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("com.mysql:mysql-connector-j:9.1.0")
 	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
-
-
+	implementation("com.squareup.okhttp3:okhttp:4.12.0")
+	implementation("org.json:json:20231013")
 }
 
 kotlin {
