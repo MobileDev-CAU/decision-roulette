@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="42ee7836-bb17-4a1d-9ce9-6b02f56e64af" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Server/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/build.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/build.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/proguard-rules.pro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/androidTest/java/com/example/decisionroulette/ExampleInstrumentedTest.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/java/com/example/decisionroulette/MainActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/java/com/example/decisionroulette/ui/theme/Color.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/java/com/example/decisionroulette/ui/theme/Theme.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/java/com/example/decisionroulette/ui/theme/Type.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/drawable/ic_launcher_foreground.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-anydpi/ic_launcher.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-hdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-mdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/values/colors.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/values/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/values/themes.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/xml/backup_rules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/main/res/xml/data_extraction_rules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/app/src/test/java/com/example/decisionroulette/ExampleUnitTest.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/build.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/gradle.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/gradle/libs.versions.toml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Android/settings.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/decision-roulette/Server/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/settings.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/RouletteApplication.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/config/JwtFilter.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/config/SecurityConfig.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/controller/AuthController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/controller/HomeController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/controller/RouletteAnalysisController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/controller/RouletteController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/controller/VoteController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/domain/FinalSelection.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/domain/Roulette.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/domain/RouletteItem.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/domain/SpinHistory.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/domain/User.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/domain/Vote.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/domain/VoteOption.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/domain/VoteRecord.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/dto/AI.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/dto/Auth.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/dto/Roulette.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/dto/feedback.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/dto/home.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/dto/vote.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/repository/FinalSelectionRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/repository/RouletteItemRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/repository/RouletteRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/repository/SpinHistoryRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/repository/UserRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/repository/VoteOptionRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/repository/VoteRecordRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/repository/VoteRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/service/AIService.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/service/FeedbackService.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/service/HomeService.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/service/RouletteAnalysisService.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/service/RouletteService.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/service/UserService.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/service/VoteService.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/kotlin/com/mobApp/roulette/util/jwtUtil.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/src/test/kotlin/com/mobApp/roulette/RouletteApplicationTests.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/test.txt" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="roulette" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="roulette" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="roulette" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="compileClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="roulette" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="compileClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+                <item name="org.springframework.boot:spring-boot-starter-data-jpa:3.5.7" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="roulette" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="runtimeClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="roulette" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="runtimeClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+                <item name="org.springframework.boot:spring-boot-starter-data-jpa:3.5.7" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="roulette" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="runtimeClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+                <item name="org.springframework.boot:spring-boot-starter-data-jpa:3.5.7" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
+                <item name="org.springframework.boot:spring-boot-starter-jdbc:3.5.7" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Script" />
+        <option value="Kotlin File" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="35ePKdha9kqWuM02xKWEnbBsZXY" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build roulette.executor": "Run",
+    "Kotlin.RouletteApplicationKt.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "feat/6",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/82107/roulette-clone/decision-roulette/roulette-service"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="RouletteApplicationKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.mobApp.roulette.RouletteApplicationKt" />
+      <module name="roulette.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Kotlin.RouletteApplicationKt" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="42ee7836-bb17-4a1d-9ce9-6b02f56e64af" name="Changes" comment="" />
+      <created>1763467501990</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763467501990</updated>
+    </task>
+    <servers />
+  </component>
+</project>
