@@ -14,7 +14,7 @@ import com.example.decisionroulette.api.roulette.RouletteRepository
 
 
 sealed interface TopicCreateUiEvent {
-    object NavigateToCreateOption : TopicCreateUiEvent // 옵션 생성 화면으로 이동 (itemCount == 0)
+    data class NavigateToCreateOption(val topicTitle: String) : TopicCreateUiEvent
     object NavigateToRoulette : TopicCreateUiEvent     // 룰렛 화면으로 이동 (itemCount > 0)
     object NavigateToBack : TopicCreateUiEvent         // 이전 화면으로 이동
 }
@@ -121,37 +121,46 @@ class TopicCreateViewModel : ViewModel() {
         uiState = uiState.copy(selectedTopicId = newSelectedId)
     }
 
-    // 🔥 [추가] 메뉴 열기
+    // 메뉴 열기
     fun onMoreOptionsSelected(topicId: Int) {
         menuOpenTopicId.value = topicId
     }
 
-    // 🔥 [추가] 메뉴 닫기
+    // 메뉴 닫기
     fun dismissMenu() {
         menuOpenTopicId.value = null
     }
 
-    // 🔥 [추가] 토픽 삭제 로직
+    // 룰렛 삭제
     fun deleteTopic(topicId: Int, isExisting: Boolean) {
         if (isExisting) {
-            // 기존 토픽 삭제
-            val updatedList = uiState.existingTopics.filter { it.rouletteId != topicId }
-            uiState = uiState.copy(existingTopics = updatedList)
+            viewModelScope.launch {
+                // 1. 서버에 삭제 요청
+                val result = repository.deleteRoulette(topicId)
+
+                result.onSuccess {
+                    // 2. 성공 시 로컬 리스트에서도 제거
+                    val updatedList = uiState.existingTopics.filter { it.rouletteId != topicId }
+                    uiState = uiState.copy(existingTopics = updatedList)
+                }.onFailure {
+                    println("삭제 실패: ${it.message}")
+                    // 실패 시 에러 메시지를 띄우거나 복구 로직 추가 가능
+                }
+            }
         } else {
-            // 사용자 생성(임시) 토픽 삭제
+            // 사용자 생성(임시) 토픽 삭제 (서버 요청 필요 없음)
             val updatedList = uiState.userCreatedTopics.filter { it.tempId != topicId }
             uiState = uiState.copy(userCreatedTopics = updatedList)
         }
 
-        // 만약 삭제된 토픽이 선택된 상태였다면 선택 해제
         if (uiState.selectedTopicId == topicId) {
             uiState = uiState.copy(selectedTopicId = null)
         }
 
-        dismissMenu() // 메뉴 닫기
+        dismissMenu()
     }
 
-     // Choice 버튼 클릭 시 호출
+    // Choice 버튼 클릭 시 호출
     fun onChoiceButtonClicked() {
         val selectedId = uiState.selectedTopicId
 
@@ -165,8 +174,7 @@ class TopicCreateViewModel : ViewModel() {
             // 기존 주제가 있다면 itemCount를 사용하고, 새 주제라면 itemCount는 0으로 간주합니다.
             val itemCount = existingTopic?.itemCount ?: 0
 
-            // 선택된 주제의 이름 (나중에 API 호출 등에 사용)
-            val selectedTopicTitle = existingTopic?.title ?: userTopic?.title ?: "Unknown Topic"
+            val selectedTitle = existingTopic?.title ?: userTopic?.title ?: ""
 
 
             // TODO: 실제 앱에서는 여기서 선택된 주제를 저장하거나,
@@ -180,7 +188,7 @@ class TopicCreateViewModel : ViewModel() {
                 }
                 // 옵션이 없는 경우 (itemCount == 0 또는 새 주제): 옵션 생성 화면으로 이동
                 else {
-                    _events.send(TopicCreateUiEvent.NavigateToCreateOption)
+                    _events.send(TopicCreateUiEvent.NavigateToCreateOption(selectedTitle))
                 }
             }
         } else {

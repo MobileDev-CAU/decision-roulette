@@ -50,7 +50,7 @@ object Routes {
     const val HOME = "home_route"
 //    const val TOPIC_LIST = "topic_list_route"
     const val TOPIC_CREATE="topic_create_route"
-    const val OPTION_CREATE="option_create_route"
+    const val OPTION_CREATE="option_create_route/{topicTitle}"
     const val ROULETTE="roulette_route"
     const val AI="ai_route"
     const val SIGN_UP = "sign_up_route"
@@ -153,8 +153,8 @@ fun AppScreen(
     LaunchedEffect(topicCreateViewModel.events) {
         topicCreateViewModel.events.collect { event ->
             when (event) {
-                TopicCreateUiEvent.NavigateToCreateOption -> {
-                    navController.navigate(Routes.OPTION_CREATE)
+                is TopicCreateUiEvent.NavigateToCreateOption -> {
+                    navController.navigate("${Routes.OPTION_CREATE}/${event.topicTitle}")
                 }
 
                 TopicCreateUiEvent.NavigateToRoulette -> {
@@ -280,14 +280,23 @@ fun AppScreen(
             // 6. 주제 생성 (하단 바 없음)
             composable(Routes.TOPIC_CREATE) {
                 TopicCreateScreen(
-                    onNavigateToCreateOption = { navController.navigate(Routes.OPTION_CREATE) },
+                    onNavigateToCreateOption = { title ->
+                        navController.navigate("option_create_route/$title")
+                    },
                     onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) },
                     onNavigateToBack = { navController.popBackStack() }
                 )
             }
 
             // 7. 옵션 생성 (하단 바 없음)
-            composable(Routes.OPTION_CREATE) {
+            composable(
+                route = "option_create_route/{topicTitle}"
+            ) { backStackEntry ->
+                val topicTitle = backStackEntry.arguments?.getString("topicTitle") ?: "제목 없음"
+                val viewModel: OptionCreateViewModel = viewModel()
+                LaunchedEffect(topicTitle) {
+                    viewModel.updateTitle(topicTitle)
+                }
                 OptionCreateScreen(
                     onNavigateToAi = { navController.navigate(Routes.AI) },
                     onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) },

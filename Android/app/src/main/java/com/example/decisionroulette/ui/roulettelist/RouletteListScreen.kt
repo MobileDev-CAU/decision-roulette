@@ -31,7 +31,7 @@ import com.example.decisionroulette.ui.reusable.VerticalScrollbarThumb
 
 @Composable
 fun TopicCreateScreen(
-    onNavigateToCreateOption: () -> Unit,
+    onNavigateToCreateOption: (String) -> Unit,
     onNavigateToRoulette: () -> Unit,
     onNavigateToBack:()->Unit,
     viewModel: TopicCreateViewModel = viewModel()
@@ -45,7 +45,9 @@ fun TopicCreateScreen(
     LaunchedEffect(Unit) {
         viewModel.events.collectLatest { event ->
             when (event) {
-                TopicCreateUiEvent.NavigateToCreateOption -> onNavigateToCreateOption()
+                is TopicCreateUiEvent.NavigateToCreateOption -> {
+                    onNavigateToCreateOption(event.topicTitle)
+                }
                 TopicCreateUiEvent.NavigateToRoulette -> onNavigateToRoulette()
                 TopicCreateUiEvent.NavigateToBack -> onNavigateToBack()
             }
