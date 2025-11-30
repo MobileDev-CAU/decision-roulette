@@ -210,16 +210,16 @@ fun AppScreen(
     // TODO 투표리스트 일때도 이 배경화면이도록
     if (BOTTOM_NAV_SCREENS.contains(currentRoute)) {
         Image(
-            painter = painterResource(id = R.drawable.home_background5),
+            painter = painterResource(id = R.drawable.home_background6),
             contentDescription = null,
-//            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
     } else {
         Image(
-            painter = painterResource(id = R.drawable.basic_background),
+            painter = painterResource(id = R.drawable.basic_background2),
             contentDescription = null,
-//            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
     }
