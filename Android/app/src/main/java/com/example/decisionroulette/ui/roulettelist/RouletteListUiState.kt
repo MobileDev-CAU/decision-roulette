@@ -1,7 +1,6 @@
-package com.example.decisionroulette.ui.topiccreate
+package com.example.decisionroulette.ui.roulettelist
 
 import com.example.decisionroulette.data.topiclist.RouletteList
-import com.example.decisionroulette.data.topiclist.RouletteListResponse
 
 
 data class TopicCreateUiState(

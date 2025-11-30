@@ -26,9 +26,9 @@ import com.example.decisionroulette.ui.optioncreate.OptionCreateUiEvent
 import com.example.decisionroulette.ui.optioncreate.OptionCreateViewModel
 import com.example.decisionroulette.ui.roulette.RouletteScreen
 import com.example.decisionroulette.ui.theme.DecisionRouletteTheme
-import com.example.decisionroulette.ui.topiccreate.TopicCreateScreen
-import com.example.decisionroulette.ui.topiccreate.TopicCreateUiEvent
-import com.example.decisionroulette.ui.topiccreate.TopicCreateViewModel
+import com.example.decisionroulette.ui.roulettelist.TopicCreateScreen
+import com.example.decisionroulette.ui.roulettelist.TopicCreateUiEvent
+import com.example.decisionroulette.ui.roulettelist.TopicCreateViewModel
 //import com.example.decisionroulette.ui.topiclist.TopicListScreen
 //import com.example.decisionroulette.ui.topiclist.TopicListUiEvent
 //import com.example.decisionroulette.ui.topiclist.TopicListViewModel

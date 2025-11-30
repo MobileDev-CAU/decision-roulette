@@ -1,28 +1,23 @@
-package com.example.decisionroulette.ui.topiccreate
+package com.example.decisionroulette.ui.roulettelist
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect // ⬅️ 추가
-import androidx.compose.runtime.collectAsState // ⬅️ 제거
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,6 +38,7 @@ fun TopicCreateScreen(
 ) {
     val state = viewModel.uiState
     val currentInputValue by viewModel.currentInput
+    val openMenuId by viewModel.menuOpenTopicId
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
 
@@ -67,7 +63,7 @@ fun TopicCreateScreen(
     ) {
 
 //        Spacer(modifier = Modifier.height(40.dp))
-        BackButton(title = "Create New Topic", onClick = viewModel::onBackButtonClicked)
+        BackButton(title = "My Roulette List", onClick = viewModel::onBackButtonClicked)
 //        Spacer(modifier = Modifier.height(40.dp))
 
         Spacer(modifier = Modifier.weight(1f))
@@ -80,7 +76,6 @@ fun TopicCreateScreen(
             fontSize = 15.sp
         )
 
-        // ---------------------------------------------------------
 
         val listScrollState = rememberScrollState() // 스크롤 상태 정의
 
@@ -92,38 +87,65 @@ fun TopicCreateScreen(
                 .padding(horizontal = 10.dp)
         ) {
             // 1. Scrollable Column (주제 버튼 목록)
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(listScrollState),
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.Black)
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(listScrollState),
 //                    .padding(end = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // 1. 기존 주제 버튼 (rouletteId를 사용)
-                state.existingTopics.forEach { topic ->
-                    val isSelected = state.selectedTopicId == topic.rouletteId
-                    TopicButton(
-                        title = topic.title,
-                        isSelected = isSelected,
-                        onClick = { viewModel.toggleTopicSelection(topic.rouletteId) }
-                    )
-                }
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // 1. 기존 주제 버튼 (rouletteId를 사용)
+                    state.existingTopics.forEach { topic ->
+                        val isSelected = state.selectedTopicId == topic.rouletteId
+                        TopicButton(
+                            title = topic.title,
+                            isSelected = isSelected,
+                            onClick = { viewModel.toggleTopicSelection(topic.rouletteId) },
+                            isMenuExpanded = openMenuId == topic.rouletteId,
+                            onMenuClick = { viewModel.onMoreOptionsSelected(topic.rouletteId) },
+                            onDismissMenu = viewModel::dismissMenu,
+                            onDelete = {
+                                viewModel.deleteTopic(
+                                    topic.rouletteId,
+                                    isExisting = true
+                                )
+                            }
+                        )
+                    }
 
-                // 2. 사용자가 새로 생성한 주제 버튼 (tempId를 사용)
-                state.userCreatedTopics.forEach { userTopic -> // ⬅️ userCreatedOptions 대신 userCreatedTopics 사용
-                    val isSelected = state.selectedTopicId == userTopic.tempId
-                    TopicButton(
-                        title = userTopic.title,
-                        isSelected = isSelected,
-                        onClick = { viewModel.toggleTopicSelection(userTopic.tempId) }
-                    )
+                    // 2. 사용자가 새로 생성한 주제 버튼 (tempId를 사용)
+                    state.userCreatedTopics.forEach { userTopic -> // userCreatedOptions 대신 userCreatedTopics 사용
+                        val isSelected = state.selectedTopicId == userTopic.tempId
+                        TopicButton(
+                            title = userTopic.title,
+                            isSelected = isSelected,
+                            onClick = { viewModel.toggleTopicSelection(userTopic.tempId) },
+                            isMenuExpanded = openMenuId == userTopic.tempId,
+                            onMenuClick = { viewModel.onMoreOptionsSelected(userTopic.tempId) },
+                            onDismissMenu = viewModel::dismissMenu,
+                            onDelete = {
+                                viewModel.deleteTopic(
+                                    userTopic.tempId,
+                                    isExisting = false
+                                )
+                            }
+                        )
+                    }
                 }
+                // 2. Scroll Bar Thumb
+                VerticalScrollbarThumb(
+                    listScrollState = listScrollState,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
             }
-            // 2. Scroll Bar Thumb
-            VerticalScrollbarThumb(
-                listScrollState = listScrollState,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
         }
 
         // ---------------------------------------------------------

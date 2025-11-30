@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -34,6 +35,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 import com.example.decisionroulette.data.RouletteItem
 import com.example.decisionroulette.ui.theme.Galmuri
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Fill
 
 @Composable
 fun RouletteWheel(
@@ -113,6 +116,7 @@ fun RouletteWheel(
             onClick = onStartClick,
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            contentPadding = PaddingValues(0.dp),
             modifier = Modifier
                 .size(80.dp)
                 .border(4.dp, Color.Black, CircleShape)
@@ -121,14 +125,34 @@ fun RouletteWheel(
         }
 
         // 3-4. 화살표 핀
-        Icon(
-            imageVector = Icons.Default.ArrowDropDown,
-            contentDescription = "Pointer",
-            tint = Color.Red,
+        Canvas(
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .size(50.dp)
-                .offset(y = (-15).dp)
-        )
+                .align(Alignment.TopCenter) // 상단 중앙 정렬
+                .size(35.dp) // 크기
+                .offset(y = (-10).dp) // 위치 조정
+        ) {
+            // 1. 역삼각형 경로(모양) 정의
+            val trianglePath = Path().apply {
+                // 좌표: (x, y) 기준
+                moveTo(size.width / 2f, size.height) // 하단 중앙 꼭짓점 (뾰족한 부분)
+                lineTo(0f, 0f) // 상단 왼쪽 꼭짓점
+                lineTo(size.width, 0f) // 상단 오른쪽 꼭짓점
+                close() // 경로 닫기 (삼각형 완성)
+            }
+
+            // 2. 내부 채우기
+            drawPath(
+                path = trianglePath,
+                color = Color.Yellow, // 내부 색상
+                style = Fill
+            )
+
+            // 3. 검정색 테두리 그리기
+            drawPath(
+                path = trianglePath,
+                color = Color.Black, // 테두리 색상 (검정)
+                style = Stroke(width = 3.dp.toPx()) // 테두리 두께 (5dp, 조절 가능)
+            )
+        }
     }
 }

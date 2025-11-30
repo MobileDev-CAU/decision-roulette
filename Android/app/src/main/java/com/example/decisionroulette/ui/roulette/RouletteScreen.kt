@@ -40,8 +40,9 @@ import com.example.decisionroulette.ui.theme.Galmuri
 
 // 룰렛 색상 팔레트
 val RouletteColors = listOf(
-    Color(0xFFE57373), Color(0xFF81C784), Color(0xFF64B5F6),
-    Color(0xFFFFD54F), Color(0xFFBA68C8), Color(0xFF4DB6AC)
+//    Color(0xFF66BCB6),
+    Color(0xFFF97199),
+    Color.White
 )
 
 @Composable
