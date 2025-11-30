@@ -61,7 +61,7 @@ fun TopicCreateScreen(
         modifier = Modifier
             .fillMaxSize()
 //            .padding(horizontal = 16.dp)
-            .padding(horizontal = 30.dp)
+            .padding(horizontal = 40.dp) // 다른 뷰에서도 다 양옆 패딩 40으로 맞춰주기!!!!!!!!!
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -69,8 +69,6 @@ fun TopicCreateScreen(
 //        Spacer(modifier = Modifier.height(40.dp))
         BackButton(title = "Create New Topic", onClick = viewModel::onBackButtonClicked)
 //        Spacer(modifier = Modifier.height(40.dp))
-
-        // ---------------------------------------------------------
 
         Spacer(modifier = Modifier.weight(1f))
 

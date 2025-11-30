@@ -1,17 +1,11 @@
 package com.example.decisionroulette
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.content.MediaType.Companion.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,34 +24,31 @@ import com.example.decisionroulette.ui.home.HomeUiEvent
 import com.example.decisionroulette.ui.optioncreate.OptionCreateScreen
 import com.example.decisionroulette.ui.optioncreate.OptionCreateUiEvent
 import com.example.decisionroulette.ui.optioncreate.OptionCreateViewModel
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.decisionroulette.ui.roulette.RouletteScreen
 import com.example.decisionroulette.ui.theme.DecisionRouletteTheme
 import com.example.decisionroulette.ui.topiccreate.TopicCreateScreen
 import com.example.decisionroulette.ui.topiccreate.TopicCreateUiEvent
 import com.example.decisionroulette.ui.topiccreate.TopicCreateViewModel
-import com.example.decisionroulette.ui.topiclist.TopicListScreen
-import com.example.decisionroulette.ui.topiclist.TopicListUiEvent
-import com.example.decisionroulette.ui.topiclist.TopicListViewModel
+//import com.example.decisionroulette.ui.topiclist.TopicListScreen
+//import com.example.decisionroulette.ui.topiclist.TopicListUiEvent
+//import com.example.decisionroulette.ui.topiclist.TopicListViewModel
 import com.example.decisionroulette.ui.auth.AuthViewModel
 import com.example.decisionroulette.ui.auth.LoginScreen
 import com.example.decisionroulette.ui.auth.SignUpScreen
 import com.example.decisionroulette.ui.auth.AuthUiEvent
 import com.example.decisionroulette.ui.reusable.BottomNavigationBar
 import com.example.decisionroulette.ui.mypage.MyPageScreen // ⬅️ MyPageScreen Import 추가 (가정)
-import com.example.decisionroulette.ui.roulette.RouletteViewModel
 import com.example.decisionroulette.ui.topiclist.VoteListScreen
 import com.example.decisionroulette.ui.vote.MyVoteScreen
 import com.example.decisionroulette.ui.votelist.VoteListUiEvent
 import com.example.decisionroulette.ui.votelist.VoteListViewModel
-import com.example.decisionroulette.ui.mypage.MyPageScreen
 import androidx.compose.foundation.Image
 
 
 // 화면 경로(Route)를 정의하는 상수 객체
 object Routes {
     const val HOME = "home_route"
-    const val TOPIC_LIST = "topic_list_route"
+//    const val TOPIC_LIST = "topic_list_route"
     const val TOPIC_CREATE="topic_create_route"
     const val OPTION_CREATE="option_create_route"
     const val ROULETTE="roulette_route"
@@ -95,7 +86,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppScreen(
     homeViewModel: HomeViewModel = viewModel(),
-    topicListViewModel: TopicListViewModel = viewModel(),
+//    topicListViewModel: TopicListViewModel = viewModel(),
     topicCreateViewModel: TopicCreateViewModel = viewModel(),
     optionCreateViewModel: OptionCreateViewModel=viewModel(),
     authViewModel: AuthViewModel = viewModel(),
@@ -136,8 +127,8 @@ fun AppScreen(
     LaunchedEffect(homeViewModel.events) {
         homeViewModel.events.collect { event ->
             when (event) {
-                HomeUiEvent.NavigateToTopicList -> {
-                    navController.navigate(Routes.TOPIC_LIST)
+                HomeUiEvent.NavigateToTopicCreate -> {
+                    navController.navigate(Routes.TOPIC_CREATE)
                 }
 
                 else -> {}
@@ -146,17 +137,17 @@ fun AppScreen(
     }
 
     // 2. 주제 목록 -> 주제 생성 화면 이동 (TopicListViewModel 이벤트)
-    LaunchedEffect(topicListViewModel.events) {
-        topicListViewModel.events.collect { event ->
-            when (event) {
-                TopicListUiEvent.NavigateToAddTopic -> {
-                    navController.navigate(Routes.TOPIC_CREATE)
-                }
-
-                else -> {}
-            }
-        }
-    }
+//    LaunchedEffect(topicListViewModel.events) {
+//        topicListViewModel.events.collect { event ->
+//            when (event) {
+//                TopicListUiEvent.NavigateToAddTopic -> {
+//                    navController.navigate(Routes.TOPIC_CREATE)
+//                }
+//
+//                else -> {}
+//            }
+//        }
+//    }
 
     // 3. 주제 생성 (분기)
     LaunchedEffect(topicCreateViewModel.events) {
@@ -171,7 +162,7 @@ fun AppScreen(
                 }
 
                 TopicCreateUiEvent.NavigateToBack -> {
-                    navController.navigate(Routes.TOPIC_LIST)
+                    navController.navigate(Routes.TOPIC_CREATE)
                 }
             }
         }
@@ -260,17 +251,17 @@ fun AppScreen(
             // 3. 홈 화면 (하단 바 있음)
             composable(Routes.HOME) {
                 HomeScreen(
-                    onNavigateToTopicList = homeViewModel::onRouletteButtonClicked
+                    onNavigateToTopicCreate = homeViewModel::onRouletteButtonClicked
                 )
             }
 
             // 4. 주제 목록 (하단 바 있음)
-            composable(Routes.TOPIC_LIST) {
-                TopicListScreen(
-                    onNavigateToCreateTopic = topicListViewModel::onAddListButtonClicked,
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
+//            composable(Routes.TOPIC_LIST) {
+//                TopicListScreen(
+//                    onNavigateToCreateTopic = topicListViewModel::onAddListButtonClicked,
+//                    onNavigateBack = { navController.popBackStack() }
+//                )
+//            }
 
             // 🚨 5. 사용자 정보 화면 (MyPage) (하단 바 있음)
             composable(Routes.USER_PAGE) {
@@ -306,10 +297,10 @@ fun AppScreen(
             // 8. 룰렛 돌아가기
             composable(Routes.ROULETTE) {
                 RouletteScreen(
-                    // 💡 onNavigateToVoteList 콜백 연결 유지
-                    onNavigateToVoteList = {
-                        navController.navigate(Routes.VOTE_LIST)
-                    })
+                    onNavigateToVoteList = { navController.navigate(Routes.VOTE_LIST) },
+                    onNavigateToBack = { navController.popBackStack() }
+                )
+
             }
 
             composable(Routes.VOTE_LIST) {

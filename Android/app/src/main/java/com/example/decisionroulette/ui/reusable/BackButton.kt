@@ -39,7 +39,7 @@ fun BackButton(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 80.dp)
+            .padding(top = 40.dp)
     ) {
         TextButton(
             onClick = onClick,
@@ -51,7 +51,7 @@ fun BackButton(
         ) {
             Text(
                 text = "<",
-                fontSize = 40.sp,
+                fontSize = 25.sp,
                 fontFamily = Galmuri,
             )
         }
@@ -60,7 +60,7 @@ fun BackButton(
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
-            fontSize = 28.sp,
+            fontSize = 25.sp,
             textAlign = TextAlign.Center, // 텍스트 자체를 중앙 정렬
             modifier = Modifier.align(Alignment.Center)
         )
