@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,22 +35,29 @@ fun VoteListScreen (
 ) {
 
 
+
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
+            .fillMaxSize(),
+            //.padding(horizontal = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
+
+        Spacer(modifier = Modifier.height(70.dp))
+
+
         Text(
             text = "a real-time voting list",
-            modifier = Modifier.padding(top = 50.dp),
-            fontSize = 36.sp
+            style = MaterialTheme.typography.titleLarge,
+            fontSize = 25.sp,
+            textAlign = TextAlign.Center, // 텍스트 자체를 중앙 정렬
+
         )
 
         // -----------------------------------------------------------------
 
-        val voteItems = listOf(
+        val voteItems = listOf( // 이거 배경화면이랑 크기 맞춰야할듯..
             VoteItem(
                 id = "1",
                 title = "주말 데이트 장소",

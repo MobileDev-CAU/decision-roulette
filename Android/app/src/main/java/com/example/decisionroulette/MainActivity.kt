@@ -43,6 +43,10 @@ import com.example.decisionroulette.ui.vote.MyVoteScreen
 import com.example.decisionroulette.ui.votelist.VoteListUiEvent
 import com.example.decisionroulette.ui.votelist.VoteListViewModel
 import androidx.compose.foundation.Image
+import com.example.decisionroulette.ui.auth.TokenManager
+import com.example.decisionroulette.ui.home.VoteUiEvent
+import com.example.decisionroulette.ui.home.VoteViewModel
+import com.example.decisionroulette.ui.vote.OtherVoteScreen
 
 
 // 화면 경로(Route)를 정의하는 상수 객체
@@ -58,6 +62,7 @@ object Routes {
     const val USER_PAGE="user_page_route"
     const val VOTE_LIST="vote_list_route"
     const val VOTE_STATUS_MY = "vote_status_my_route"
+
     const val VOTE_STATUS_OTHER = "vote_status_other_route"
 
 
@@ -68,6 +73,9 @@ object Routes {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        TokenManager.initialize(this)
+
 //        enableEdgeToEdge()
         setContent {
             DecisionRouletteTheme {
@@ -91,12 +99,30 @@ fun AppScreen(
     optionCreateViewModel: OptionCreateViewModel=viewModel(),
     authViewModel: AuthViewModel = viewModel(),
     //rouletteViewModel: RouletteViewModel =viewModel()
-    voteListViewModel: VoteListViewModel=viewModel()
+    voteListViewModel: VoteListViewModel=viewModel(),
+    voteViewModel: VoteViewModel =viewModel()
 
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    val onMyPageClicked: () -> Unit = {
+        if (authViewModel.uiState.isLoggedIn) {
+            // 로그인 상태: 마이페이지(USER_PAGE)로 이동
+            navController.navigate(Routes.USER_PAGE) {
+                // 하단 탭 이동 최적화
+                popUpTo(Routes.HOME) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
+        } else {
+            // 로그아웃 상태: 로그인 화면(LOGIN)으로 이동 (스택 전체 지움)
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(navController.graph.id) { inclusive = true }
+            }
+        }
+    }
 
     // 하단바 생성: 필요한 화면만 포함 (LOGIN, SIGN_UP은 제외)
     // TODO 투표리스트 포함해야함
@@ -104,7 +130,7 @@ fun AppScreen(
 
 
     // ------------------------------------------------------------------
-    // 0. 인증 (로그인/회원가입) 네비게이션 처리
+// 0. 인증 (로그인/회원가입) 네비게이션 처리
     LaunchedEffect(authViewModel.events) {
         authViewModel.events.collect { event ->
             when (event) {
@@ -114,15 +140,23 @@ fun AppScreen(
                     }
                 }
 
-                AuthUiEvent.NavigateToSignUp -> navController.navigate(Routes.SIGN_UP)
-                AuthUiEvent.NavigateToLogin -> navController.navigate(Routes.LOGIN)
+                AuthUiEvent.NavigateToSignUp -> {
+                    // 🚨🚨 수정: 회원가입 화면 진입 전에 입력 필드 초기화 🚨🚨
+                    authViewModel.clearAuthInputFields()
+                    navController.navigate(Routes.SIGN_UP)
+                }
+
+                AuthUiEvent.NavigateToLogin -> {
+                    // 🚨🚨 수정: 로그인 화면 진입 전에 입력 필드 초기화 🚨🚨
+                    authViewModel.clearAuthInputFields()
+                    navController.navigate(Routes.LOGIN)
+                }
 
                 else -> {}
             }
         }
     }
-    // ------------------------------------------------------------------
-
+// ------------------------------------------------------------------
     // 1. 홈 화면 -> 주제 목록 이동 (HomeViewModel 이벤트)
     LaunchedEffect(homeViewModel.events) {
         homeViewModel.events.collect { event ->
@@ -189,11 +223,41 @@ fun AppScreen(
     LaunchedEffect(voteListViewModel.events) {
         voteListViewModel.events.collect { event ->
             when (event) {
+
+                // 이거 투표 리스트의 owner가 나인지 상대방인지에 따라 전환되는 화면 달라질건데 아직 api가 없어서 ..
+                // 내 투표 화면 보고싶으면 1번 주석 처리
+                // 상대방 투표 화면 보고싶으면 2번 주석 처리
+
+                // 1번
                 VoteListUiEvent.NavigateToVoteStatus -> {
-                    navController.navigate(Routes.VOTE_STATUS_MY)
+                    navController.navigate(Routes.VOTE_STATUS_OTHER)
                 }
 
+                // 2번
+//                VoteListUiEvent.NavigateToVoteStatus -> {
+//                    navController.navigate(Routes.VOTE_STATUS_OTHER)
+//                }
+
                 else -> {}
+            }
+        }
+    }
+
+    LaunchedEffect(voteViewModel.events) {
+        voteViewModel.events.collect { event ->
+            when (event) {
+                VoteUiEvent.NavigateToBack -> {
+                    navController.navigate(Routes.VOTE_LIST)
+                }
+
+                VoteUiEvent.NavigateToRoulette -> {
+                    navController.navigate(Routes.ROULETTE)
+                }
+
+                VoteUiEvent.NavigateToVoteClear -> {
+                    navController.navigate(Routes.VOTE_LIST)
+                }
+
             }
         }
     }
@@ -221,7 +285,7 @@ fun AppScreen(
         // 🚨 조건부 bottomBar 렌더링
         bottomBar = {
             if (BOTTOM_NAV_SCREENS.contains(currentRoute)) {
-                BottomNavigationBar(navController = navController)
+                BottomNavigationBar(navController = navController,onMyPageClicked = onMyPageClicked)
             }
         }
     ) { innerPadding ->
@@ -235,7 +299,7 @@ fun AppScreen(
             // 🚨 1. 로그인 화면 (하단 바 없음)
             composable(Routes.LOGIN) {
                 LoginScreen(
-                    // 로그인 성공/회원가입 이동은 ViewModel 이벤트로 처리됨
+                    viewModel = authViewModel, // ⬅️ AppScreen의 ViewModel 인스턴스 전달
                     onNavigateToUserPage = { navController.navigate(Routes.USER_PAGE) },
                     onNavigateToSignUp = { navController.navigate(Routes.SIGN_UP) }
                 )
@@ -244,6 +308,7 @@ fun AppScreen(
             // 🚨 2. 회원가입 화면 (하단 바 없음)
             composable(Routes.SIGN_UP) {
                 SignUpScreen(
+                    viewModel = authViewModel, // ⬅️ AppScreen의 ViewModel 인스턴스 전달
                     onNavigateToLogin = { navController.navigate(Routes.LOGIN) }
                 )
             }
@@ -266,13 +331,8 @@ fun AppScreen(
             // 🚨 5. 사용자 정보 화면 (MyPage) (하단 바 있음)
             composable(Routes.USER_PAGE) {
                 MyPageScreen(
-                    // 로그아웃 시 로그인 화면으로 이동
-                    onLogout = {
-                        navController.navigate(Routes.LOGIN) {
-                            popUpTo(navController.graph.id) { inclusive = true }
-                        }
-                    },
-                    onNavigateToEdit = { /* TODO: 수정 화면 경로 추가 */ }
+                    authViewModel = authViewModel, // ⬅️ AppScreen의 ViewModel 인스턴스 전달
+                    navController = navController
                 )
             }
 
@@ -324,8 +384,21 @@ fun AppScreen(
             composable(Routes.VOTE_STATUS_MY) {
                 MyVoteScreen(
 
+                    onNavigateToBack = { navController.popBackStack()},
+                    onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) }
+
+
                 )
+
             }
+
+            composable(Routes.VOTE_STATUS_OTHER) {
+                OtherVoteScreen(
+
+                    onNavigateToVoteClear = {navController.navigate(Routes.VOTE_LIST) }
+
+                )
+        }
         }
     }
 }
