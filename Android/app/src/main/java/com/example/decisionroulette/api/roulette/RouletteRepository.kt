@@ -12,10 +12,8 @@ class RouletteRepository(
     suspend fun getRouletteList(ownerId: Int): Result<List<RouletteDto>> {
         return try {
             val response = api.getRouletteList(ownerId)
-            // 성공하면 Result.success로 감싸서 반환
             Result.success(response)
         } catch (e: Exception) {
-            // 실패하면 Result.failure로 에러 반환 (네트워크 에러 등)
             Result.failure(e)
         }
     }

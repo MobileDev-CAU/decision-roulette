@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
@@ -47,12 +48,17 @@ val RouletteColors = listOf(
 
 @Composable
 fun RouletteScreen(
+    rouletteId: Int,
     viewModel: RouletteViewModel = viewModel(),
     onNavigateToVoteList: () -> Unit,
     onNavigateToBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val rotation = remember { Animatable(0f) }
+
+    LaunchedEffect(rouletteId) {
+        viewModel.loadRouletteDetail(rouletteId)
+    }
 
     LaunchedEffect(uiState.isSpinning) {
         if (uiState.isSpinning) {
@@ -68,44 +74,50 @@ fun RouletteScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // 1. 헤더 컴포넌트 호출
-        RouletteHeader(
-            title = uiState.title,
-            onBackClick = onNavigateToBack, // 뒤로 가기 연결
-            onEditClick = {
-                // TODO: 수정 화면으로 이동하거나 다이얼로그 띄우기
+    if (uiState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color.Black)
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // 1. 헤더 컴포넌트 호출
+            RouletteHeader(
+                title = uiState.title,
+                onBackClick = onNavigateToBack, // 뒤로 가기 연결
+                onEditClick = {
+                    // TODO: 수정 화면으로 이동하거나 다이얼로그 띄우기
+                }
+            )
+
+            ModeToggleSwitch(
+                isVoteMode = uiState.isVoteMode,
+                onToggle = { isVote -> viewModel.toggleMode(isVote) }
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // 2. 통계 박스 컴포넌트 호출
+            Top3KeywordsBox(keywords = uiState.top3Keywords)
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // 3. 룰렛 휠 컴포넌트 호출
+            // 핵심: 회전 값(rotation.value)과 클릭 이벤트(startSpin)를 파라미터로 넘깁니다.
+            RouletteWheel(
+                items = uiState.items,
+                rotationValue = rotation.value,
+                onStartClick = { viewModel.startSpin(rotation.value) }
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(onClick = { viewModel.addDummyItem() }) {
+                Text("테스트: 메뉴 추가하기 (+)")
             }
-        )
-
-        ModeToggleSwitch(
-            isVoteMode = uiState.isVoteMode,
-            onToggle = { isVote -> viewModel.toggleMode(isVote) }
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-
-        // 2. 통계 박스 컴포넌트 호출
-        Top3KeywordsBox(keywords = uiState.top3Keywords)
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // 3. 룰렛 휠 컴포넌트 호출
-        // 핵심: 회전 값(rotation.value)과 클릭 이벤트(startSpin)를 파라미터로 넘깁니다.
-        RouletteWheel(
-            items = uiState.items,
-            rotationValue = rotation.value,
-            onStartClick = { viewModel.startSpin(rotation.value) }
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Button(onClick = { viewModel.addDummyItem() }) {
-            Text("테스트: 메뉴 추가하기 (+)")
         }
     }
 

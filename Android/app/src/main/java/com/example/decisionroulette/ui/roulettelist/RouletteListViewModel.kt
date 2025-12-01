@@ -15,7 +15,7 @@ import com.example.decisionroulette.api.roulette.RouletteRepository
 
 sealed interface TopicCreateUiEvent {
     data class NavigateToCreateOption(val topicTitle: String) : TopicCreateUiEvent
-    object NavigateToRoulette : TopicCreateUiEvent     // 룰렛 화면으로 이동 (itemCount > 0)
+    data class NavigateToRoulette(val rouletteId: Int) : TopicCreateUiEvent
     object NavigateToBack : TopicCreateUiEvent         // 이전 화면으로 이동
 }
 
@@ -184,8 +184,7 @@ class TopicCreateViewModel : ViewModel() {
             viewModelScope.launch {
                 // 옵션이 있는 경우 (itemCount > 0): 룰렛 화면으로 이동
                 if (itemCount > 0) {
-                    _events.send(TopicCreateUiEvent.NavigateToRoulette)
-                }
+                    _events.send(TopicCreateUiEvent.NavigateToRoulette(selectedId))                }
                 // 옵션이 없는 경우 (itemCount == 0 또는 새 주제): 옵션 생성 화면으로 이동
                 else {
                     _events.send(TopicCreateUiEvent.NavigateToCreateOption(selectedTitle))

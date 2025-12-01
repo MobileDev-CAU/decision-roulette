@@ -32,7 +32,7 @@ import com.example.decisionroulette.ui.reusable.VerticalScrollbarThumb
 @Composable
 fun TopicCreateScreen(
     onNavigateToCreateOption: (String) -> Unit,
-    onNavigateToRoulette: () -> Unit,
+    onNavigateToRoulette: (Int) -> Unit,
     onNavigateToBack:()->Unit,
     viewModel: TopicCreateViewModel = viewModel()
 ) {
@@ -48,7 +48,7 @@ fun TopicCreateScreen(
                 is TopicCreateUiEvent.NavigateToCreateOption -> {
                     onNavigateToCreateOption(event.topicTitle)
                 }
-                TopicCreateUiEvent.NavigateToRoulette -> onNavigateToRoulette()
+                is TopicCreateUiEvent.NavigateToRoulette -> onNavigateToRoulette(event.rouletteId)
                 TopicCreateUiEvent.NavigateToBack -> onNavigateToBack()
             }
         }

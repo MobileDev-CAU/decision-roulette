@@ -51,7 +51,7 @@ object Routes {
 //    const val TOPIC_LIST = "topic_list_route"
     const val TOPIC_CREATE="topic_create_route"
     const val OPTION_CREATE="option_create_route/{topicTitle}"
-    const val ROULETTE="roulette_route"
+    const val ROULETTE="roulette_route/{rouletteId}"
     const val AI="ai_route"
     const val SIGN_UP = "sign_up_route"
     const val LOGIN = "login_route"
@@ -157,8 +157,8 @@ fun AppScreen(
                     navController.navigate("${Routes.OPTION_CREATE}/${event.topicTitle}")
                 }
 
-                TopicCreateUiEvent.NavigateToRoulette -> {
-                    navController.navigate(Routes.ROULETTE)
+                is TopicCreateUiEvent.NavigateToRoulette -> {
+                    navController.navigate("roulette_route/${event.rouletteId}")
                 }
 
                 TopicCreateUiEvent.NavigateToBack -> {
@@ -283,7 +283,9 @@ fun AppScreen(
                     onNavigateToCreateOption = { title ->
                         navController.navigate("option_create_route/$title")
                     },
-                    onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) },
+                    onNavigateToRoulette = { rouletteId ->
+                        navController.navigate("roulette_route/$rouletteId")
+                    },
                     onNavigateToBack = { navController.popBackStack() }
                 )
             }
@@ -304,8 +306,11 @@ fun AppScreen(
                 )
             }
             // 8. 룰렛 돌아가기
-            composable(Routes.ROULETTE) {
+            composable(Routes.ROULETTE) { backStackEntry ->
+                val rouletteId = backStackEntry.arguments?.getString("rouletteId")?.toIntOrNull() ?: -1
+
                 RouletteScreen(
+                    rouletteId = rouletteId,
                     onNavigateToVoteList = { navController.navigate(Routes.VOTE_LIST) },
                     onNavigateToBack = { navController.popBackStack() }
                 )

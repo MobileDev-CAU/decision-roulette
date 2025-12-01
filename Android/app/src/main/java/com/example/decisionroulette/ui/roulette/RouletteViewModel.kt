@@ -1,6 +1,7 @@
 package com.example.decisionroulette.ui.roulette
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.decisionroulette.data.RouletteItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -8,8 +9,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toMutableList
+import com.example.decisionroulette.api.roulette.RouletteRepository
+import kotlinx.coroutines.launch
 
 class RouletteViewModel: ViewModel() {
+    private val repository = RouletteRepository()
     private val _uiState = MutableStateFlow(RouletteUiState())
     val uiState: StateFlow<RouletteUiState> = _uiState.asStateFlow()
 //    private val rawVoteItems = listOf(
@@ -20,16 +24,16 @@ class RouletteViewModel: ViewModel() {
 //        RouletteItem("초밥", 0.2f),   // 20%
 //    )
 
-    private val rawVoteItems = listOf(
-        RouletteItem("파스타", 0.1f),
-        RouletteItem("1", 0.1f),
-        RouletteItem("2", 0.1f),
-        RouletteItem("3", 0.1f),
-        RouletteItem("4", 0.1f),
-        RouletteItem("5", 0.1f),
-        RouletteItem("김밥", 0.2f),
-        RouletteItem("초밥", 0.2f),
-    )
+//    private val rawVoteItems = listOf(
+//        RouletteItem("파스타", 0.1f),
+//        RouletteItem("1", 0.1f),
+//        RouletteItem("2", 0.1f),
+//        RouletteItem("3", 0.1f),
+//        RouletteItem("4", 0.1f),
+//        RouletteItem("5", 0.1f),
+//        RouletteItem("김밥", 0.2f),
+//        RouletteItem("초밥", 0.2f),
+//    )
 
     init {
         _uiState.update {
@@ -42,12 +46,14 @@ class RouletteViewModel: ViewModel() {
     }
 
     fun toggleMode(isVote: Boolean) {
+        val currentItems = _uiState.value.items
+
         val newItems = if (isVote) {
-            // A. 투표 모드: 원본 가중치(0.4, 0.3...) 그대로 사용
-            rawVoteItems
+            // 투표 모드: 가중치 유지 (서버에서 받은 값)
+            currentItems
         } else {
-            // B. 기본 모드: 모든 가중치를 1.0으로 강제 통일 (1/N)
-            rawVoteItems.map { it.copy(weight = 1.0f) }
+            // 기본 모드: 가중치 1.0으로 통일
+            currentItems.map { it.copy(weight = 1.0f) }
         }
 
         _uiState.update {
@@ -115,6 +121,39 @@ class RouletteViewModel: ViewModel() {
         return finalRotation + (360f * 5) // 최소 5바퀴 추가
     }
 
+    fun loadRouletteDetail(rouletteId: Int) {
+        viewModelScope.launch {
+            // 로딩 시작
+            _uiState.update { it.copy(isLoading = true) }
+
+            // API 호출
+            val result = repository.getRouletteDetail(rouletteId)
+
+            result.onSuccess { response ->
+                // DTO -> UI Model 변환
+                val uiItems = response.items.map { dto ->
+                    RouletteItem(
+                        name = dto.name,
+                        weight = dto.weight.toFloat()
+                    )
+                }
+
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        rouletteId = response.rouletteId,
+                        title = response.title,
+                        items = uiItems,
+                        top3Keywords = emptyList()
+                    )
+                }
+            }.onFailure { e ->
+                println("룰렛 상세 조회 실패: ${e.message}")
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
     fun onSpinFinished() {
         _uiState.update {
             it.copy(
@@ -144,14 +183,22 @@ class RouletteViewModel: ViewModel() {
     // [버튼 1] 선택 확정하기
     fun saveFinalChoice(finalChoice: String) {
         closeDialog()
+        val currentId = _uiState.value.rouletteId
+        val spinResult = _uiState.value.spinResult ?: return
 
-        // 1. 룰렛 결과: _uiState.value.spinResult
-        // 2. 최종 선택: finalChoice
-        // 3. 비교: 만약 둘이 다르면 -> "사용자가 룰렛을 거부함" 데이터 기록
+        println("최종 선택 저장: ID=$currentId, 결과=$spinResult, 선택=$finalChoice")
 
-        println("룰렛 결과: ${_uiState.value.spinResult}, 사용자의 선택: $finalChoice")
-
-        // TODO: 여기서 백엔드 API 호출 (finalChoice 전송)
+        // 최종 선택 저장 API 호출
+        viewModelScope.launch {
+            // userId는 로그인된 정보를 가져와야 함 (여기선 10 하드코딩)
+            repository.saveFinalChoice(currentId, spinResult, finalChoice, userId = 10)
+                .onSuccess {
+                    println("저장 성공")
+                }
+                .onFailure {
+                    println("저장 실패: ${it.message}")
+                }
+        }
     }
 
 //    fun confirmSelection() {
