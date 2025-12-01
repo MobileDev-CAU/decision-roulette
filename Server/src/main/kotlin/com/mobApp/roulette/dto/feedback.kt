@@ -11,7 +11,7 @@ data class FeedbackResponse(
 data class FinalChoiceRequest(
         val rouletteId: Long,
         val spinResult: String,
-        val finalChoice: String
+        val finalChosenItem: String
 )
 data class FinalChoiceResponse(
         val message: String

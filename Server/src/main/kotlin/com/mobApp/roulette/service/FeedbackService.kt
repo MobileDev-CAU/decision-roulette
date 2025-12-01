@@ -19,8 +19,8 @@ class FeedbackService(private  val finalSelectionRepository: FinalSelectionRepos
                 userId = userId,
                 rouletteId = req.rouletteId,
                 rouletteResultItem = req.spinResult,
-                finalChosenItem = req.finalChoice,
-                wasFollowingResult = (req.spinResult == req.finalChoice),
+                finalChosenItem = req.finalChosenItem,
+                wasFollowingResult = (req.spinResult == req.finalChosenItem),
         )
         finalSelectionRepository.save(sel)
         return FinalChoiceResponse("저장 완료")

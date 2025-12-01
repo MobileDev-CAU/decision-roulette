@@ -34,7 +34,7 @@ class RouletteController(
     @PostMapping("/ai/analyze")
     fun analyze(@RequestBody req: AIAnalyzeRequest): ResponseEntity<AIAnalysisResponse> =
         ResponseEntity.ok(aiService.analyzeItems(req.items))
-    @GetMapping("{Id}")
+    @GetMapping("{id}")
     fun detail(@PathVariable id : Long): ResponseEntity<RouletteDetailResponse> =
             ResponseEntity.ok(rouletteService.getDetail(id))
     @PostMapping("/result/feedback")

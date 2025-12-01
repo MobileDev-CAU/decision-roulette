@@ -3,7 +3,8 @@ package com.mobApp.roulette.dto
 data class VoteListItemResponse(
         val voteId: Long,
         val title: String,
-        val itemCount: Int
+        val itemCount: Int,
+        val userNickname: String?
 )
 data class VoteDetailItem(
         val name: String,

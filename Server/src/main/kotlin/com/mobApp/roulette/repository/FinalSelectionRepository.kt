@@ -10,12 +10,12 @@ interface FinalSelectionRepository : JpaRepository<FinalSelection, Long> {
     fun findAllByUserId(userId: Long): List<FinalSelection>
     fun findAllByRouletteId(rouletteId: Long): List<FinalSelection>
 
-    /*@Query("""
-        SELECT fs.finalChoice AS name, COUNT(fs.finalChoice) AS cnt
+    @Query("""
+        SELECT fs.finalChosenItem AS name, COUNT(fs.finalChosenItem) AS cnt
         FROM FinalSelection fs
         WHERE fs.rouletteId = :rouletteId
-        GROUP BY fs.finalChoice
+        GROUP BY fs.finalChosenItem
         ORDER BY cnt DESC
     """)
-    fun findTopChoices(@Param("rouletteId") rouletteId: Long): List<Map<String, Any>>*/
+    fun findTopChoices(@Param("rouletteId") rouletteId: Long): List<Map<String, Any>>
 }

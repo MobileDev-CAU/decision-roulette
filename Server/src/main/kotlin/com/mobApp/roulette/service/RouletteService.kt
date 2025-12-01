@@ -37,7 +37,19 @@ class RouletteService(
             rouletteRepository.findAllByOwnerId(ownerId).map{RouletteListItemResponse(it.id!!, it.title, it.items.size)}
     fun getDetail(id: Long): RouletteDetailResponse{
         val r = rouletteRepository.findById(id).orElseThrow{ IllegalArgumentException("존재하지 않는 룰렛") }
-        return RouletteDetailResponse(r.id!!, r.title, r.items.map{it.name})
+        val itemResponses = r.items.map {
+            RouletteDetailItemResponse(
+                    itemId = it.id!!,
+                    name = it.name,
+                    orderIndex = it.orderIndex,
+                    weight = it.weight
+            )
+        }
+        return RouletteDetailResponse(
+                rouletteId = r.id!!,
+                title = r.title,
+                items = itemResponses
+        )
     }
     @Transactional
     fun spin(rouletteId: Long, userId:Long): RouletteSpinResponse{
@@ -83,7 +95,7 @@ class RouletteService(
                 success = true,
                 rouletteId= saved.id!!,
                 items = saved.items.map{
-                    RouletteItemResponse(
+                    RouletteDetailItemResponse(
                             itemId = it.id!!,
                             name = it.name,
                             orderIndex = it.orderIndex,
@@ -94,6 +106,6 @@ class RouletteService(
     }
     private fun Roulette.toRouletteResponse(): RouletteResponse =
             RouletteResponse(this.id!!, this.ownerId, this.title, this.items.map{it.toResponse()})
-    private fun RouletteItem.toResponse(): RouletteItemResponse =
-            RouletteItemResponse(this.id!!, this.name, this.orderIndex, this.weight)
+    private fun RouletteItem.toResponse(): RouletteDetailItemResponse =
+            RouletteDetailItemResponse(this.id!!, this.name, this.orderIndex, this.weight)
 }

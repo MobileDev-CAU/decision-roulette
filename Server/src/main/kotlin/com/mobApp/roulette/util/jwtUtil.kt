@@ -1,54 +1,54 @@
-// JwtUtil.kt
 package com.mobApp.roulette.util
 
-import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Component
 import java.util.*
-import kotlin.collections.HashMap
 
 @Component
-class JwtUtil {
-    // TODO: 실제 시크릿은 application.yml / 환경변수로 관리하세요.
-    private val SECRET = System.getenv("JWT_SECRET") ?: "replace_this_in_prod"
-    private val ACCESS_TOKEN_EXP_MS = 1000L * 60 * 60 // 1 hour
+object JwtUtil {
 
-    fun generateAccessToken(userId: Long, userIdentifier: String): String {
-        val claims: Map<String, Any> = HashMap()
-        return createToken(claims, userIdentifier, userId)
-    }
+    // 1️⃣ 안전한 256비트 이상 키 생성
+    private val key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
 
-    private fun createToken(claims: Map<String, Any>, subject: String, userId: Long): String {
-        val key = Keys.hmacShaKeyFor(SECRET.toByteArray())
+    // 2️⃣ Access Token 생성
+    fun generateAccessToken(id: Long, userId: String): String {
         val now = Date()
-        val expiry = Date(now.time + ACCESS_TOKEN_EXP_MS)
+        val expiry = Date(now.time + 1000 * 60 * 60) // 1시간 유효
+
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
+                .setSubject(id.toString())
+                .claim("userId", userId)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .claim("uid", userId)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key)  // 안전한 키 사용
                 .compact()
     }
 
-    fun extractAllClaims(token: String): Claims {
-        val key = Keys.hmacShaKeyFor(SECRET.toByteArray())
-        return Jwts.parser()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .body
+    // 3️⃣ Refresh Token 생성 (선택)
+    fun generateRefreshToken(userId: String): String {
+        val now = Date()
+        val expiry = Date(now.time + 1000L * 60 * 60 * 24 * 7) // 7일 유효
+
+        return Jwts.builder()
+                .setSubject(userId)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(key)
+                .compact()
     }
 
-    fun validateToken(token: String): Boolean {
+    // 4️⃣ 토큰 검증 (예시)
+    /*fun validateToken(token: String): Boolean {
         return try {
-            val claims = extractAllClaims(token)
-            claims.expiration.after(Date())
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+            true
         } catch (e: Exception) {
             false
         }
-    }
+    }*/
 }

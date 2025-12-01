@@ -1,7 +1,7 @@
 package com.mobApp.roulette.controller
 
 
-/*import com.mobApp.roulette.dto.RouletteTop3Response
+import com.mobApp.roulette.dto.RouletteTop3Response
 import com.mobApp.roulette.service.RouletteAnalysisService
 import org.springframework.web.bind.annotation.*
 
@@ -16,4 +16,4 @@ class RouletteAnalysisController(
     ): RouletteTop3Response{
         return rouletteAnalysisService.getTop3FinalChoices(id)
     }
-}*/
+}
