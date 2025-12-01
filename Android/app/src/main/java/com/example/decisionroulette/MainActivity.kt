@@ -37,12 +37,13 @@ import com.example.decisionroulette.ui.auth.LoginScreen
 import com.example.decisionroulette.ui.auth.SignUpScreen
 import com.example.decisionroulette.ui.auth.AuthUiEvent
 import com.example.decisionroulette.ui.reusable.BottomNavigationBar
-import com.example.decisionroulette.ui.mypage.MyPageScreen // ⬅️ MyPageScreen Import 추가 (가정)
+import com.example.decisionroulette.ui.mypage.MyPageScreen
 import com.example.decisionroulette.ui.topiclist.VoteListScreen
 import com.example.decisionroulette.ui.vote.MyVoteScreen
 import com.example.decisionroulette.ui.votelist.VoteListUiEvent
 import com.example.decisionroulette.ui.votelist.VoteListViewModel
 import androidx.compose.foundation.Image
+import com.example.decisionroulette.ui.editoption.EditOptionScreen
 
 
 // 화면 경로(Route)를 정의하는 상수 객체
@@ -50,8 +51,9 @@ object Routes {
     const val HOME = "home_route"
 //    const val TOPIC_LIST = "topic_list_route"
     const val TOPIC_CREATE="topic_create_route"
-    const val OPTION_CREATE="option_create_route/{topicTitle}"
-    const val ROULETTE="roulette_route/{rouletteId}"
+    const val OPTION_CREATE = "option_create_route"
+    const val ROULETTE = "roulette_route"
+    const val EDIT_OPTION = "edit_option_route"
     const val AI="ai_route"
     const val SIGN_UP = "sign_up_route"
     const val LOGIN = "login_route"
@@ -172,8 +174,8 @@ fun AppScreen(
     LaunchedEffect(optionCreateViewModel.events) {
         optionCreateViewModel.events.collect { event ->
             when (event) {
-                OptionCreateUiEvent.NavigateToRoulette -> {
-                    navController.navigate(Routes.ROULETTE)
+                is OptionCreateUiEvent.NavigateToRoulette -> {
+                    navController.navigate("roulette_route/${event.rouletteId}")
                 }
 
                 OptionCreateUiEvent.NavigateAi -> {
@@ -301,20 +303,39 @@ fun AppScreen(
                 }
                 OptionCreateScreen(
                     onNavigateToAi = { navController.navigate(Routes.AI) },
-                    onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) },
+                    onNavigateToRoulette = { rouletteId ->
+                        navController.navigate("roulette_route/$rouletteId")
+                    },
                     onNavigateToBack = { navController.popBackStack() }
                 )
             }
+
             // 8. 룰렛 돌아가기
-            composable(Routes.ROULETTE) { backStackEntry ->
+            composable("${Routes.ROULETTE}/{rouletteId}") { backStackEntry ->
                 val rouletteId = backStackEntry.arguments?.getString("rouletteId")?.toIntOrNull() ?: -1
 
                 RouletteScreen(
                     rouletteId = rouletteId,
                     onNavigateToVoteList = { navController.navigate(Routes.VOTE_LIST) },
+                    onNavigateToBack = { navController.popBackStack() },
+                    onNavigateToEdit = {
+                        navController.navigate("${Routes.EDIT_OPTION}/$rouletteId")
+                    }
+                )
+            }
+
+            composable("${Routes.EDIT_OPTION}/{rouletteId}") { backStackEntry ->
+                val rouletteId = backStackEntry.arguments?.getString("rouletteId")?.toIntOrNull() ?: -1
+
+                EditOptionScreen(
+                    rouletteId = rouletteId,
+                    onNavigateToRoulette = { id ->
+                        navController.navigate("${Routes.ROULETTE}/$id") {
+                            popUpTo("${Routes.ROULETTE}/$id") { inclusive = true }
+                        }
+                    },
                     onNavigateToBack = { navController.popBackStack() }
                 )
-
             }
 
             composable(Routes.VOTE_LIST) {

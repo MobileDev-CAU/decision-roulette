@@ -42,8 +42,15 @@ import com.example.decisionroulette.ui.theme.Galmuri
 // 룰렛 색상 팔레트
 val RouletteColors = listOf(
 //    Color(0xFF66BCB6),
-    Color(0xFFF97199),
-    Color.White
+//    Color(0xFFD4E3FD),
+//    Color(0xFFF97199),
+//    Color.White
+    Color(0xFFE58CB9),
+    Color(0xFFAD8EE1),
+    Color(0xFF9BDFF7),
+    Color(0xFFA3E9BA),
+    Color(0xFFF7E07D),
+//    Color(0xFFE97679),
 )
 
 @Composable
@@ -51,7 +58,8 @@ fun RouletteScreen(
     rouletteId: Int,
     viewModel: RouletteViewModel = viewModel(),
     onNavigateToVoteList: () -> Unit,
-    onNavigateToBack: () -> Unit
+    onNavigateToBack: () -> Unit,
+    onNavigateToEdit: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val rotation = remember { Animatable(0f) }
@@ -89,9 +97,7 @@ fun RouletteScreen(
             RouletteHeader(
                 title = uiState.title,
                 onBackClick = onNavigateToBack, // 뒤로 가기 연결
-                onEditClick = {
-                    // TODO: 수정 화면으로 이동하거나 다이얼로그 띄우기
-                }
+                onEditClick = onNavigateToEdit
             )
 
             ModeToggleSwitch(

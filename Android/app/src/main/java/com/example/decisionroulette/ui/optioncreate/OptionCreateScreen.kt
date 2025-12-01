@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun OptionCreateScreen(
-    onNavigateToRoulette: () -> Unit,
+    onNavigateToRoulette: (Int) -> Unit,
     onNavigateToAi: () -> Unit,
     onNavigateToBack: () -> Unit,
     viewModel: OptionCreateViewModel = viewModel()
@@ -38,7 +38,9 @@ fun OptionCreateScreen(
         viewModel.events.collectLatest { event ->
             when (event) {
                 OptionCreateUiEvent.NavigateAi -> onNavigateToAi()
-                OptionCreateUiEvent.NavigateToRoulette -> onNavigateToRoulette()
+                is OptionCreateUiEvent.NavigateToRoulette -> {
+                    onNavigateToRoulette(event.rouletteId)
+                }
                 OptionCreateUiEvent.NavigateToBack -> onNavigateToBack()
             }
         }
@@ -53,28 +55,25 @@ fun OptionCreateScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 40.dp)
                 .verticalScroll(screenScrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(40.dp))
-            BackButton(title = "옵션 선택", onClick = viewModel::onBackButtonClicked)
+//            Spacer(modifier = Modifier.height(40.dp))
+            BackButton(title = "Fill the Roulette", onClick = viewModel::onBackButtonClicked)
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-
-            // ---------------------------------------------------------
-
+//            Spacer(modifier = Modifier.height(40.dp))
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Text(text = "Today's concern", fontSize = 20.sp)
+            Text(text = "Today's Concern", fontSize = 20.sp)
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = "여기에 선택된 주제 쓰기", // 선택된 주제 title 끌고와서 !!! ----> 데이터 연결할때 수정
+                text = state.topicTitle,
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 36.dp),
-                fontSize = 15.sp
+                fontSize = 17.sp
             )
 
 
@@ -90,15 +89,15 @@ fun OptionCreateScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(listScrollState)
-                        .padding(end = 20.dp),
+                        .verticalScroll(listScrollState),
+//                        .padding(end = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     state.options.forEachIndexed { index, option ->
                         OptionInputField(
                             index = index + 1,
                             value = option.value,
-                            placeholder = "Please enter a keyword",
+                            placeholder = "Enter a keyword",
                             onValueChange = { newValue ->
                                 viewModel.updateOptionValue(option.id, newValue)
                             },
@@ -126,11 +125,11 @@ fun OptionCreateScreen(
                     .padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // 1-1. '+' 버튼 (추가)
+                // 1-1. '+' 버튼
                 Button(
                     onClick = viewModel::addOption,
                     modifier = Modifier
-                        .weight(1f) // ⬅️ 공간을 1/2로 나눔
+                        .weight(1f)
                         .height(60.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(

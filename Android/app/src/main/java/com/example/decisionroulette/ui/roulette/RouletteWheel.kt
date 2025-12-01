@@ -143,7 +143,7 @@ fun RouletteWheel(
             // 2. 내부 채우기
             drawPath(
                 path = trianglePath,
-                color = Color.Yellow, // 내부 색상
+                color = Color.White, // 내부 색상
                 style = Fill
             )
 
