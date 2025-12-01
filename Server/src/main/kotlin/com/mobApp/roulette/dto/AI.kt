@@ -8,9 +8,7 @@ data class AIRecommendRequest(
 data class AIRecommendResponse(
         val recommendations: List<String>
 )
-data class AIWarningResponse(
-        val warning: String
-)
+
 data class AIAnalyzeRequest(
         val title: String,
         val items: List<String>

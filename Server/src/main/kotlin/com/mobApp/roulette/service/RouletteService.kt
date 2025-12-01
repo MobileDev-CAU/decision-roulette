@@ -7,6 +7,7 @@ import com.mobApp.roulette.repository.RouletteRepository
 import com.mobApp.roulette.repository.RouletteItemRepository
 import com.mobApp.roulette.repository.SpinHistoryRepository
 import com.mobApp.roulette.domain.SpinHistory
+import com.mobApp.roulette.repository.FinalSelectionRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -16,7 +17,8 @@ import kotlin.random.Random
 class RouletteService(
         private val rouletteRepository: RouletteRepository,
         private val rouletteItemRepository: RouletteItemRepository,
-        private val spinHistoryRepository: SpinHistoryRepository
+        private val spinHistoryRepository: SpinHistoryRepository,
+        private val finalSelectionRepository: FinalSelectionRepository
 ){
     @Transactional
     fun createRoulette(req: CreateRouletteRequest):RouletteResponse{
@@ -103,6 +105,42 @@ class RouletteService(
                     )
                 }
         )
+    }
+    // 특정 주제의 모든 사용자의 최종 선택 조회 추가
+    fun getPopularItemsByTitle(title: String, limit: Int = 3): List<String> {
+        // 1. 제목이 유사한 룰렛들 찾기
+        val keywords = title.split(" ").filter { it.isNotEmpty() }
+
+        val roulettes = rouletteRepository.findAll()
+            .filter { roulette ->
+                // ✅ 키워드 중 하나라도 포함되면 매칭
+                keywords.any { keyword ->
+                    roulette.title.contains(keyword, ignoreCase = true)
+                }
+            }
+
+
+        if (roulettes.isEmpty()) return emptyList()
+
+        // 2. 해당 룰렛들의 ID 수집
+        val rouletteIds = roulettes.mapNotNull { it.id }
+
+        // 3. FinalSelection에서 가장 많이 선택된 항목 찾기
+        val itemCounts = mutableMapOf<String, Int>()
+
+        rouletteIds.forEach { rouletteId ->
+            val selections = finalSelectionRepository.findAllByRouletteId(rouletteId)
+            selections.forEach { selection ->
+                val item = selection.finalChosenItem
+                itemCounts[item] = itemCounts.getOrDefault(item, 0) + 1
+            }
+        }
+
+        // 4. 상위 N개 반환
+        return itemCounts.entries
+            .sortedByDescending { it.value }
+            .take(limit)
+            .map { it.key }
     }
     private fun Roulette.toRouletteResponse(): RouletteResponse =
             RouletteResponse(this.id!!, this.ownerId, this.title, this.items.map{it.toResponse()})

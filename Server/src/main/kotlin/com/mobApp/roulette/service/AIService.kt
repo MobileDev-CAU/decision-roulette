@@ -34,14 +34,41 @@ class AIService(
         val history = req.history ?: emptyList() // 데이터 없으면 빈 리스트 처리
         val popular = req.popular ?: emptyList()
 
+        // ✅ 데이터 유무에 따라 프롬프트 조정
+        val historyText = if (history.isNotEmpty()) {
+            "User's past selections: ${history.joinToString(", ")}"
+        } else {
+            "User's past selections: None (first-time user or new topic)"
+        }
+
+        val popularText = if (popular.isNotEmpty()) {
+            "Items with the most votes from other users: ${popular.joinToString(", ")}"
+        } else {
+            "Items with the most votes from other users: None (new topic)"
+        }
+
+        val includeRule = when {
+            history.isNotEmpty() && popular.isNotEmpty() ->
+                """2. You MUST include at least 1 item from "User's past selections" AND at least 1 item from "Items with the most votes from other users" in your recommendation."""
+
+            history.isNotEmpty() ->
+                """2. You MUST include at least 1 item from "User's past selections" in your recommendation."""
+
+            popular.isNotEmpty() ->
+                """2. You MUST include at least 1 item from "Items with the most votes from other users" in your recommendation."""
+
+            else ->
+                """2. Since no historical data is available, recommend 5 items based purely on the topic."""
+        }
+
         val prompt = """
             Topic requested by user: $title
-            User's past selections: ${history.joinToString(", ")}
-            Items with the most votes from friends: ${popular.joinToString(", ")}
+            $historyText
+            $popularText
 
             You are a keyword recommendation assistant. You must adhere to the following rules:
             1. Recommend exactly 5 concrete keywords in English based on the provided topic and data.
-            2. You MUST include the items from "User's Past Selections" and "Items with the Most Votes" in your recommendation.
+            $includeRule
             3. Abstract categories are strictly forbidden; provide specific items only.
             4. Output format: Provide ONLY the words separated by commas, without any explanation or numbering. (e.g., Pizza, Hamburger, Sushi)
             
@@ -105,11 +132,12 @@ class AIService(
     }
 
     // 리스트를 인자로 받습니다 (예: ["피자", "햄버거"])
-    fun analyzeItems(items: List<String>): AIAnalysisResponse {
+    fun analyzeItems(req: AIAnalyzeRequest): AIAnalysisResponse {
 
         // 1. 프롬프트 작성
         val prompt = """
-            Compare and analyze the following list of items: ${items.joinToString(", ")}
+            Topic: ${req.title}
+            Compare and analyze the following list of items: ${req.items.joinToString(", ")}
 
             For each item, clearly write 1 'pro' and 1 'con' in English.
 

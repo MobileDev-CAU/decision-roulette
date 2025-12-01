@@ -29,11 +29,35 @@ class RouletteController(
     ):ResponseEntity<RouletteSpinResponse> =
             ResponseEntity.ok(rouletteService.spin(id, userId))
     @PostMapping("/ai/recommend")
-    fun recommend(@RequestBody req: AIRecommendRequest): ResponseEntity<AIRecommendResponse> =
-            ResponseEntity.ok(aiService.recommend(req))
+    fun recommend(
+        @RequestBody req: AIRecommendRequest,
+        @RequestParam(required = false) userId: Long?
+    ): ResponseEntity<AIRecommendResponse> {
+
+        // 1. 사용자 이력 조회 (userId가 있는 경우에만)
+        val userHistory = if (userId != null) {
+            feedbackService.getUserFinalChoiceHistory(userId, 3)
+        } else {
+            emptyList()
+        }
+
+        // 2. 인기 항목 조회 (주제 기반)
+        val popularItems = rouletteService.getPopularItemsByTitle(req.title, 3)
+
+        // 3. 요청 DTO에 데이터 추가
+        val enrichedRequest = AIRecommendRequest(
+            title = req.title,
+            history = userHistory,
+            popular = popularItems
+        )
+
+        // 4. AI 서비스 호출
+        val result = aiService.recommend(enrichedRequest)
+        return ResponseEntity.ok(result)
+    }
     @PostMapping("/ai/analyze")
     fun analyze(@RequestBody req: AIAnalyzeRequest): ResponseEntity<AIAnalysisResponse> =
-        ResponseEntity.ok(aiService.analyzeItems(req.items))
+        ResponseEntity.ok(aiService.analyzeItems(req))
     @GetMapping("{id}")
     fun detail(@PathVariable id : Long): ResponseEntity<RouletteDetailResponse> =
             ResponseEntity.ok(rouletteService.getDetail(id))

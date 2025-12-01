@@ -1,5 +1,6 @@
 package com.mobApp.roulette
 
+import com.mobApp.roulette.dto.AIAnalyzeRequest
 import com.mobApp.roulette.dto.AIRecommendRequest
 import com.mobApp.roulette.service.AIService
 import org.junit.jupiter.api.Test
@@ -40,12 +41,15 @@ class AIServiceTest {
     fun `2_비교분석_리포트_테스트`() {
         println("========== [2. 비교 분석] 시작 ==========")
 
-        // 분석하고 싶은 아이템 리스트 (가짜 데이터)
-        val itemsToAnalyze = listOf("pizza", "hamburger", "pasta")
+        // 분석하고 싶은 아이템 리스트와 주제
+        val request = AIAnalyzeRequest(
+            title = "점심 메뉴",  // 주제 추가!
+            items = listOf("pizza", "hamburger", "pasta")
+        )
 
         try {
             // 우리가 아까 만든 analyzeItems 함수 호출
-            val result = myService.analyzeItems(itemsToAnalyze)
+            val result = myService.analyzeItems(request)
 
             println("✅ AI 분석 성공!")
 

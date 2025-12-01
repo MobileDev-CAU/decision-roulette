@@ -25,4 +25,12 @@ class FeedbackService(private  val finalSelectionRepository: FinalSelectionRepos
         finalSelectionRepository.save(sel)
         return FinalChoiceResponse("저장 완료")
     }
+
+    //사용자별 최종 선택 이력 조회 추가
+    fun getUserFinalChoiceHistory(userId: Long, limit: Int = 3): List<String> {
+        return finalSelectionRepository.findAllByUserId(userId)
+            .sortedByDescending { it.createdAt }
+            .take(limit)
+            .map { it.finalChosenItem }
+    }
 }
