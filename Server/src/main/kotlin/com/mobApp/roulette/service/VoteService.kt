@@ -4,10 +4,7 @@ import com.mobApp.roulette.domain.Vote
 import com.mobApp.roulette.domain.VoteOption
 import com.mobApp.roulette.domain.VoteRecord
 import com.mobApp.roulette.dto.*
-import com.mobApp.roulette.repository.RouletteRepository
-import com.mobApp.roulette.repository.VoteOptionRepository
-import com.mobApp.roulette.repository.VoteRecordRepository
-import com.mobApp.roulette.repository.VoteRepository
+import com.mobApp.roulette.repository.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Private
@@ -17,7 +14,8 @@ class VoteService(
         private val voteRepository: VoteRepository,
         private val voteOptionRepository: VoteOptionRepository,
         private val voteRecordRepository: VoteRecordRepository,
-        private val rouletteRepository: RouletteRepository
+        private val rouletteRepository: RouletteRepository,
+        private val userRepository: UserRepository
 ){
     @Transactional
     fun createVote(title: String, optionNames: List<String>, creatorId: Long?): Vote{
@@ -55,10 +53,13 @@ class VoteService(
     fun getAllVotes(): List<VoteListItemResponse>{
         val votes = voteRepository.findAll()
         return votes.map {vote ->
+            val user = vote.createdByUserId?.let { userRepository.findById(it).orElse(null) }
+
             VoteListItemResponse(
                     voteId = vote.id!!,
                     title = vote.title,
-                    itemCount = vote.options.size
+                    itemCount = vote.options.size,
+                    userNickname = user?.nickname
             )
         }
     }
