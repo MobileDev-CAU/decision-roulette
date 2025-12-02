@@ -48,7 +48,7 @@ class OptionCreateViewModel : ViewModel() {
     // 옵션 추가
     fun addOption(initialValue: String = "") {
         val newId = nextId.getAndIncrement()
-        val newOption = Option(id = newId, value = "")
+        val newOption = Option(id = newId, value = initialValue)
         _options.add(newOption)
     }
 
@@ -97,13 +97,18 @@ class OptionCreateViewModel : ViewModel() {
 
     // 3. 다이얼로그 완료 (선택된 항목들 추가)
     fun addAiSelectedOptions(selectedItems: List<String>) {
-        // 선택된 항목들을 각각 새로운 옵션칸으로 추가
         selectedItems.forEach { item ->
-            addOption(initialValue = item)
-        }
+            // 1. 현재 옵션 목록 중 비어있는(공백) 칸 찾기
+            val emptyIndex = _options.indexOfFirst { it.value.isBlank() }
 
-        // 빈 칸(공백)인 옵션이 있다면 제거해서 정리할 수도 있음 (선택사항)
-        // _options.removeIf { it.value.isBlank() }
+            if (emptyIndex != -1) {
+                // 2. 비어있는 칸이 있으면 그 자리에 값 채워넣기
+                _options[emptyIndex] = _options[emptyIndex].copy(value = item)
+            } else {
+                // 3. 비어있는 칸이 없으면 새로 추가하기
+                addOption(initialValue = item)
+            }
+        }
 
         dismissAiDialog()
     }

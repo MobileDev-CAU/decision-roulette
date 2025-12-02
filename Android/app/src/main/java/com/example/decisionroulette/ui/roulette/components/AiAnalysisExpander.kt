@@ -60,7 +60,6 @@ fun AiAnalysisExpander(
             )
         }
 
-        // [내용] 펼쳐졌을 때만 보임 (애니메이션 적용 가능)
         AnimatedVisibility(visible = isExpanded) {
             Column(modifier = Modifier.padding(top = 16.dp)) {
                 if (analysisResult.isEmpty()) {

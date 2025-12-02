@@ -26,7 +26,7 @@ import TopicButton
 import com.example.decisionroulette.ui.reusable.BackButton
 import kotlinx.coroutines.flow.collectLatest
 import com.example.decisionroulette.ui.reusable.VerticalScrollbarThumb
-
+import com.example.decisionroulette.ui.theme.Galmuri
 
 
 @Composable
@@ -70,9 +70,9 @@ fun TopicCreateScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Text(text = "What are your concerns today?", fontSize = 20.sp)
+        Text(text = "What's your concern today?", fontSize = 20.sp)
         Text(
-            text = "Please choose a topic",
+            text = "Choose a topic",
             color = Color.Gray,
             modifier = Modifier.padding(bottom = 36.dp),
             fontSize = 15.sp
@@ -175,13 +175,14 @@ fun TopicCreateScreen(
             enabled = state.selectedTopicId != null,
             modifier = Modifier
                 .fillMaxWidth()
+                .width(250.dp)
                 .height(60.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black
+                containerColor = Color(0xFF685C57)
             )
         )
         {
-            Text("choice", color = Color.White, style = MaterialTheme.typography.titleMedium)
+            Text("choice", color = Color.White, style = MaterialTheme.typography.titleMedium, fontFamily = Galmuri)
         }
 
         Spacer(modifier = Modifier.weight(1f))

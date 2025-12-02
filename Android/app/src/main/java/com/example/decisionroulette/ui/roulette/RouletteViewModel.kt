@@ -147,6 +147,7 @@ class RouletteViewModel: ViewModel() {
                         top3Keywords = emptyList()
                     )
                 }
+                analyzeRoulette(response.title, uiItems.map { it.name })
             }.onFailure { e ->
                 println("룰렛 상세 조회 실패: ${e.message}")
                 _uiState.update { it.copy(isLoading = false) }
@@ -155,16 +156,22 @@ class RouletteViewModel: ViewModel() {
     }
 
     // AI 분석 리포트 요청
-    fun analyzeRoulette() {
-        val title = _uiState.value.title
-        val items = _uiState.value.items.map { it.name }
+    private fun analyzeRoulette(title: String, items: List<String>) {
+        println("AI 분석 요청 시작: 제목=$title, 항목수=${items.size}")
 
-        if (items.isEmpty()) return
+        if (items.isEmpty()) {
+            println("AI 분석 취소: 항목이 없습니다.")
+            return
+        }
+
+//        val title = _uiState.value.title
+//        val items = _uiState.value.items.map { it.name }
 
         viewModelScope.launch {
             val result = repository.analyzeRoulette(title, items)
 
             result.onSuccess { response ->
+                println("AI 분석 성공! 결과 개수: ${response.analysis.size}")
                 _uiState.update {
                     it.copy(analysisResult = response.analysis)
                 }
