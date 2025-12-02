@@ -9,18 +9,23 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.decisionroulette.api.vote.VoteListItem // [핵심 수정] 실제 API 모델 임포트
-// import com.example.decisionroulette.ui.votelist.VoteItem // 이전 더미 모델 임포트가 있다면 제거
-// import com.example.decisionroulette.ui.votelist.VoteOption // 이전 더미 모델 임포트가 있다면 제거
+import androidx.compose.ui.unit.sp
+import com.example.decisionroulette.api.vote.VoteListItem
+import com.example.decisionroulette.ui.theme.Galmuri // Galmuri 폰트 임포트
 
-// VoteCard 컴포저블 수정
+// 🎨 디자인 컬러 (RouletteResultDialog에서 가져옴)
+val MainBrown = Color(0xFF685C57)
+val LightBrown = Color(0xFFD7CCC8)
+val BackgroundWhite = Color(0xFFFDFBF7)
+
 @Composable
 fun VoteCard(
-    // [핵심 수정] VoteItem 대신 VoteListItem 타입을 받도록 변경
     voteItem: VoteListItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -28,56 +33,60 @@ fun VoteCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp) // 카드 높이
+            .heightIn(min = 100.dp) // 높이를 최소값으로 설정하여 제목 길이에 유연하게 대응
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        border = BorderStroke(1.dp, Color.LightGray),
-        colors = CardDefaults.cardColors(containerColor = Color.White) // 배경색 설정
+
+        // 둥근 모서리 및 입체감 강화
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+
+        // 메인 브라운 색상의 얇은 테두리 적용
+        border = BorderStroke(1.5.dp, LightBrown),
+
+        // 배경색을 테마 화이트로 설정
+        colors = CardDefaults.cardColors(containerColor = BackgroundWhite)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween // 내용물 위아래 정렬
+                .padding(20.dp), // 내부 패딩 증가
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             // 투표 제목 표시
             Text(
                 text = voteItem.title,
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Black
+                fontSize = 18.sp,
+                fontFamily = Galmuri,
+                fontWeight = FontWeight.Bold,
+                color = MainBrown, // 제목에 메인 브라운 색상 적용
+                maxLines = 2 // 긴 제목에 대비
             )
-            // 투표 항목 수 및 작성자 닉네임 표시 (VoteListItem 모델에 맞게 변경)
+
+            Spacer(modifier = Modifier.height(8.dp)) // 제목과 정보 사이 간격
+
+            // 투표 항목 수 및 작성자 닉네임 표시
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom // Row의 요소들이 아래로 정렬되도록 함
             ) {
+                // 항목 수 정보
                 Text(
-                    text = "${voteItem.itemCount}개 항목", // itemCount 사용
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    text = "${voteItem.itemCount} Items",
+                    fontSize = 13.sp,
+                    fontFamily = Galmuri,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LightBrown // 보조 정보에 라이트 브라운 색상 적용
                 )
+
+                // 작성자 닉네임 정보
                 Text(
-                    text = "작성자: ${voteItem.userNickname}", // userNickname 사용
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    text = "By ${voteItem.userNickname}",
+                    fontSize = 13.sp,
+                    fontFamily = Galmuri,
+                    color = Color.Gray // 일반 회색 사용
                 )
             }
         }
     }
-}
-
-// Preview를 업데이트하여 새로운 VoteListItem 모델을 사용하도록 변경
-@Preview(showBackground = true)
-@Composable
-fun PreviewVoteCard() {
-    VoteCard(
-        voteItem = VoteListItem(
-            voteId = 1L,
-            title = "주말 데이트 장소",
-            itemCount = 3,
-            userNickname = "수인"
-        ),
-        onClick = {}
-    )
 }

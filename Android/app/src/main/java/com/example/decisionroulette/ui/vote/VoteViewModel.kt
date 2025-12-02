@@ -15,6 +15,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle // ⭐ 필수 import 추가
+import com.example.decisionroulette.ui.roulettelist.TopicCreateUiEvent
 
 // UI에서 사용할 항목 모델 정의
 data class OptionItem(val id: Int, val title: String, val currentVotes: Int = 0)
@@ -24,7 +25,8 @@ data class VoteUiState(
     val options: List<OptionItem> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val voteId: Long = -1L
+    val voteId: Long = -1L,
+    val title: String = "Loading..." // ⭐ 투표 제목 필드 추가 및 초기화
 )
 
 sealed interface VoteUiEvent {
@@ -97,7 +99,8 @@ class VoteViewModel(
                 _uiState.update {
                     it.copy(
                         options = options,
-                        isLoading = false
+                        isLoading = false,
+                        title = voteDetail.title // ⭐ 투표 제목 저장
                     )
                 }
             }.onFailure { throwable ->
@@ -217,5 +220,4 @@ class VoteViewModel(
             }
         }
     }
-    // -------------------------------------------------------------------
-}
+   }
