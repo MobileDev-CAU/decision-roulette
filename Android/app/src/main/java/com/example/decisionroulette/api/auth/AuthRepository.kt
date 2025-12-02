@@ -2,12 +2,12 @@ package com.example.decisionroulette.api.auth
 
 import android.util.Log
 import com.example.decisionroulette.api.RetrofitClient
+import com.example.decisionroulette.ui.auth.TokenManager
 import retrofit2.HttpException
 import java.io.IOException
 import java.lang.Exception
 
 class AuthRepository(private val api: AuthApiService = RetrofitClient.authInstance) {
-
 
     // 회원가입
     suspend fun signUp(request: SignUpRequest): Result<SignUpResponse> {
@@ -77,5 +77,20 @@ class AuthRepository(private val api: AuthApiService = RetrofitClient.authInstan
             // 그 외 예외
             Result.failure(e)
         }
+    }
+
+    fun getCurrentUserNickname(): String? {
+        return TokenManager.getUserNickname()
+    }
+
+    // ⭐ 추가: VoteViewModel에서 사용하는 userId 가져오는 함수
+    /**
+     * 로컬 저장소(TokenManager)에서 현재 로그인된 사용자의 ID를 가져옵니다.
+     * @return 유효한 userId(Int) 또는 인증되지 않았을 경우 null
+     */
+    fun getCurrentUserId(): Int? {
+        val userId = TokenManager.getUserId()
+        // TokenManager에서 -1을 반환하는 경우 유효하지 않은 것으로 간주
+        return if (userId > 0) userId else null
     }
 }

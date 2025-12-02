@@ -1,5 +1,7 @@
 package com.example.decisionroulette.ui.votelist
 
+import com.example.decisionroulette.api.vote.VoteListItem
+
 
 data class VoteItem(
     val id: String, // 각 투표를 식별하는 ID (필수)
@@ -14,7 +16,8 @@ data class VoteOption(
 )
 
 data class VoteListState(
-    val isLoading: Boolean = true,
-    val voteItems: List<VoteItem> = emptyList(),
+    val isLoading: Boolean = false,
+    val voteItems: List<VoteListItem> = emptyList(),
     val errorMessage: String? = null
 )
+

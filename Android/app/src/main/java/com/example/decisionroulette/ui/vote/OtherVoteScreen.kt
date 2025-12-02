@@ -1,6 +1,5 @@
 package com.example.decisionroulette.ui.vote
 
-
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -16,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,14 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.ui.home.VoteViewModel
-import com.example.decisionroulette.ui.home.OptionItem
-import com.example.decisionroulette.ui.reusable.BlackBorder
+import com.example.decisionroulette.ui.home.OptionItem // VoteViewModel이 사용하는 OptionItem import
 
-// OptionItem.kt
-data class OptionItem(
-    val id: Int,
-    val title: String // 예: "치킨", "피자"
-)
+// 🚨🚨🚨 VoteViewModel과 충돌하는 OptionItem 정의 제거 🚨🚨🚨
 
 @Composable
 fun VoteOptionItem(
@@ -62,8 +55,9 @@ fun VoteOptionItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Option 1, Option 2 등의 텍스트
+            // item.id를 그대로 사용하기보다, 1부터 시작하는 순번으로 변환하여 표시하는 것이 좋습니다.
             Text(
-                text = "option ${item.id}",
+                text = "option ${item.id + 1}",
                 fontSize = 12.sp,
                 color = Color.Gray
             )
@@ -73,6 +67,15 @@ fun VoteOptionItem(
                 text = item.title,
                 fontSize = 18.sp,
                 color = Color.Black
+            )
+
+            // ⭐ 투표율 표시 추가 (VoteViewModel의 OptionItem에는 currentVotes가 투표율(%)로 들어있음)
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "${item.currentVotes}%",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.DarkGray
             )
         }
     }
@@ -88,9 +91,9 @@ fun OtherVoteScreen(
     // 1. 상태 관리: 선택된 옵션의 ID를 저장합니다.
     var selectedOptionId by remember { mutableStateOf<Int?>(null) }
 
-    // 2. ViewModel로부터 투표 항목 데이터 StateFlow를 수집합니다.
-    // Compose 상태로 변환하여 리스트를 그립니다.
-    val optionsList by viewModel.options.collectAsState()
+    // 2. ViewModel로부터 UI 상태를 수집합니다.
+    val uiState by viewModel.uiState.collectAsState()
+    val optionsList = uiState.options // 투표 항목 목록
 
     val scrollState = rememberScrollState()
 
@@ -113,6 +116,15 @@ fun OtherVoteScreen(
         )
 
         Spacer(modifier = Modifier.weight(1f))
+
+        // ⭐ 로딩 및 에러 상태 표시
+        if (uiState.isLoading) {
+            Text("투표 항목을 불러오는 중...", color = Color.Gray)
+        } else if (uiState.errorMessage != null) {
+            Text(uiState.errorMessage!!, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
+        } else if (optionsList.isEmpty()) {
+            Text("투표 항목이 없습니다.", color = Color.Gray)
+        }
 
 
         // ----------------- 투표 항목 섹션 (스크롤 가능) -----------------
@@ -137,27 +149,19 @@ fun OtherVoteScreen(
             }
         }
 
-        // 일단 뷰 보려는 용도
-        BlackBorder(
-
-            modifier = Modifier
-                .width(250.dp)
-                .padding(top = 40.dp),
-
-            onClick = onNavigateToVoteClear,
-            text = "VOTE"
-        )
+        // 🚨🚨🚨 불필요한 BlackBorder 컴포넌트 제거 🚨🚨🚨
+        // BlackBorder( ... ) 제거
 
         // 이게 진자용
         Button(
-            enabled = selectedOptionId != null,
+            // 로딩 중이 아닐 때만 버튼 활성화
+            enabled = selectedOptionId != null && !uiState.isLoading,
             onClick = {
                 // 4. 투표하기 버튼 클릭 시 ViewModel의 vote 함수를 호출
                 viewModel.vote(selectedOptionId)
 
-                // 5. 투표 완료 후 화면 전환 (선택적)
-                // 만약 ViewModel에서 이벤트를 보내지 않는다면, 여기서 직접 호출합니다.
-                // onNavigateToVoteClear()
+                // 5. 투표 완료 후 화면 전환은 ViewModel 이벤트(NavigateToRoulette)를 통해 처리되어야 합니다.
+                // onNavigateToVoteClear() 호출은 ViewModel의 책임을 침범하므로 제거
             },
             modifier = Modifier
                 .fillMaxWidth()

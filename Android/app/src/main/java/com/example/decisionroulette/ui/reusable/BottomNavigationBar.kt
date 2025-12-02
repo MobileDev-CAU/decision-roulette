@@ -49,7 +49,7 @@ fun BottomNavigationBar(
         ),
         BottomNavItem(
             name = "MyPage",
-            route = Routes.USER_PAGE, // ⬅️ MyPage 버튼이 가리키는 최종 라우트로 설정
+            route = Routes.USER_PAGE,
             selectedIcon = Icons.Filled.Person,
             unselectedIcon = Icons.Outlined.Person
         )

@@ -1,14 +1,17 @@
-package com.example.decisionroulette.ui.topiclist
+package com.example.decisionroulette.ui.votelist
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect // LaunchedEffect 임포트
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,26 +23,37 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.R
 import com.example.decisionroulette.ui.reusable.VoteCard
 import com.example.decisionroulette.ui.votelist.VoteListViewModel
-import com.example.decisionroulette.ui.votelist.VoteOption
-import com.example.decisionroulette.ui.votelist.VoteItem
-
-
+import com.example.decisionroulette.api.vote.VoteListItem // 모델 경로 통일
+import com.example.decisionroulette.ui.votelist.VoteListUiEvent // VoteListUiEvent 임포트
 
 private val MAX_CONTAINER_WIDTH = 400.dp
 
 @Composable
 fun VoteListScreen (
-    onNavigateToVoteStatus: () -> Unit,
+    onNavigateToVoteStatus: (Long) -> Unit, // 상세 페이지 이동 시 voteId를 받도록 수정
     modifier: Modifier = Modifier,
     viewModel: VoteListViewModel = viewModel()
 ) {
+    // ViewModel의 UI 상태를 수집
+    val uiState by viewModel.uiState.collectAsState()
 
+    // [핵심 추가] ViewModel의 이벤트를 수집하여 라우팅을 실행합니다.
+    LaunchedEffect(key1 = Unit) {
+        // ViewModel에서 발생하는 이벤트를 Flow로 수집
+        viewModel.events.collect { event ->
+            when (event) {
+                is VoteListUiEvent.NavigateToVoteStatus -> {
+                    // 이벤트에 포함된 voteId를 사용하여 상세 화면으로 이동합니다.
+                    onNavigateToVoteStatus(event.voteId)
+                }
+            }
+        }
+    }
 
 
     Column(
         modifier = modifier
             .fillMaxSize(),
-            //.padding(horizontal = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
@@ -55,76 +69,54 @@ fun VoteListScreen (
 
         )
 
+        Spacer(modifier = Modifier.height(20.dp))
+
         // -----------------------------------------------------------------
-
-        val voteItems = listOf( // 이거 배경화면이랑 크기 맞춰야할듯..
-            VoteItem(
-                id = "1",
-                title = "주말 데이트 장소",
-                options = listOf(
-                    VoteOption("서순라길", 70),
-                    VoteOption("성수동", 20),
-                    VoteOption("노들섬", 18)
-                ),
-            ),
-            VoteItem(
-                id = "2",
-                title = "강남역 저녁 메뉴",
-                options = listOf(
-                    VoteOption("라멘", 70),
-                    VoteOption("닭갈비", 20),
-                    VoteOption("스시", 18)
-                ),
-            ),
-            VoteItem(
-                id = "3",
-                title = "결혼식장 착장",
-                options = listOf(
-                    VoteOption("블랙 블라우스", 70),
-                    VoteOption("화이트 셔츠", 20),
-                    VoteOption("체크자켓", 18)
-                ),
-            ),
-            VoteItem(
-                id = "4",
-                title = "저녁 메뉴",
-                options = listOf(
-                    VoteOption("마라엽떡", 70),
-                    VoteOption("마라탕", 20),
-                    VoteOption("치킨", 18)
-                ),
-            ),
-            VoteItem(
-                id = "5",
-                title = "점심 메뉴",
-                options = listOf(
-                    VoteOption("김치찌개", 40),
-                    VoteOption("돈까스", 30),
-                    VoteOption("파스타", 30)
-                ),
-            )
-        )
-
-        Column(modifier = modifier.padding(horizontal = 16.dp)) {
-
-
-            LazyColumn(
-
-                verticalArrangement = Arrangement.spacedBy(8.dp), // 아이템 간 간격
-                contentPadding = PaddingValues(bottom = 16.dp) // 하단 패딩
+        // 1. 로딩 상태 표시 (CircularProgressIndicator로 변경)
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(top = 100.dp),
+                contentAlignment = Alignment.TopCenter
             ) {
-                items(items = voteItems, key = { it.id }) { voteItem ->
-                    VoteCard(
-                        voteItem = voteItem,
-                        onClick = {
-                            onNavigateToVoteStatus() // 여기 일단 이렇게 해놓고 사용자 id 도 추가해서 자신/다른사람 분기 만들기
-                        } )// 재사용 가능한 VoteCard 컴포넌트 사용
+                CircularProgressIndicator()
+            }
+            // 2. 에러 상태 표시
+        } else if (uiState.errorMessage != null) {
+            Text(
+                text = uiState.errorMessage ?: "오류 발생",
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.error
+            )
+            // 3. 데이터 표시
+        } else {
+            // ViewModel의 실제 데이터 사용
+            val voteItems = uiState.voteItems
+
+            if (voteItems.isEmpty()) {
+                Text(
+                    text = "현재 진행 중인 투표가 없습니다.",
+                    modifier = Modifier.padding(16.dp),
+                    color = Color.Gray
+                )
+            } else {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp), // 아이템 간 간격
+                        contentPadding = PaddingValues(bottom = 16.dp) // 하단 패딩
+                    ) {
+                        // ViewModel에서 가져온 voteItems 사용
+                        items(items = voteItems, key = { it.voteId }) { voteItem ->
+                            VoteCard(
+                                voteItem = voteItem, // 실제 데이터를 VoteCard에 전달
+                                onClick = {
+                                    // 클릭 이벤트를 ViewModel로 전달하여 이벤트 채널에 보냅니다.
+                                    viewModel.onVoteItemClicked(voteItem.voteId)
+                                }
+                            ) // 재사용 가능한 VoteCard 컴포넌트 사용
+                        }
+                    }
                 }
             }
-
         }
     }
 }
-
-
-

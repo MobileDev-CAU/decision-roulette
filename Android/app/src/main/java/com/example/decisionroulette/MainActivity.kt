@@ -38,7 +38,7 @@ import com.example.decisionroulette.ui.auth.SignUpScreen
 import com.example.decisionroulette.ui.auth.AuthUiEvent
 import com.example.decisionroulette.ui.reusable.BottomNavigationBar
 import com.example.decisionroulette.ui.mypage.MyPageScreen
-import com.example.decisionroulette.ui.topiclist.VoteListScreen
+import com.example.decisionroulette.ui.votelist.VoteListScreen
 import com.example.decisionroulette.ui.vote.MyVoteScreen
 import com.example.decisionroulette.ui.votelist.VoteListUiEvent
 import com.example.decisionroulette.ui.votelist.VoteListViewModel
@@ -53,7 +53,7 @@ import com.example.decisionroulette.ui.vote.OtherVoteScreen
 // 화면 경로(Route)를 정의하는 상수 객체
 object Routes {
     const val HOME = "home_route"
-//    const val TOPIC_LIST = "topic_list_route"
+    //    const val TOPIC_LIST = "topic_list_route"
     const val TOPIC_CREATE="topic_create_route"
     const val OPTION_CREATE = "option_create_route"
     const val ROULETTE = "roulette_route"
@@ -63,11 +63,10 @@ object Routes {
     const val LOGIN = "login_route"
     const val USER_PAGE="user_page_route"
     const val VOTE_LIST="vote_list_route"
-    const val VOTE_STATUS_MY = "vote_status_my_route"
+    // 🚨🚨 경로 수정: voteId를 파라미터로 받을 수 있게 경로를 변경
+    const val VOTE_STATUS_MY = "vote_status_my_route/{voteId}"
 
-    const val VOTE_STATUS_OTHER = "vote_status_other_route"
-
-
+    const val VOTE_STATUS_OTHER = "vote_status_other_route/{voteId}"
 
 
 }
@@ -102,8 +101,8 @@ fun AppScreen(
     authViewModel: AuthViewModel = viewModel(),
     //rouletteViewModel: RouletteViewModel =viewModel()
     voteListViewModel: VoteListViewModel=viewModel(),
-    voteViewModel: VoteViewModel =viewModel()
-
+    // ⭐ 1. VoteViewModel을 단일 인스턴스로 두지 않고, 개별 화면에서 voteId를 받아 생성하도록 수정
+    // voteViewModel: VoteViewModel =viewModel()
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -222,29 +221,30 @@ fun AppScreen(
             }
         }
     }
+    // 🚨🚨 VoteListViewModel 이벤트 처리 수정 🚨🚨
     LaunchedEffect(voteListViewModel.events) {
         voteListViewModel.events.collect { event ->
             when (event) {
-
-                // 이거 투표 리스트의 owner가 나인지 상대방인지에 따라 전환되는 화면 달라질건데 아직 api가 없어서 ..
-                // 내 투표 화면 보고싶으면 1번 주석 처리
-                // 상대방 투표 화면 보고싶으면 2번 주석 처리
-
-                // 1번
-                VoteListUiEvent.NavigateToVoteStatus -> {
-                    navController.navigate(Routes.VOTE_STATUS_OTHER)
+                // 🌟 NavigateToVoteStatus 이벤트에서 voteId와 isMyVote 플래그 추출
+                is VoteListUiEvent.NavigateToVoteStatus -> {
+                    val route = if (event.isMyVote) {
+                        Routes.VOTE_STATUS_MY
+                    } else {
+                        Routes.VOTE_STATUS_OTHER
+                    }
+                    // 추출된 voteId를 경로에 포함하여 네비게이션
+                    // 경로가 "vote_status_my_route/{voteId}" 형태이므로 {voteId} 부분을 대체합니다.
+                    navController.navigate(route.replace("{voteId}", event.voteId.toString()))
                 }
-
-                // 2번
-//                VoteListUiEvent.NavigateToVoteStatus -> {
-//                    navController.navigate(Routes.VOTE_STATUS_OTHER)
-//                }
 
                 else -> {}
             }
         }
     }
 
+    // ⭐ VoteViewModel 이벤트 처리: VoteViewModel 인스턴스가 각 화면 내부에 생성되도록 변경해야 합니다.
+    // 따라서, LaunchedEffect를 NavHost 내부에서 각 화면별로 구성해야 합니다.
+    /*
     LaunchedEffect(voteViewModel.events) {
         voteViewModel.events.collect { event ->
             when (event) {
@@ -263,8 +263,8 @@ fun AppScreen(
             }
         }
     }
+    */
 
-    // TODO 투표리스트 일때도 이 배경화면이도록
     if (BOTTOM_NAV_SCREENS.contains(currentRoute)) {
         Image(
             painter = painterResource(id = R.drawable.home_background6),
@@ -294,7 +294,7 @@ fun AppScreen(
 
         NavHost(
             navController = navController,
-            startDestination = Routes.HOME, // 앱 시작 화면을 HOME으로 유지
+            startDestination = Routes.LOGIN, // 앱 시작 화면을 HOME으로 유지
             modifier = Modifier.padding(innerPadding)
         ) {
 
@@ -400,31 +400,61 @@ fun AppScreen(
 
             composable(Routes.VOTE_LIST) {
                 VoteListScreen(
-
+                    // onVoteItemClicked는 VoteListViewModel의 메서드를 참조하며, ViewModel이 이벤트를 발생시킵니다.
                     onNavigateToVoteStatus = voteListViewModel::onVoteItemClicked
-
-
                 )
             }
 
-            composable(Routes.VOTE_STATUS_MY) {
+            // 🚨🚨 VOTE_STATUS_MY 경로 처리 (파라미터 읽기)
+            composable(Routes.VOTE_STATUS_MY) { backStackEntry ->
+                // voteId는 ViewModel의 key로 사용하며, ViewModel은 SavedStateHandle로 argument를 읽습니다.
+                val voteId = backStackEntry.arguments?.getString("voteId")
+
+                // ⭐ Factory 제거: key를 사용하여 ViewModel을 스코프하고, SavedStateHandle 패턴을 가정합니다.
+                val voteViewModel: VoteViewModel = viewModel(key = voteId)
+
+                // ⭐ 개별 화면의 VoteViewModel 이벤트 처리
+                LaunchedEffect(voteViewModel.events) {
+                    voteViewModel.events.collect { event ->
+                        when (event) {
+                            VoteUiEvent.NavigateToBack -> { navController.popBackStack() }
+                            VoteUiEvent.NavigateToRoulette -> { navController.navigate(Routes.ROULETTE) }
+                            VoteUiEvent.NavigateToVoteClear -> { navController.popBackStack() } // 투표 후 목록으로 돌아감
+                        }
+                    }
+                }
+
                 MyVoteScreen(
-
-                    onNavigateToBack = { navController.popBackStack()},
-                    onNavigateToRoulette = { navController.navigate(Routes.ROULETTE) }
-
-
+                    onNavigateToBack = { voteViewModel.onBackButtonClicked() }, // ViewModel 함수 호출
+                    onNavigateToRoulette = { /* 룰렛 시작 함수 호출 */ }, // onRouletteStartClicked 함수가 ViewModel에 정의되지 않아 제거
+                    viewModel = voteViewModel // 인스턴스 전달
                 )
-
             }
 
-            composable(Routes.VOTE_STATUS_OTHER) {
+            // 🚨🚨 VOTE_STATUS_OTHER 경로 처리 (파라미터 읽기)
+            composable(Routes.VOTE_STATUS_OTHER) { backStackEntry ->
+                val voteId = backStackEntry.arguments?.getString("voteId")
+
+                // ⭐ Factory 제거: key를 사용하여 ViewModel을 스코프하고, SavedStateHandle 패턴을 가정합니다.
+                val voteViewModel: VoteViewModel = viewModel(key = voteId)
+
+                // ⭐ 개별 화면의 VoteViewModel 이벤트 처리
+                LaunchedEffect(voteViewModel.events) {
+                    voteViewModel.events.collect { event ->
+                        when (event) {
+                            VoteUiEvent.NavigateToBack -> { navController.popBackStack() }
+                            VoteUiEvent.NavigateToRoulette -> { navController.navigate(Routes.ROULETTE) }
+                            VoteUiEvent.NavigateToVoteClear -> { navController.popBackStack() } // 투표 후 목록으로 돌아감
+                        }
+                    }
+                }
+
                 OtherVoteScreen(
-
-                    onNavigateToVoteClear = {navController.navigate(Routes.VOTE_LIST) }
-
+                    // onNavigateToVoteClear는 이제 ViewModel 이벤트 처리로 대체됩니다.
+                    onNavigateToVoteClear = { /* Handled by LaunchedEffect */ },
+                    viewModel = voteViewModel // 인스턴스 전달
                 )
-        }
+            }
         }
     }
 }
