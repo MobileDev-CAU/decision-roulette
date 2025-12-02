@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember // ⭐ remember import
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -48,7 +49,10 @@ import com.example.decisionroulette.ui.auth.TokenManager
 import com.example.decisionroulette.ui.home.VoteUiEvent
 import com.example.decisionroulette.ui.home.VoteViewModel
 import com.example.decisionroulette.ui.vote.OtherVoteScreen
-
+import com.example.decisionroulette.data.repository.VoteRepository // Repository import
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.decisionroulette.api.auth.AuthRepository // AuthRepository import
 
 // 화면 경로(Route)를 정의하는 상수 객체
 object Routes {
@@ -101,8 +105,11 @@ fun AppScreen(
     authViewModel: AuthViewModel = viewModel(),
     //rouletteViewModel: RouletteViewModel =viewModel()
     voteListViewModel: VoteListViewModel=viewModel(),
-    // ⭐ 1. VoteViewModel을 단일 인스턴스로 두지 않고, 개별 화면에서 voteId를 받아 생성하도록 수정
-    // voteViewModel: VoteViewModel =viewModel()
+
+    // ⭐ Repository를 AppScreen에서 직접 생성 (DI 컨테이너 대신 사용)
+    // 크래시 방지를 위해 remember 블록 내에서 생성합니다.
+    voteRepository: VoteRepository = remember { VoteRepository() },
+    authRepository: AuthRepository = remember { AuthRepository() } // ⭐ AuthRepository도 remember로 생성
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -131,7 +138,7 @@ fun AppScreen(
 
 
     // ------------------------------------------------------------------
-// 0. 인증 (로그인/회원가입) 네비게이션 처리
+    // 0. 인증 (로그인/회원가입) 네비게이션 처리
     LaunchedEffect(authViewModel.events) {
         authViewModel.events.collect { event ->
             when (event) {
@@ -157,7 +164,7 @@ fun AppScreen(
             }
         }
     }
-// ------------------------------------------------------------------
+    // ------------------------------------------------------------------
     // 1. 홈 화면 -> 주제 목록 이동 (HomeViewModel 이벤트)
     LaunchedEffect(homeViewModel.events) {
         homeViewModel.events.collect { event ->
@@ -242,28 +249,7 @@ fun AppScreen(
         }
     }
 
-    // ⭐ VoteViewModel 이벤트 처리: VoteViewModel 인스턴스가 각 화면 내부에 생성되도록 변경해야 합니다.
-    // 따라서, LaunchedEffect를 NavHost 내부에서 각 화면별로 구성해야 합니다.
-    /*
-    LaunchedEffect(voteViewModel.events) {
-        voteViewModel.events.collect { event ->
-            when (event) {
-                VoteUiEvent.NavigateToBack -> {
-                    navController.navigate(Routes.VOTE_LIST)
-                }
-
-                VoteUiEvent.NavigateToRoulette -> {
-                    navController.navigate(Routes.ROULETTE)
-                }
-
-                VoteUiEvent.NavigateToVoteClear -> {
-                    navController.navigate(Routes.VOTE_LIST)
-                }
-
-            }
-        }
-    }
-    */
+    // 주석 처리된 VoteViewModel 이벤트 처리 블록 제거 (각 화면 내에서 처리)
 
     if (BOTTOM_NAV_SCREENS.contains(currentRoute)) {
         Image(
@@ -406,12 +392,21 @@ fun AppScreen(
             }
 
             // 🚨🚨 VOTE_STATUS_MY 경로 처리 (파라미터 읽기)
-            composable(Routes.VOTE_STATUS_MY) { backStackEntry ->
+            composable(
+                route = Routes.VOTE_STATUS_MY,
+                arguments = listOf(navArgument("voteId") { type = NavType.StringType }) // NavType 정의
+            ) { backStackEntry ->
                 // voteId는 ViewModel의 key로 사용하며, ViewModel은 SavedStateHandle로 argument를 읽습니다.
                 val voteId = backStackEntry.arguments?.getString("voteId")
 
-                // ⭐ Factory 제거: key를 사용하여 ViewModel을 스코프하고, SavedStateHandle 패턴을 가정합니다.
-                val voteViewModel: VoteViewModel = viewModel(key = voteId)
+                // ⭐ Factory를 사용하여 ViewModel 생성 (크래시 방지)
+                val voteViewModel: VoteViewModel = viewModel(
+                    key = voteId,
+                    factory = VoteViewModel.provideFactory(
+                        voteRepository = voteRepository, // AppScreen에서 생성된 인스턴스
+                        authRepository = authRepository // ⭐ AppScreen에서 생성된 AuthRepository 인스턴스
+                    )
+                )
 
                 // ⭐ 개별 화면의 VoteViewModel 이벤트 처리
                 LaunchedEffect(voteViewModel.events) {
@@ -426,17 +421,26 @@ fun AppScreen(
 
                 MyVoteScreen(
                     onNavigateToBack = { voteViewModel.onBackButtonClicked() }, // ViewModel 함수 호출
-                    onNavigateToRoulette = { /* 룰렛 시작 함수 호출 */ }, // onRouletteStartClicked 함수가 ViewModel에 정의되지 않아 제거
+                    onNavigateToRoulette = { voteViewModel.onRouletteStartClicked() }, // 룰렛 시작 함수 호출
                     viewModel = voteViewModel // 인스턴스 전달
                 )
             }
 
             // 🚨🚨 VOTE_STATUS_OTHER 경로 처리 (파라미터 읽기)
-            composable(Routes.VOTE_STATUS_OTHER) { backStackEntry ->
+            composable(
+                route = Routes.VOTE_STATUS_OTHER,
+                arguments = listOf(navArgument("voteId") { type = NavType.StringType }) // NavType 정의
+            ) { backStackEntry ->
                 val voteId = backStackEntry.arguments?.getString("voteId")
 
-                // ⭐ Factory 제거: key를 사용하여 ViewModel을 스코프하고, SavedStateHandle 패턴을 가정합니다.
-                val voteViewModel: VoteViewModel = viewModel(key = voteId)
+                // ⭐ Factory를 사용하여 ViewModel 생성 (크래시 방지)
+                val voteViewModel: VoteViewModel = viewModel(
+                    key = voteId,
+                    factory = VoteViewModel.provideFactory(
+                        voteRepository = voteRepository, // AppScreen에서 생성된 인스턴스
+                        authRepository = authRepository // ⭐ AppScreen에서 생성된 AuthRepository 인스턴스
+                    )
+                )
 
                 // ⭐ 개별 화면의 VoteViewModel 이벤트 처리
                 LaunchedEffect(voteViewModel.events) {
