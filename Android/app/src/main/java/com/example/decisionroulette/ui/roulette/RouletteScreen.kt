@@ -114,7 +114,7 @@ fun RouletteScreen(
 
             // 2. 통계 박스 컴포넌트 호출
 //            Top3KeywordsBox(keywords = uiState.top3Keywords)
-            AiAnalysisExpander(items = uiState.items)
+            AiAnalysisExpander(analysisResult = uiState.analysisResult)
 
             Spacer(modifier = Modifier.weight(1f))
 

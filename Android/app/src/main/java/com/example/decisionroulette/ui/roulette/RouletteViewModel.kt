@@ -154,6 +154,26 @@ class RouletteViewModel: ViewModel() {
         }
     }
 
+    // AI 분석 리포트 요청
+    fun analyzeRoulette() {
+        val title = _uiState.value.title
+        val items = _uiState.value.items.map { it.name }
+
+        if (items.isEmpty()) return
+
+        viewModelScope.launch {
+            val result = repository.analyzeRoulette(title, items)
+
+            result.onSuccess { response ->
+                _uiState.update {
+                    it.copy(analysisResult = response.analysis)
+                }
+            }.onFailure { e ->
+                println("AI 분석 실패: ${e.message}")
+            }
+        }
+    }
+
     fun onSpinFinished() {
         _uiState.update {
             it.copy(

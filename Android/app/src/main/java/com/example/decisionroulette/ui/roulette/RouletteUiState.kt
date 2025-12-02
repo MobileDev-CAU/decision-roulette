@@ -1,5 +1,6 @@
 package com.example.decisionroulette.ui.roulette
 import com.example.decisionroulette.data.RouletteItem
+import com.example.decisionroulette.api.roulette.AiAnalysisItem
 
 data class RouletteUiState(
     val isLoading: Boolean = false,            // 로딩 중인가?
@@ -11,5 +12,6 @@ data class RouletteUiState(
     val targetRotation: Float = 0f,
     val spinResult: String? = null,            // 룰렛 결과 (null이면 아직 안 돌린 거)
     val isSpinning: Boolean = false,            // 현재 룰렛이 빙글빙글 도는 중인가?
-    val showResultDialog: Boolean = false
+    val showResultDialog: Boolean = false,
+    val analysisResult: List<AiAnalysisItem> = emptyList()
 )
