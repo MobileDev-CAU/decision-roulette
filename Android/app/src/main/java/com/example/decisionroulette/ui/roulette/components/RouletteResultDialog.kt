@@ -27,7 +27,7 @@ fun RouletteResultDialog(
     onDismiss: () -> Unit,
     onRetry: () -> Unit,
     onVote: () -> Unit,
-    onFinalConfirm: (String) -> Unit
+    onFinalConfirm: (String, Boolean) -> Unit
     // viewModel: RouletteViewModel = viewModel()
 ) {
     var step by remember { mutableIntStateOf(1) }
@@ -46,12 +46,12 @@ fun RouletteResultDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // 1. 상단 타이틀
-                Text(
-                    text = "오늘의 메뉴",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
+//                Text(
+//                    text = "오늘의 메뉴",
+//                    fontSize = 20.sp,
+//                    fontWeight = FontWeight.Bold,
+//                    color = Color.Black
+//                )
 
                 Spacer(modifier = Modifier.height(30.dp))
 
@@ -104,7 +104,7 @@ fun RouletteResultDialog(
                         Row(modifier = Modifier.fillMaxWidth()) {
                             // [예] -> 룰렛 결과(resultName) 그대로 확정
                             Button(
-                                onClick = { onFinalConfirm(resultName) },
+                                onClick = { onFinalConfirm(resultName, true) },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0E0E0)),
                                 modifier = Modifier.weight(1f).height(50.dp)
                             ) {
@@ -150,7 +150,7 @@ fun RouletteResultDialog(
                         Button(
                             onClick = {
                                 if (manualInputText.isNotBlank()) {
-                                    onFinalConfirm(manualInputText)
+                                    onFinalConfirm(manualInputText, false)
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),

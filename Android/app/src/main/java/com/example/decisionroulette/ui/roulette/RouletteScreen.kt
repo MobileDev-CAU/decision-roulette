@@ -131,21 +131,16 @@ fun RouletteScreen(
         RouletteResultDialog(
             resultName = uiState.spinResult!!,
             onDismiss = { viewModel.closeDialog() },
-            onRetry = { viewModel.retrySpin() },
-
-            // 💡 2. onVote 콜백에 네비게이션과 닫기 로직 결합
-            onVote = {
-                Log.d("VOTE_DEBUG", "2. RouletteScreen 콜백 시작: 네비게이션 함수 호출 예정")
-                onNavigateToVoteList() // MainActivity의 navController.navigate() 실행
-
-                // 네비게이션 호출 후 바로 닫기 직전 로그
-                Log.d("VOTE_DEBUG", "3. RouletteScreen 콜백: 다이얼로그 닫기 실행 예정")
-                viewModel.closeDialog() // showResultDialog = false
-
-                Log.d("VOTE_DEBUG", "4. RouletteScreen 콜백 종료.")
+            onRetry = {
+                viewModel.retrySpin() // 불만족 전송 & 다이얼로그 닫기
+                viewModel.startSpin(rotation.value) // 룰렛 다시 돌리기
             },
-            onFinalConfirm ={ finalChoice ->
-                viewModel.saveFinalChoice(finalChoice)
+            onVote = {
+                viewModel.uploadVote() // 불만족 전송 & 다이얼로그 닫기
+                onNavigateToVoteList() // 투표 화면으로 이동
+            },
+            onFinalConfirm = { finalChoice, satisfied ->
+                viewModel.saveFinalChoice(finalChoice, satisfied)
             }
         )
     }

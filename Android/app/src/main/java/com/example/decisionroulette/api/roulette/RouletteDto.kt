@@ -65,3 +65,15 @@ data class FinalChoiceRequest(
 data class FinalChoiceResponse(
     val message: String // "저장 완료"
 )
+
+// [요청] 룰렛 만족도 피드백 (/roulette/result/feedback)
+data class RouletteFeedbackRequest(
+    val rouletteId: Int,
+    val spinResult: String,
+    val satisfied: Boolean
+)
+
+// [응답] 피드백 결과
+data class RouletteFeedbackResponse(
+    val message: String // "피드백 수신 완료"
+)

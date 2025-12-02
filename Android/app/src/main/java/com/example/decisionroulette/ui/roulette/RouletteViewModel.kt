@@ -180,13 +180,29 @@ class RouletteViewModel: ViewModel() {
         _uiState.update { it.copy(showResultDialog = false) }
     }
 
+    // 피드백(만족/불만족) 전송
+    private fun sendFeedback(satisfied: Boolean) {
+        val currentId = _uiState.value.rouletteId
+        val spinResult = _uiState.value.spinResult ?: return
+
+        viewModelScope.launch {
+            // userId 10 하드코딩 (나중에 로그인 정보로 교체)
+            repository.saveFeedback(currentId, spinResult, satisfied, userId = 10)
+                .onSuccess { println("피드백 전송 성공: satisfied=$satisfied") }
+                .onFailure { println("피드백 전송 실패: ${it.message}") }
+        }
+    }
+
     // [버튼 1] 선택 확정하기
-    fun saveFinalChoice(finalChoice: String) {
+    fun saveFinalChoice(finalChoice: String, satisfied: Boolean) {
         closeDialog()
         val currentId = _uiState.value.rouletteId
         val spinResult = _uiState.value.spinResult ?: return
 
         println("최종 선택 저장: ID=$currentId, 결과=$spinResult, 선택=$finalChoice")
+
+        // 피드백 전송 (만족 or 불만족)
+        sendFeedback(satisfied)
 
         // 최종 선택 저장 API 호출
         viewModelScope.launch {
@@ -209,11 +225,13 @@ class RouletteViewModel: ViewModel() {
     // [버튼 2] 룰렛 다시 돌리기 (팝업 닫고 바로 다시 스핀)
     fun retrySpin() {
         closeDialog()
+        sendFeedback(false)
     }
 
     // [버튼 3] 유저 투표 올리기
     fun uploadVote() {
         closeDialog()
+        sendFeedback(false)
         // TODO: 투표 화면으로 이동
     }
 

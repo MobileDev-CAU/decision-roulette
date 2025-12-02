@@ -42,4 +42,11 @@ interface RouletteApiService {
         @Query("userId") userId: Int,
         @Body request: FinalChoiceRequest
     ): FinalChoiceResponse
+
+    // 룰렛 만족도 피드백 전송
+    @POST("roulette/result/feedback")
+    suspend fun saveFeedback(
+        @Query("userId") userId: Int,
+        @Body request: RouletteFeedbackRequest
+    ): RouletteFeedbackResponse
 }

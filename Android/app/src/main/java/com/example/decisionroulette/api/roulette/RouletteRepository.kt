@@ -79,4 +79,19 @@ class RouletteRepository(
             Result.failure(e)
         }
     }
+
+    // 피드백 전송 함수
+    suspend fun saveFeedback(rouletteId: Int, spinResult: String, satisfied: Boolean, userId: Int): Result<RouletteFeedbackResponse> {
+        return try {
+            val request = RouletteFeedbackRequest(
+                rouletteId = rouletteId,
+                spinResult = spinResult,
+                satisfied = satisfied
+            )
+            val response = api.saveFeedback(userId = userId, request = request)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
