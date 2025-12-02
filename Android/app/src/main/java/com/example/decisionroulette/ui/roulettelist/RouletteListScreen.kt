@@ -84,7 +84,7 @@ fun TopicCreateScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 250.dp)  // 보이는 최대 스크롤바 박스 높이
+                .heightIn(max = 300.dp)  // 보이는 최대 스크롤바 박스 높이
                 .padding(bottom = 32.dp)
                 .padding(horizontal = 10.dp)
         ) {

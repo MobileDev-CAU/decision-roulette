@@ -116,7 +116,7 @@ fun RouletteScreen(
 //            Top3KeywordsBox(keywords = uiState.top3Keywords)
             AiAnalysisExpander(analysisResult = uiState.analysisResult)
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(30.dp))
 
             // 3. 룰렛 휠 컴포넌트 호출
             // 핵심: 회전 값(rotation.value)과 클릭 이벤트(startSpin)를 파라미터로 넘깁니다.
@@ -128,9 +128,9 @@ fun RouletteScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Button(onClick = { viewModel.addDummyItem() }) {
-                Text("테스트: 메뉴 추가하기 (+)")
-            }
+//            Button(onClick = { viewModel.addDummyItem() }) {
+//                Text("테스트: 메뉴 추가하기 (+)")
+//            }
         }
     }
 

@@ -110,7 +110,7 @@ fun AnalysisItemRow(item: AiAnalysisItem) {
             fontFamily = Galmuri,
             lineHeight = 18.sp
         )
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(3.dp))
 
         // 단점 (Cons)
         Text(

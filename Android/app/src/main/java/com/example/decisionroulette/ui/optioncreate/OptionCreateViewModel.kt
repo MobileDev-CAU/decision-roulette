@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 import com.example.decisionroulette.api.roulette.RouletteRepository
+import com.example.decisionroulette.ui.auth.TokenManager
 
 
 // data/Option.kt
@@ -68,12 +69,12 @@ class OptionCreateViewModel : ViewModel() {
     // 1. AI 추천 버튼 클릭 (API 호출 -> 다이얼로그 오픈)
     fun onAiButtonClicked() {
         val title = uiState.topicTitle
+        val userId = TokenManager.getUserId()
 
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true)
 
-            // API 호출 (userId 10 하드코딩)
-            val result = repository.getAiRecommendation(title, userId = 10)
+            val result = repository.getAiRecommendation(title, userId = userId)
 
             result.onSuccess { response ->
                 // 성공 시 다이얼로그 열기 & 추천 목록 업데이트
@@ -117,6 +118,7 @@ class OptionCreateViewModel : ViewModel() {
         val validOptions = _options.filter { it.value.isNotBlank() }
         val itemsList = validOptions.map { it.value }
         val title = uiState.topicTitle
+        val userId = TokenManager.getUserId()
 
         if (itemsList.isEmpty()) return // 빈 값이면 요청 안 함
 
@@ -124,8 +126,7 @@ class OptionCreateViewModel : ViewModel() {
             // 로딩 시작
             uiState = uiState.copy(isLoading = true)
 
-            // API 호출 (ownerId는 10으로 가정)
-            val result = repository.createRoulette(title, itemsList, ownerId = 10)
+            val result = repository.createRoulette(title, itemsList, ownerId = userId)
 
             result.onSuccess { response ->
                 println("룰렛 생성 성공! ID: ${response.rouletteId}")
