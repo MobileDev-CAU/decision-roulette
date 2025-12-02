@@ -22,9 +22,6 @@ class RouletteController(
     fun create(@RequestBody req: CreateRouletteRequest): ResponseEntity<RouletteResponse> =
             ResponseEntity.ok(rouletteService.createRoulette(req))
 
-    @GetMapping("/{id}/ai-waring") ///ai수정필요
-    fun aiWarning(@PathVariable id: Long): ResponseEntity<AIWarningResponse> =
-        ResponseEntity.ok(aiService.warning())
     @GetMapping("/{id}/spin")
     fun spin(
             @PathVariable id: Long,
@@ -34,7 +31,10 @@ class RouletteController(
     @PostMapping("/ai/recommend")
     fun recommend(@RequestBody req: AIRecommendRequest): ResponseEntity<AIRecommendResponse> =
             ResponseEntity.ok(aiService.recommend(req))
-    @GetMapping("{Id}")
+    @PostMapping("/ai/analyze")
+    fun analyze(@RequestBody req: AIAnalyzeRequest): ResponseEntity<AIAnalysisResponse> =
+        ResponseEntity.ok(aiService.analyzeItems(req.items))
+    @GetMapping("{id}")
     fun detail(@PathVariable id : Long): ResponseEntity<RouletteDetailResponse> =
             ResponseEntity.ok(rouletteService.getDetail(id))
     @PostMapping("/result/feedback")

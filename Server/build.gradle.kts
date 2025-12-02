@@ -1,6 +1,8 @@
 plugins {
 	kotlin("jvm") version "1.9.25"
 	kotlin("plugin.spring") version "1.9.25"
+	kotlin("plugin.jpa") version "1.9.10"
+	kotlin("plugin.allopen") version "1.9.10"
 	id("org.springframework.boot") version "3.5.7"
 	id("io.spring.dependency-management") version "1.1.7"
 }
@@ -28,10 +30,15 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	runtimeOnly("com.h2database:h2")
 	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("com.mysql:mysql-connector-j:9.1.0")
+	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+	implementation("com.squareup.okhttp3:okhttp:4.12.0")
+	implementation("org.json:json:20231013")
 }
 
 kotlin {

@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun LoginScreen(
     onNavigateToUserPage: () -> Unit,
     onNavigateToSignUp: () -> Unit,
-    viewModel: AuthViewModel = viewModel()
+    viewModel: AuthViewModel
 ) {
     val state = viewModel.uiState
 

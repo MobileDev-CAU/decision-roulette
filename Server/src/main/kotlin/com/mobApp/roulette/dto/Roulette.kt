@@ -10,9 +10,9 @@ data class RouletteResponse(
         val rouletteId: Long,
         val ownerId: Long,
         val title: String,
-        val items: List<RouletteItemResponse>
+        val items: List<RouletteDetailItemResponse>
 )
-data class RouletteItemResponse(
+data class RouletteDetailItemResponse(
         val itemId: Long,
         val name: String,
         val orderIndex: Int,
@@ -21,7 +21,7 @@ data class RouletteItemResponse(
 data class RouletteDetailResponse( ////필요한가?
         val rouletteId: Long,
         val title: String,
-        val items: List<String>
+        val items: List<RouletteDetailItemResponse>
 )
 data class RouletteSpinResponse(
         val result: String
@@ -33,7 +33,7 @@ data class UpdateRouletteRequest(
 data class UpdateRouletteResponse(
         val success: Boolean,
         val rouletteId: Long,
-        val items: List<RouletteItemResponse>
+        val items: List<RouletteDetailItemResponse>
 )
 data class RouletteListItemResponse(
         val rouletteId: Long,
