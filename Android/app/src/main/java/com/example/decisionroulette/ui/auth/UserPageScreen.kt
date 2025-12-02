@@ -83,7 +83,7 @@ fun MyPageScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF685C57))
             ) {
                 Text("Logout", fontSize = 18.sp)
             }
@@ -128,17 +128,17 @@ fun MyPagePasswordField(actualPassword: String) {
                     modifier = Modifier.padding(start = 16.dp)
                 )
 
-                Icon(
-                    imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                    contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .size(24.dp)
-                        .clickable {
-                            isPasswordVisible = !isPasswordVisible
-                        },
-                    tint = Color.Gray
-                )
+//                Icon(
+//                    imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+//                    contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
+//                    modifier = Modifier
+//                        .padding(end = 16.dp)
+//                        .size(24.dp)
+//                        .clickable {
+//                            isPasswordVisible = !isPasswordVisible
+//                        },
+//                    tint = Color.Gray
+//                )
             }
         }
     }

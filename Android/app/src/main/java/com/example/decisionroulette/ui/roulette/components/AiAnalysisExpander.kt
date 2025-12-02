@@ -19,28 +19,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.decisionroulette.data.RouletteItem
-import com.example.decisionroulette.ui.theme.Galmuri
 import com.example.decisionroulette.api.roulette.AiAnalysisItem
+import com.example.decisionroulette.ui.theme.Galmuri
+
+//private val CustomBrown = Color(0xFF685C57)
 
 @Composable
 fun AiAnalysisExpander(
     analysisResult: List<AiAnalysisItem>,
-    isLoading: Boolean = false // 로딩 상태가 필요하면 사용
+    isLoading: Boolean = false
 ) {
-    // 접힘/펼침 상태 관리
     var isExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            // .heightIn(max = 500.dp) // 필요 시 높이 제한
-            .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(16.dp))
-            .border(1.dp, Color.LightGray, shape = RoundedCornerShape(16.dp))
+            .background(Color.White, shape = RoundedCornerShape(16.dp))
+            .border(1.dp, Color(0xFFE0E0E0), shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
-            .clickable { isExpanded = !isExpanded } // 박스 클릭 시 토글
+            .clickable { isExpanded = !isExpanded }
     ) {
-        // [헤더] 제목 + 화살표
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -51,19 +49,18 @@ fun AiAnalysisExpander(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = Galmuri,
-                color = Color.Black
+                color = CustomBrown // 🔥 갈색 적용
             )
             Icon(
                 imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = "Toggle",
-                tint = Color.Gray
+                tint = CustomBrown // 🔥 아이콘도 갈색
             )
         }
 
         AnimatedVisibility(visible = isExpanded) {
             Column(modifier = Modifier.padding(top = 16.dp)) {
                 if (analysisResult.isEmpty()) {
-                    // 데이터가 아직 없을 때
                     Text(
                         text = "Analyzing roulette items...",
                         fontSize = 14.sp,
@@ -72,14 +69,13 @@ fun AiAnalysisExpander(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 } else {
-                    // 데이터가 있을 때 리스트 표시
                     analysisResult.forEachIndexed { index, item ->
                         AnalysisItemRow(item)
                         if (index < analysisResult.lastIndex) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 12.dp),
                                 thickness = 0.5.dp,
-                                color = Color.LightGray
+                                color = Color(0xFFEEEEEE)
                             )
                         }
                     }
@@ -92,31 +88,26 @@ fun AiAnalysisExpander(
 @Composable
 fun AnalysisItemRow(item: AiAnalysisItem) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        // 항목 이름
         Text(
             text = "[ ${item.item} ]",
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black,
+            color = CustomBrown, // 항목 이름도 갈색 계열
             fontFamily = Galmuri
         )
         Spacer(modifier = Modifier.height(4.dp))
-
-        // 장점 (Pros)
         Text(
             text = "👍 ${item.pros}",
             fontSize = 13.sp,
-            color = Color(0xFF2E7D32), // 짙은 녹색
+            color = Color(0xFF558B2F), // 차분한 녹색
             fontFamily = Galmuri,
             lineHeight = 18.sp
         )
         Spacer(modifier = Modifier.height(3.dp))
-
-        // 단점 (Cons)
         Text(
             text = "👎 ${item.cons}",
             fontSize = 13.sp,
-            color = Color(0xFFC62828), // 짙은 빨강
+            color = Color(0xFFC62828), // 차분한 빨강
             fontFamily = Galmuri,
             lineHeight = 18.sp
         )

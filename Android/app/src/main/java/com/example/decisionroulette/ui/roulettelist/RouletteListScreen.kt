@@ -1,7 +1,9 @@
 package com.example.decisionroulette.ui.roulettelist
 
+import TopicButton
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -11,29 +13,31 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect // ⬅️ 추가
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.decisionroulette.ui.reusable.TopicField
-import TopicButton
 import com.example.decisionroulette.ui.reusable.BackButton
-import kotlinx.coroutines.flow.collectLatest
+import com.example.decisionroulette.ui.reusable.TopicField
 import com.example.decisionroulette.ui.reusable.VerticalScrollbarThumb
 import com.example.decisionroulette.ui.theme.Galmuri
+import kotlinx.coroutines.flow.collectLatest
 
+// 🎨 디자인 컬러 (갈색)
+private val CustomBrown = Color(0xFF685C57)
 
 @Composable
 fun TopicCreateScreen(
     onNavigateToCreateOption: (String) -> Unit,
     onNavigateToRoulette: (Int) -> Unit,
-    onNavigateToBack:()->Unit,
+    onNavigateToBack: () -> Unit,
     viewModel: TopicCreateViewModel = viewModel()
 ) {
     val state = viewModel.uiState
@@ -54,137 +58,139 @@ fun TopicCreateScreen(
         }
     }
 
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-//            .padding(horizontal = 16.dp)
-            .padding(horizontal = 40.dp) // 다른 뷰에서도 다 양옆 패딩 40으로 맞춰주기!!!!!!!!!
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-//        Spacer(modifier = Modifier.height(40.dp))
-        BackButton(title = "My Roulette List", onClick = viewModel::onBackButtonClicked)
-//        Spacer(modifier = Modifier.height(40.dp))
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(text = "What's your concern today?", fontSize = 20.sp)
-        Text(
-            text = "Choose a topic",
-            color = Color.Gray,
-            modifier = Modifier.padding(bottom = 36.dp),
-            fontSize = 15.sp
-        )
-
-
-        val listScrollState = rememberScrollState() // 스크롤 상태 정의
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 300.dp)  // 보이는 최대 스크롤바 박스 높이
-                .padding(bottom = 32.dp)
-                .padding(horizontal = 10.dp)
+    if (state.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = CustomBrown)
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            // 1. Scrollable Column (주제 버튼 목록)
-            if (state.isLoading) {
+            // 1. 헤더 (고정)
+            Box(modifier = Modifier.padding(horizontal = 40.dp)) {
+                BackButton(title = "My Roulette List", onClick = viewModel::onBackButtonClicked)
+            }
+
+            // 2. 스크롤 가능한 내용
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 40.dp) // 전체 패딩 40dp 통일
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.weight(1f)) // 위쪽 여백 (적절히 조절됨)
+
+                // 메인 텍스트
+                Text(
+                    text = "What's Your Concern Today?",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Galmuri, // 폰트 적용
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Choose a topic",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 36.dp),
+                    fontSize = 15.sp,
+                    fontFamily = Galmuri
+                )
+
+                // 3. 리스트 영역 (Box)
+                val listScrollState = rememberScrollState()
                 Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = Color.Black)
-                }
-            } else {
-                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .verticalScroll(listScrollState),
-//                    .padding(end = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .heightIn(max = 300.dp)
+                        .padding(horizontal = 10.dp)
                 ) {
-                    // 1. 기존 주제 버튼 (rouletteId를 사용)
-                    state.existingTopics.forEach { topic ->
-                        val isSelected = state.selectedTopicId == topic.rouletteId
-                        TopicButton(
-                            title = topic.title,
-                            isSelected = isSelected,
-                            onClick = { viewModel.toggleTopicSelection(topic.rouletteId) },
-                            isMenuExpanded = openMenuId == topic.rouletteId,
-                            onMenuClick = { viewModel.onMoreOptionsSelected(topic.rouletteId) },
-                            onDismissMenu = viewModel::dismissMenu,
-                            onDelete = {
-                                viewModel.deleteTopic(
-                                    topic.rouletteId,
-                                    isExisting = true
-                                )
-                            }
-                        )
-                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(listScrollState),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // 기존 주제 버튼
+                        state.existingTopics.forEach { topic ->
+                            val isSelected = state.selectedTopicId == topic.rouletteId
+                            TopicButton(
+                                title = topic.title,
+                                isSelected = isSelected,
+                                onClick = { viewModel.toggleTopicSelection(topic.rouletteId) },
+                                isMenuExpanded = openMenuId == topic.rouletteId,
+                                onMenuClick = { viewModel.onMoreOptionsSelected(topic.rouletteId) },
+                                onDismissMenu = viewModel::dismissMenu,
+                                onDelete = { viewModel.deleteTopic(topic.rouletteId, isExisting = true) }
+                            )
+                        }
 
-                    // 2. 사용자가 새로 생성한 주제 버튼 (tempId를 사용)
-                    state.userCreatedTopics.forEach { userTopic -> // userCreatedOptions 대신 userCreatedTopics 사용
-                        val isSelected = state.selectedTopicId == userTopic.tempId
-                        TopicButton(
-                            title = userTopic.title,
-                            isSelected = isSelected,
-                            onClick = { viewModel.toggleTopicSelection(userTopic.tempId) },
-                            isMenuExpanded = openMenuId == userTopic.tempId,
-                            onMenuClick = { viewModel.onMoreOptionsSelected(userTopic.tempId) },
-                            onDismissMenu = viewModel::dismissMenu,
-                            onDelete = {
-                                viewModel.deleteTopic(
-                                    userTopic.tempId,
-                                    isExisting = false
-                                )
+                        // 사용자 생성 주제 버튼
+                        state.userCreatedTopics.forEach { userTopic ->
+                            val isSelected = state.selectedTopicId == userTopic.tempId
+                            TopicButton(
+                                title = userTopic.title,
+                                isSelected = isSelected,
+                                onClick = { viewModel.toggleTopicSelection(userTopic.tempId) },
+                                isMenuExpanded = openMenuId == userTopic.tempId,
+                                onMenuClick = { viewModel.onMoreOptionsSelected(userTopic.tempId) },
+                                onDismissMenu = viewModel::dismissMenu,
+                                onDelete = { viewModel.deleteTopic(userTopic.tempId, isExisting = false) }
+                            )
+                        }
+                    }
+                    // 스크롤바
+                    VerticalScrollbarThumb(
+                        listScrollState = listScrollState,
+                        modifier = Modifier.align(Alignment.CenterEnd)
+                    )
+                }
+
+                // 4. 입력 필드
+                Box(modifier = Modifier.padding(10.dp)) {
+                    TopicField(
+                        value = currentInputValue,
+                        onValueChange = viewModel::updateCurrentInput,
+                        label = "Enter A New Topic.",
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                viewModel.addTopicFromInput()
+                                focusManager.clearFocus()
                             }
                         )
-                    }
+                    )
                 }
-                // 2. Scroll Bar Thumb
-                VerticalScrollbarThumb(
-                    listScrollState = listScrollState,
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                )
+
+                Spacer(modifier = Modifier.height(36.dp))
+
+                // 5. Choice 버튼 (갈색 적용)
+                Button(
+                    onClick = viewModel::onChoiceButtonClicked,
+                    enabled = state.selectedTopicId != null,
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(45.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CustomBrown,
+                        disabledContainerColor = Color.Gray
+                    ),
+                    shape = RoundedCornerShape(12.dp) // 둥근 모서리
+                ) {
+                    Text(
+                        "Choice",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontFamily = Galmuri
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // 하단 여백 확보
+                Spacer(modifier = Modifier.height(50.dp))
             }
         }
-
-        // ---------------------------------------------------------
-        Box(modifier = Modifier.padding(horizontal = 10.dp)) {
-            // 새 주제 입력 필드
-            TopicField(
-                value = currentInputValue,
-                onValueChange = viewModel::updateCurrentInput,
-                label = "Enter a new topic.",
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        viewModel.addTopicFromInput()
-                        focusManager.clearFocus()
-                    }
-                )
-            )
-        }
-
-        Spacer(modifier = Modifier.height(48.dp))
-
-        // choice 버튼
-        Button(
-            onClick = viewModel::onChoiceButtonClicked,
-            enabled = state.selectedTopicId != null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .width(250.dp)
-                .height(60.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF685C57)
-            )
-        )
-        {
-            Text("choice", color = Color.White, style = MaterialTheme.typography.titleMedium, fontFamily = Galmuri)
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
     }
 }

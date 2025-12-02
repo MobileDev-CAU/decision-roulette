@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.decisionroulette.ui.theme.Galmuri
 
+//private val CustomBrown = Color(0xFF685C57)
+
 @Composable
 fun ModeToggleSwitch(
     isVoteMode: Boolean,
@@ -24,7 +26,7 @@ fun ModeToggleSwitch(
 ) {
     Row(
         modifier = Modifier
-            .background(Color(0xFFEEEEEE), RoundedCornerShape(50))
+            .background(Color(0xFFEFEBE9), RoundedCornerShape(50)) // 연한 갈색 배경
             .padding(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -47,8 +49,9 @@ private fun ToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit)
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color.White else Color.Transparent,
-            contentColor = if (isSelected) Color.Black else Color.Gray
+            // 선택됨: 갈색 / 선택안됨: 투명
+            containerColor = if (isSelected) CustomBrown else Color.Transparent,
+            contentColor = if (isSelected) Color.White else Color.Gray
         ),
         elevation = if (isSelected) ButtonDefaults.buttonElevation(defaultElevation = 2.dp) else null,
         shape = RoundedCornerShape(50),

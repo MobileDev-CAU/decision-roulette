@@ -30,7 +30,8 @@ fun RouletteHeader(
             Icon(
                 imageVector = Icons.Default.Edit,
                 contentDescription = "Edit",
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(28.dp),
+                tint = CustomBrown
             )
         }
     }

@@ -45,14 +45,14 @@ fun OptionInputField(
             )
         )
 
-        // 🚨 삭제 버튼 (옵션이 최소 2개 이상일 때만 표시하는 로직은 ViewModel에서 관리)
+        // 삭제 버튼 (옵션이 최소 2개 이상일 때만 표시하는 로직은 ViewModel에서 관리)
         if (onRemove != null) {
             IconButton(onClick = onRemove) {
                 Icon(Icons.Default.Close, contentDescription = "Remove option")
             }
         } else {
             // 삭제 버튼이 없을 때 공간을 맞추기 위해
-            Spacer(modifier = Modifier.width(48.dp))
+//            Spacer(modifier = Modifier.width(48.dp))
         }
     }
 }

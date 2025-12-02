@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
-    // 💡 Hilt/Koin 등을 사용하지 않는 간단한 예시에서는 기본값으로 viewModel()을 사용합니다.
     viewModel: AuthViewModel = viewModel()
 ) {
     val state = viewModel.uiState
