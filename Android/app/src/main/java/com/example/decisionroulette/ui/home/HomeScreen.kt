@@ -20,8 +20,9 @@ import com.example.decisionroulette.ui.theme.Galmuri
 
 @Composable
 fun HomeScreen (
-    onNavigateToTopicList: () -> Unit,
+    onNavigateToTopicCreate: () -> Unit,
     modifier: Modifier = Modifier) {
+
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -55,7 +56,7 @@ fun HomeScreen (
                 .width(250.dp)
                 .padding(top = 40.dp),
 
-            onClick = onNavigateToTopicList,
+            onClick = onNavigateToTopicCreate,
             text = "START"
         )
     }

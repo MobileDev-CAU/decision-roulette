@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.decisionroulette.ui.reusable.BackButton
 import kotlin.math.cos
 import kotlin.math.sin
 import com.example.decisionroulette.ui.roulette.components.RouletteResultDialog
@@ -38,14 +40,16 @@ import com.example.decisionroulette.ui.theme.Galmuri
 
 // 룰렛 색상 팔레트
 val RouletteColors = listOf(
-    Color(0xFFE57373), Color(0xFF81C784), Color(0xFF64B5F6),
-    Color(0xFFFFD54F), Color(0xFFBA68C8), Color(0xFF4DB6AC)
+//    Color(0xFF66BCB6),
+    Color(0xFFF97199),
+    Color.White
 )
 
 @Composable
 fun RouletteScreen(
     viewModel: RouletteViewModel = viewModel(),
-    onNavigateToVoteList: () -> Unit
+    onNavigateToVoteList: () -> Unit,
+    onNavigateToBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val rotation = remember { Animatable(0f) }
@@ -67,11 +71,17 @@ fun RouletteScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(horizontal = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 1. 헤더 컴포넌트 호출
-        RouletteHeader(title = uiState.title)
+        RouletteHeader(
+            title = uiState.title,
+            onBackClick = onNavigateToBack, // 뒤로 가기 연결
+            onEditClick = {
+                // TODO: 수정 화면으로 이동하거나 다이얼로그 띄우기
+            }
+        )
 
         ModeToggleSwitch(
             isVoteMode = uiState.isVoteMode,
@@ -124,23 +134,31 @@ fun RouletteScreen(
 }
 
 @Composable
-fun RouletteHeader(title: String) {
+fun RouletteHeader(
+    title: String,
+    onBackClick: () -> Unit,
+    onEditClick: () -> Unit
+) {
     Box(
-        modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = title,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Center)
-        )
-        Icon(
-            imageVector = Icons.Default.Edit,
-            contentDescription = "Edit",
-            modifier = Modifier.align(Alignment.CenterEnd)
-        )
+        BackButton(title = title, onClick = onBackClick)
+        IconButton(
+            onClick = onEditClick,
+            modifier = Modifier
+//                .size(60.dp) // BackButton의 높이와 맞춤
+                .align(Alignment.TopEnd) // 오른쪽 상단 정렬
+                .padding(top = 45.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Edit",
+                modifier = Modifier.size(28.dp)
+            )
+        }
     }
 }
+
 
 @Composable
 fun ModeToggleSwitch(

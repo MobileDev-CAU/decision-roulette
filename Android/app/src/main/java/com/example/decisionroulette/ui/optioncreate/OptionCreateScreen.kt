@@ -45,6 +45,11 @@ fun OptionCreateScreen(
     }
 
 
+    if (state.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color.Black)
+        }
+    } else {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,7 +79,6 @@ fun OptionCreateScreen(
 
 
             // ---------------------------------------------------------
-
 
 
             Box(
@@ -107,7 +111,9 @@ fun OptionCreateScreen(
 
                 VerticalScrollbarThumb(
                     listScrollState = listScrollState,
-                    modifier = Modifier.align(Alignment.CenterEnd).padding(vertical = 4.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(vertical = 4.dp)
                 )
             }
 
@@ -127,7 +133,10 @@ fun OptionCreateScreen(
                         .weight(1f) // ⬅️ 공간을 1/2로 나눔
                         .height(60.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray.copy(alpha = 0.5f), contentColor = Color.Black)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray.copy(alpha = 0.5f),
+                        contentColor = Color.Black
+                    )
                 ) {
                     Text("+", fontSize = 24.sp)
                 }
@@ -139,7 +148,10 @@ fun OptionCreateScreen(
                         .weight(1f) // ⬅️ 공간을 1/2로 나눔
                         .height(60.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray.copy(alpha = 0.5f), contentColor = Color.Black)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray.copy(alpha = 0.5f),
+                        contentColor = Color.Black
+                    )
                 ) {
                     Text("AI recommend", fontSize = 18.sp)
                 }
@@ -152,10 +164,11 @@ fun OptionCreateScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp),
-                text= "Next"
-                )
+                text = "Next"
+            )
 
             Spacer(modifier = Modifier.weight(1f))
         }
+    }
 
 }

@@ -5,11 +5,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope // ⬅️ 추가
-import kotlinx.coroutines.channels.Channel // ⬅️ 추가
-import kotlinx.coroutines.flow.receiveAsFlow // ⬅️ 추가
-import kotlinx.coroutines.launch // ⬅️ 추가
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
+import com.example.decisionroulette.api.roulette.RouletteRepository
 
 
 // data/Option.kt
@@ -22,7 +23,7 @@ sealed interface OptionCreateUiEvent {
 }
 
 class OptionCreateViewModel : ViewModel() {
-
+    private val repository = RouletteRepository()
     private val _events = Channel<OptionCreateUiEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
@@ -35,11 +36,14 @@ class OptionCreateViewModel : ViewModel() {
         private set
 
     init {
-        repeat(3) {
+        repeat(2) {
             addOption()
         }
     }
 
+    fun updateTitle(title: String) {
+        uiState = uiState.copy(topicTitle = title)
+    }
 
     // 옵션 추가
     fun addOption() {
@@ -61,18 +65,31 @@ class OptionCreateViewModel : ViewModel() {
         _options.removeIf { it.id == id }
     }
 
-
-
-    //  최종 '저장' 버튼 클릭 시 모든 옵션 값을 반환하고 룰렛 화면으로 이동 이벤트를 발행
-
     fun onSaveButtonClicked() {
         val validOptions = _options.filter { it.value.isNotBlank() }
-        println("Saving options: $validOptions")
+        val itemsList = validOptions.map { it.value }
+        val title = uiState.topicTitle
 
-        // TODO: 서버 저장 로직 추가
+        if (itemsList.isEmpty()) return // 빈 값이면 요청 안 함
 
         viewModelScope.launch {
-            _events.send(OptionCreateUiEvent.NavigateToRoulette)
+            // 로딩 시작
+            uiState = uiState.copy(isLoading = true)
+
+            // API 호출 (ownerId는 10으로 가정)
+            val result = repository.createRoulette(title, itemsList, ownerId = 10)
+
+            result.onSuccess { response ->
+                println("룰렛 생성 성공! ID: ${response.rouletteId}")
+                // 성공 시 룰렛 화면으로 이동 (필요하다면 response.rouletteId를 넘겨줄 수 있음)
+                _events.send(OptionCreateUiEvent.NavigateToRoulette)
+            }.onFailure { e ->
+                println("룰렛 생성 실패: ${e.message}")
+                // 실패 처리 (토스트 메시지 등)
+            }
+
+            // 로딩 종료
+            uiState = uiState.copy(isLoading = false)
         }
     }
 
