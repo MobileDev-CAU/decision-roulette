@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.decisionroulette.ui.auth.AuthViewModel
 import com.example.decisionroulette.Routes // Routes 객체 Import 필수
+import com.example.decisionroulette.ui.theme.Galmuri
 
 @Composable
 fun MyPageScreen(
@@ -85,15 +86,11 @@ fun MyPageScreen(
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF685C57))
             ) {
-                Text("Logout", fontSize = 18.sp)
+                Text("Logout", fontSize = 18.sp, fontFamily = Galmuri)
             }
         }
     }
 }
-
-// -------------------------------------------------------------------------
-// 보조 Composable: MyPagePasswordField와 MyPageInfoField는 이전 코드를 유지
-// -------------------------------------------------------------------------
 
 @Composable
 fun MyPagePasswordField(actualPassword: String) {

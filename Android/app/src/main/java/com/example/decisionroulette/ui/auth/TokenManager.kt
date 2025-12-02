@@ -10,10 +10,6 @@ object TokenManager {
     private const val KEY_USER_EMAIL = "user_email"
     private const val KEY_NICKNAME = "nickname"
     private const val KEY_USER_ID = "user_id"
-
-
-
-
     private lateinit var prefs: SharedPreferences
 
     fun initialize(context: Context) {
@@ -72,6 +68,4 @@ object TokenManager {
     fun getUserNickname(): String? {
         return prefs.getString(KEY_NICKNAME, null)
     }
-
-
 }
