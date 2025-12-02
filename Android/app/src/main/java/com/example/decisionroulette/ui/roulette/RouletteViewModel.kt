@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toMutableList
 import com.example.decisionroulette.api.roulette.RouletteRepository
+import com.example.decisionroulette.ui.auth.TokenManager
 import kotlinx.coroutines.launch
 
 class RouletteViewModel: ViewModel() {
@@ -147,9 +148,36 @@ class RouletteViewModel: ViewModel() {
                         top3Keywords = emptyList()
                     )
                 }
+                analyzeRoulette(response.title, uiItems.map { it.name })
             }.onFailure { e ->
                 println("룰렛 상세 조회 실패: ${e.message}")
                 _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    // AI 분석 리포트 요청
+    private fun analyzeRoulette(title: String, items: List<String>) {
+        println("AI 분석 요청 시작: 제목=$title, 항목수=${items.size}")
+
+        if (items.isEmpty()) {
+            println("AI 분석 취소: 항목이 없습니다.")
+            return
+        }
+
+//        val title = _uiState.value.title
+//        val items = _uiState.value.items.map { it.name }
+
+        viewModelScope.launch {
+            val result = repository.analyzeRoulette(title, items)
+
+            result.onSuccess { response ->
+                println("AI 분석 성공! 결과 개수: ${response.analysis.size}")
+                _uiState.update {
+                    it.copy(analysisResult = response.analysis)
+                }
+            }.onFailure { e ->
+                println("AI 분석 실패: ${e.message}")
             }
         }
     }
@@ -184,10 +212,11 @@ class RouletteViewModel: ViewModel() {
     private fun sendFeedback(satisfied: Boolean) {
         val currentId = _uiState.value.rouletteId
         val spinResult = _uiState.value.spinResult ?: return
+        val userId = TokenManager.getUserId()
 
         viewModelScope.launch {
             // userId 10 하드코딩 (나중에 로그인 정보로 교체)
-            repository.saveFeedback(currentId, spinResult, satisfied, userId = 10)
+            repository.saveFeedback(currentId, spinResult, satisfied, userId = userId)
                 .onSuccess { println("피드백 전송 성공: satisfied=$satisfied") }
                 .onFailure { println("피드백 전송 실패: ${it.message}") }
         }
@@ -198,6 +227,7 @@ class RouletteViewModel: ViewModel() {
         closeDialog()
         val currentId = _uiState.value.rouletteId
         val spinResult = _uiState.value.spinResult ?: return
+        val userId = TokenManager.getUserId()
 
         println("최종 선택 저장: ID=$currentId, 결과=$spinResult, 선택=$finalChoice")
 
@@ -206,8 +236,7 @@ class RouletteViewModel: ViewModel() {
 
         // 최종 선택 저장 API 호출
         viewModelScope.launch {
-            // userId는 로그인된 정보를 가져와야 함 (여기선 10 하드코딩)
-            repository.saveFinalChoice(currentId, spinResult, finalChoice, userId = 10)
+            repository.saveFinalChoice(currentId, spinResult, finalChoice, userId = userId)
                 .onSuccess {
                     println("저장 성공")
                 }

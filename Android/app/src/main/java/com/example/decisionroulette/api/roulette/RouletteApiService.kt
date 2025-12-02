@@ -49,4 +49,17 @@ interface RouletteApiService {
         @Query("userId") userId: Int,
         @Body request: RouletteFeedbackRequest
     ): RouletteFeedbackResponse
+
+    // AI 항목 추천
+    @POST("roulette/ai/recommend")
+    suspend fun getAiRecommendation(
+        @Query("userId") userId: Int,
+        @Body request: AiRecommendRequest
+    ): AiRecommendResponse
+
+    // AI 분석 리포트
+    @POST("roulette/ai/analyze")
+    suspend fun analyzeRoulette(
+        @Body request: AiAnalyzeRequest
+    ): AiAnalyzeResponse
 }

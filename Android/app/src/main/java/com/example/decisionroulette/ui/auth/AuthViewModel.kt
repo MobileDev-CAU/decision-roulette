@@ -12,15 +12,13 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-// AuthUiEvent 정의 (일회성 이벤트)
+// AuthUiEvent 정의
 sealed interface AuthUiEvent {
     object NavigateToUserPage : AuthUiEvent
     object NavigateToSignUp : AuthUiEvent
     object NavigateToLogin : AuthUiEvent
     data class ShowError(val message: String) : AuthUiEvent
 }
-
-// 🚨 상태 추적 필드가 포함된 AuthUiState가 정의되어 있다고 가정합니다.
 
 class AuthViewModel() : ViewModel() {
 
@@ -75,7 +73,7 @@ class AuthViewModel() : ViewModel() {
         }
 
         val userEmailUsedForLogin = uiState.emailInput
-        val passwordEntered = uiState.passwordInput // ⬅️ 비밀번호 값 보존
+        val passwordEntered = uiState.passwordInput
 
         uiState = uiState.copy(isLoginLoading = true, loginError = null)
 
@@ -91,14 +89,14 @@ class AuthViewModel() : ViewModel() {
                     accessToken = response.accessToken,
                     refreshToken = response.refreshToken,
                     nickname = response.nickname,
-
+                    userId = response.id
                     )
 
                 // UI State 업데이트 (로그인 상태를 true로 설정)
                 uiState = uiState.copy(
                     emailInput = userEmailUsedForLogin,
                     nicknameInput = response.nickname,
-                    passwordInput = passwordEntered, // ⬅️⬅️⬅️ 이 코드가 누락되었었습니다.
+                    passwordInput = passwordEntered,
                     isLoggedIn = true
                 )
 
@@ -126,7 +124,7 @@ class AuthViewModel() : ViewModel() {
             return
         }
 
-        val passwordEntered = uiState.passwordInput // ⬅️ 비밀번호 값 보존
+        val passwordEntered = uiState.passwordInput // 비밀번호 값 보존
 
         uiState = uiState.copy(isLoginLoading = true, loginError = null)
         viewModelScope.launch {
@@ -137,7 +135,7 @@ class AuthViewModel() : ViewModel() {
             )
 
             authRepository.signUp(request).onSuccess { response ->
-                // 🚨 회원가입 성공 시: 사용자 정보만 로컬 저장소에 저장
+                // 회원가입 성공 시: 사용자 정보만 로컬 저장소에 저장
                 TokenManager.saveUser(
                     email = response.userId,
                     nickname = response.nickname
@@ -147,7 +145,7 @@ class AuthViewModel() : ViewModel() {
                 uiState = uiState.copy(
                     emailInput = response.userId,
                     nicknameInput = response.nickname,
-                    passwordInput = passwordEntered // ⬅️ 비밀번호 보존
+                    passwordInput = passwordEntered // 비밀번호 보존
                 )
 
                 _events.send(AuthUiEvent.NavigateToLogin)

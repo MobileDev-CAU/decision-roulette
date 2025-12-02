@@ -51,10 +51,9 @@ fun HomeScreen (
 
 
         BlackBorder(
-
             modifier = Modifier
-                .width(250.dp)
-                .padding(top = 40.dp),
+                .width(250.dp),
+//                .padding(top = 30.dp),
 
             onClick = onNavigateToTopicCreate,
             text = "START"

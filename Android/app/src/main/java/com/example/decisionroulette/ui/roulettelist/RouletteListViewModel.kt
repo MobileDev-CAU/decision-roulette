@@ -11,15 +11,16 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import com.example.decisionroulette.api.roulette.RouletteRepository
+import com.example.decisionroulette.ui.auth.TokenManager
 
 
 sealed interface TopicCreateUiEvent {
     data class NavigateToCreateOption(val topicTitle: String) : TopicCreateUiEvent
     data class NavigateToRoulette(val rouletteId: Int) : TopicCreateUiEvent
-    object NavigateToBack : TopicCreateUiEvent         // 이전 화면으로 이동
+    object NavigateToBack : TopicCreateUiEvent
 }
 
-// 초기 더미 데이터 (실제로는 Repository를 통해 서버에서 로드됩니다)
+// 초기 더미 데이터
 private val initialExistingTopics = listOf(
     RouletteList(rouletteId = 10, title = "점심 메뉴", itemCount = 3),
     RouletteList(rouletteId = 20, title = "오늘 할 일", itemCount = 5),
@@ -52,12 +53,16 @@ class TopicCreateViewModel : ViewModel() {
     }
 
     private fun loadExistingTopics() {
+        val userId = TokenManager.getUserId()
+        if (userId == -1) {
+            println("로그인 정보가 없습니다.")
+            return
+        }
         viewModelScope.launch {
             // 로딩 시작
             uiState = uiState.copy(isLoading = true)
 
-            // TODO ownerId 하드코딩 삭제 필요
-            val result = repository.getRouletteList(ownerId = 10)
+            val result = repository.getRouletteList(ownerId = userId)
 
             result.onSuccess { dtoList ->
                 // DTO(RouletteDto) -> UI 모델(RouletteList) 변환
