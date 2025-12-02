@@ -94,4 +94,33 @@ class RouletteRepository(
             Result.failure(e)
         }
     }
+
+    // AI 추천 받기
+    suspend fun getAiRecommendation(title: String, userId: Int): Result<AiRecommendResponse> {
+        return try {
+            val request = AiRecommendRequest(
+                title = title,
+                history = listOf(""),
+                popular = listOf("")
+            )
+            val response = api.getAiRecommendation(userId = userId, request = request)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // AI 분석 받기
+    suspend fun analyzeRoulette(title: String, items: List<String>): Result<AiAnalyzeResponse> {
+        return try {
+            val request = AiAnalyzeRequest(
+                title = title,
+                items = items
+            )
+            val response = api.analyzeRoulette(request)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

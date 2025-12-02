@@ -11,8 +11,6 @@ import com.example.decisionroulette.ui.auth.TokenManager
 
 object RetrofitClient {
     private const val BASE_URL = "http://15.165.9.218:8081/"
-
-    // 🚨🚨🚨 Access Token 첨부 로직 추가된 Interceptor 🚨🚨🚨
     private val headerInterceptor = Interceptor { chain ->
         val originalRequest = chain.request()
 

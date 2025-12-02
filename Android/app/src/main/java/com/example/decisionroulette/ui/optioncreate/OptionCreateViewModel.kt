@@ -46,7 +46,7 @@ class OptionCreateViewModel : ViewModel() {
     }
 
     // 옵션 추가
-    fun addOption() {
+    fun addOption(initialValue: String = "") {
         val newId = nextId.getAndIncrement()
         val newOption = Option(id = newId, value = "")
         _options.add(newOption)
@@ -63,6 +63,49 @@ class OptionCreateViewModel : ViewModel() {
     // 옵션 제거
     fun removeOption(id: Int) {
         _options.removeIf { it.id == id }
+    }
+
+    // 1. AI 추천 버튼 클릭 (API 호출 -> 다이얼로그 오픈)
+    fun onAiButtonClicked() {
+        val title = uiState.topicTitle
+
+        viewModelScope.launch {
+            uiState = uiState.copy(isLoading = true)
+
+            // API 호출 (userId 10 하드코딩)
+            val result = repository.getAiRecommendation(title, userId = 10)
+
+            result.onSuccess { response ->
+                // 성공 시 다이얼로그 열기 & 추천 목록 업데이트
+                uiState = uiState.copy(
+                    isLoading = false,
+                    showAiDialog = true,
+                    aiRecommendations = response.recommendations
+                )
+            }.onFailure {
+                // 실패 시 에러 처리 (일단 로딩만 끔)
+                println("AI 추천 실패: ${it.message}")
+                uiState = uiState.copy(isLoading = false)
+            }
+        }
+    }
+
+    // 2. 다이얼로그 닫기
+    fun dismissAiDialog() {
+        uiState = uiState.copy(showAiDialog = false)
+    }
+
+    // 3. 다이얼로그 완료 (선택된 항목들 추가)
+    fun addAiSelectedOptions(selectedItems: List<String>) {
+        // 선택된 항목들을 각각 새로운 옵션칸으로 추가
+        selectedItems.forEach { item ->
+            addOption(initialValue = item)
+        }
+
+        // 빈 칸(공백)인 옵션이 있다면 제거해서 정리할 수도 있음 (선택사항)
+        // _options.removeIf { it.value.isBlank() }
+
+        dismissAiDialog()
     }
 
     fun onSaveButtonClicked() {
@@ -100,9 +143,9 @@ class OptionCreateViewModel : ViewModel() {
     }
 
     // ai 추천
-    fun onAiButtonClicked() {
-        viewModelScope.launch {
-            _events.send(OptionCreateUiEvent.NavigateAi)
-        }
-    }
+//    fun onAiButtonClicked() {
+//        viewModelScope.launch {
+//            _events.send(OptionCreateUiEvent.NavigateAi)
+//        }
+//    }
 }

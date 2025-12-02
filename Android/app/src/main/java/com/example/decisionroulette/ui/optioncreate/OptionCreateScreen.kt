@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.sp
+import com.example.decisionroulette.ui.optioncreate.components.AiRecommendationDialog
 
 
 @Composable
@@ -37,7 +38,7 @@ fun OptionCreateScreen(
     LaunchedEffect(Unit) {
         viewModel.events.collectLatest { event ->
             when (event) {
-                OptionCreateUiEvent.NavigateAi -> onNavigateToAi()
+                OptionCreateUiEvent.NavigateAi -> { }
                 is OptionCreateUiEvent.NavigateToRoulette -> {
                     onNavigateToRoulette(event.rouletteId)
                 }
@@ -46,6 +47,15 @@ fun OptionCreateScreen(
         }
     }
 
+    if (state.showAiDialog) {
+        AiRecommendationDialog(
+            recommendations = state.aiRecommendations,
+            onDismiss = { viewModel.dismissAiDialog() },
+            onConfirm = { selectedItems ->
+                viewModel.addAiSelectedOptions(selectedItems)
+            }
+        )
+    }
 
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -127,7 +137,7 @@ fun OptionCreateScreen(
             ) {
                 // 1-1. '+' 버튼
                 Button(
-                    onClick = viewModel::addOption,
+                    onClick = { viewModel.addOption() },
                     modifier = Modifier
                         .weight(1f)
                         .height(60.dp),

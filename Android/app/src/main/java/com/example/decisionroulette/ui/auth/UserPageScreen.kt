@@ -48,6 +48,7 @@ fun MyPageScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(horizontal = 40.dp)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center

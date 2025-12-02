@@ -9,35 +9,39 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.decisionroulette.data.RouletteItem
 import com.example.decisionroulette.ui.reusable.BackButton
-import kotlin.math.cos
-import kotlin.math.sin
 import com.example.decisionroulette.ui.roulette.components.RouletteResultDialog
 import com.example.decisionroulette.ui.theme.Galmuri
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+import com.example.decisionroulette.ui.roulette.components.*
 
 // 룰렛 색상 팔레트
 val RouletteColors = listOf(
@@ -63,6 +67,7 @@ fun RouletteScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val rotation = remember { Animatable(0f) }
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(rouletteId) {
         viewModel.loadRouletteDetail(rouletteId)
@@ -90,7 +95,8 @@ fun RouletteScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 40.dp),
+                .padding(horizontal = 40.dp)
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // 1. 헤더 컴포넌트 호출
@@ -107,7 +113,8 @@ fun RouletteScreen(
             Spacer(modifier = Modifier.height(30.dp))
 
             // 2. 통계 박스 컴포넌트 호출
-            Top3KeywordsBox(keywords = uiState.top3Keywords)
+//            Top3KeywordsBox(keywords = uiState.top3Keywords)
+            AiAnalysisExpander(items = uiState.items)
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -143,94 +150,5 @@ fun RouletteScreen(
                 viewModel.saveFinalChoice(finalChoice, satisfied)
             }
         )
-    }
-}
-
-@Composable
-fun RouletteHeader(
-    title: String,
-    onBackClick: () -> Unit,
-    onEditClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        BackButton(title = title, onClick = onBackClick)
-        IconButton(
-            onClick = onEditClick,
-            modifier = Modifier
-//                .size(60.dp) // BackButton의 높이와 맞춤
-                .align(Alignment.TopEnd) // 오른쪽 상단 정렬
-                .padding(top = 45.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Edit",
-                modifier = Modifier.size(28.dp)
-            )
-        }
-    }
-}
-
-
-@Composable
-fun ModeToggleSwitch(
-    isVoteMode: Boolean,
-    onToggle: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .background(Color(0xFFEEEEEE), RoundedCornerShape(50))
-            .padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // 기본 모드 버튼
-        ToggleButton(
-            text = "기본 (1/N)",
-            isSelected = !isVoteMode,
-            onClick = { onToggle(false) }
-        )
-
-        // 투표 반영 버튼
-        ToggleButton(
-            text = "투표 반영",
-            isSelected = isVoteMode,
-            onClick = { onToggle(true) }
-        )
-    }
-}
-
-@Composable
-fun ToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color.White else Color.Transparent,
-            contentColor = if (isSelected) Color.Black else Color.Gray
-        ),
-        elevation = if (isSelected) ButtonDefaults.buttonElevation(defaultElevation = 2.dp) else null,
-        shape = RoundedCornerShape(50),
-        modifier = Modifier.height(36.dp)
-    ) {
-        Text(text, fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = Galmuri)
-    }
-}
-
-@Composable
-fun Top3KeywordsBox(keywords: List<String>) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(16.dp))
-            .border(1.dp, Color.LightGray, shape = RoundedCornerShape(16.dp))
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "사용자 이전 선택 TOP3", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(10.dp))
-
-        keywords.forEach { keyword ->
-            Text(text = keyword, fontSize = 16.sp, modifier = Modifier.padding(2.dp))
-        }
     }
 }
