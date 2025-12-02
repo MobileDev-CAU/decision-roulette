@@ -88,7 +88,6 @@ class AuthViewModel() : ViewModel() {
                 TokenManager.saveTokensAndUser(
                     accessToken = response.accessToken,
                     refreshToken = response.refreshToken,
-                    email = userEmailUsedForLogin,
                     nickname = response.nickname,
                     userId = response.id
                     )

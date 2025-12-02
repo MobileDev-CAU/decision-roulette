@@ -2,6 +2,8 @@ package com.example.decisionroulette.api
 
 import com.example.decisionroulette.api.roulette.RouletteApiService
 import com.example.decisionroulette.api.auth.AuthApiService
+import com.example.decisionroulette.api.vote.VoteApiService
+
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -51,8 +53,6 @@ object RetrofitClient {
     }
 
     val authInstance: AuthApiService by lazy {
-        // 인증 관련 API (로그인, 회원가입)에도 토큰이 필요 없으면(일반적) headerInterceptor를 그대로 사용합니다.
-        // 하지만 로그인이 필요한 경우 토큰이 있어도 괜찮습니다.
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)
@@ -60,4 +60,15 @@ object RetrofitClient {
             .build()
             .create(AuthApiService::class.java)
     }
+
+    val voteInstance: VoteApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(VoteApiService::class.java)
+    }
+
+
 }

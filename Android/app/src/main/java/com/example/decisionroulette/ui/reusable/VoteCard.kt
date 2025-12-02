@@ -1,107 +1,83 @@
 package com.example.decisionroulette.ui.reusable
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.decisionroulette.R // 프로젝트의 R 파일 임포트
-import com.example.decisionroulette.ui.votelist.VoteOption
-import com.example.decisionroulette.ui.votelist.VoteItem
-import com.example.decisionroulette.ui.theme.DecisionRouletteTheme // 앱 테마 임포트
+import com.example.decisionroulette.api.vote.VoteListItem // [핵심 수정] 실제 API 모델 임포트
+// import com.example.decisionroulette.ui.votelist.VoteItem // 이전 더미 모델 임포트가 있다면 제거
+// import com.example.decisionroulette.ui.votelist.VoteOption // 이전 더미 모델 임포트가 있다면 제거
 
-
-
+// VoteCard 컴포저블 수정
 @Composable
 fun VoteCard(
-    voteItem: VoteItem,
-    modifier: Modifier = Modifier,
+    // [핵심 수정] VoteItem 대신 VoteListItem 타입을 받도록 변경
+    voteItem: VoteListItem,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-
-    val painter = remember {
-        ColorPainter(Color.Red)
-    }
-    // 테두리와 배경을 가진 카드 형태
-    Column(
+    Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .border(1.dp, Color.LightGray, MaterialTheme.shapes.medium) // 카드 테두리
-            .background(Color.White, MaterialTheme.shapes.medium) // 카드 배경색
-            .padding(16.dp)
-            .clip(MaterialTheme.shapes.medium) // 💡 클릭 시 ripple 효과를 위해 클립 추가
-            .clickable(onClick = onClick)
+            .height(120.dp) // 카드 높이
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        border = BorderStroke(1.dp, Color.LightGray),
+        colors = CardDefaults.cardColors(containerColor = Color.White) // 배경색 설정
     ) {
-        // 사용자 아이콘과 제목
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 8.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween // 내용물 위아래 정렬
         ) {
-            // 사용자 아이콘 (원형으로 클립)
-            Image(
-                painter = painter,
-                contentDescription = "우선 임시로 색 넣어놓기 ----> 수정 : 사용자 id 연결해서 구분",
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape) // 원형으로 자르기
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)) // 아이콘 배경색 (예시)
-                    .padding(4.dp)
-
-            )
-            Spacer(Modifier.width(8.dp))
+            // 투표 제목 표시
             Text(
                 text = voteItem.title,
-                style = MaterialTheme.typography.titleLarge, // 제목 스타일
-                fontSize = 20.sp // 예시 폰트 크기
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black
             )
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        // 투표 내용 (원형 차트와 목록)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // ⭐️ 왼쪽: 원형 차트 (간단한 더미. 실제 구현 시 더 복잡해질 수 있음)
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .background(Color.LightGray.copy(alpha = 0.3f), CircleShape) // 임시 원형 차트 배경
-                    .border(1.dp, Color.Gray, CircleShape)
+            // 투표 항목 수 및 작성자 닉네임 표시 (VoteListItem 모델에 맞게 변경)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // 실제 차트 그리기 로직 (예: Canvas를 사용한 Arc 그리기)
-                // 지금은 단순한 회색 원으로 대체합니다.
-            }
-
-            Spacer(Modifier.width(16.dp))
-
-            // ⭐️ 오른쪽: 투표 옵션 리스트
-            Column {
-                voteItem.options.forEachIndexed { index, option ->
-                    Text(
-                        text = "${index + 1}위 ${option.name} ${option.percentage}%",
-                        style = MaterialTheme.typography.bodyLarge, // 옵션 스타일
-                        fontSize = 16.sp, // 예시 폰트 크기
-                        modifier = Modifier.padding(vertical = 2.dp)
-                    )
-                }
+                Text(
+                    text = "${voteItem.itemCount}개 항목", // itemCount 사용
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "작성자: ${voteItem.userNickname}", // userNickname 사용
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
             }
         }
     }
+}
+
+// Preview를 업데이트하여 새로운 VoteListItem 모델을 사용하도록 변경
+@Preview(showBackground = true)
+@Composable
+fun PreviewVoteCard() {
+    VoteCard(
+        voteItem = VoteListItem(
+            voteId = 1L,
+            title = "주말 데이트 장소",
+            itemCount = 3,
+            userNickname = "수인"
+        ),
+        onClick = {}
+    )
 }
