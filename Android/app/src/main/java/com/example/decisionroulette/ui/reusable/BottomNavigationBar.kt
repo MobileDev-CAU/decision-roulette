@@ -30,20 +30,19 @@ data class BottomNavItem(
 @Composable
 fun BottomNavigationBar(
     navController: NavController,
-    onMyPageClicked: () -> Unit, // ⬅️ 추가된 인수: MyPage 클릭 시 실행될 조건부 네비게이션 함수
+    onMyPageClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 🚨 내비게이션 아이템 목록 정의
     val items = listOf(
         BottomNavItem(
             name = "Home",
-            route = Routes.HOME, // ⬅️ Routes.HOME 사용
+            route = Routes.HOME,
             selectedIcon = Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home
         ),
         BottomNavItem(
             name = "Vote",
-            route = Routes.VOTE_LIST, // ⬅️ Routes.VOTE_LIST 사용
+            route = Routes.VOTE_LIST,
             selectedIcon = Icons.Filled.Poll,
             unselectedIcon = Icons.Outlined.Poll
         ),
@@ -55,13 +54,12 @@ fun BottomNavigationBar(
         )
     )
 
-    // 🚨 현재 라우트 경로를 가져옵니다.
     val backStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry.value?.destination?.route
 
     NavigationBar(
         modifier = modifier,
-        containerColor = Color.White.copy(alpha = 0.0f) // 배경색 설정 (예: 투명)
+        containerColor = Color.White.copy(alpha = 0.0f)
     ) {
         items.forEach { item ->
             val selected = currentRoute == item.route
@@ -69,12 +67,9 @@ fun BottomNavigationBar(
                 selected = selected,
                 onClick = {
                     if (item.route == Routes.USER_PAGE) {
-                        // 🚨🚨 MyPage 버튼 클릭 시: 조건부 분기 함수 호출 🚨🚨
                         onMyPageClicked()
                     } else if (currentRoute != item.route) {
-                        // 나머지 버튼 클릭 시: 일반 네비게이션
                         navController.navigate(item.route) {
-                            // 하단 탭 이동 최적화 로직
                             popUpTo(Routes.HOME) { saveState = true }
                             launchSingleTop = true
                             restoreState = true

@@ -11,10 +11,6 @@ object TokenManager {
     private const val KEY_NICKNAME = "nickname"
     private const val KEY_USER_ID = "user_id"
 
-
-    private const val KEY_USER_ID = "user_id"
-
-
     private lateinit var prefs: SharedPreferences
 
     fun initialize(context: Context) {
@@ -30,7 +26,7 @@ object TokenManager {
     }
 
     // 1. 토큰 및 사용자 정보 저장 (로그인 성공 시)
-    fun saveTokensAndUser(accessToken: String, refreshToken: String, email: String, nickname: String, userId: Int) {
+    fun saveTokensAndUser(accessToken: String, refreshToken: String, nickname: String, userId: Int) {
         prefs.edit().apply {
             putString(KEY_ACCESS_TOKEN, accessToken)
             putString(KEY_REFRESH_TOKEN, refreshToken)
@@ -72,10 +68,6 @@ object TokenManager {
 
     fun getUserNickname(): String? {
         return prefs.getString(KEY_NICKNAME, null)
-    }
-
-    fun getUserId(): Int {
-        return prefs.getInt(KEY_USER_ID, -1)
     }
 
 }
