@@ -13,6 +13,8 @@ import com.example.decisionroulette.api.vote.VoteDetail
 import com.example.decisionroulette.api.vote.VoteRouletteDetailResponse
 import com.example.decisionroulette.api.vote.VoteSelectRequest
 import com.example.decisionroulette.api.vote.VoteSelectResponse
+import com.example.decisionroulette.api.vote.VoteUploadRequest
+import com.example.decisionroulette.api.vote.VoteUploadResponse
 
 // 참고: Kotlin 표준 라이브러리의 Result<T>는 data.common.Result 대신 사용됩니다.
 
@@ -161,6 +163,40 @@ class VoteRepository(
             Result.failure(e)
         }
     }
+
+    suspend fun uploadVote(rouletteId: Int): Result<VoteUploadResponse> = withContext(Dispatchers.IO) {
+        return@withContext try {
+            // 1. 요청 DTO 생성
+            val requestBody = VoteUploadRequest(rouletteId = rouletteId)
+
+            // 2. API 호출
+            val response = api.uploadVote(requestBody)
+
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    Result.success(it)
+                } ?: run {
+                    val errorMsg = "Server returned empty body on successful vote upload."
+                    Log.e(TAG, errorMsg)
+                    Result.failure(IOException(errorMsg))
+                }
+            } else {
+                // HTTP 실패 코드 (4xx, 5xx) 처리
+                val errorMsg = "HTTP Error during vote upload: ${response.code()}"
+                Log.e(TAG, "API call failed: $errorMsg, Body: ${response.errorBody()?.string()}")
+                Result.failure(HttpException(response))
+            }
+        } catch (e: IOException) {
+            // 네트워크 오류
+            Log.e(TAG, "Network Error during uploadVote: ${e.message}")
+            Result.failure(e)
+        } catch (e: Exception) {
+            // 그 외 예외
+            Log.e(TAG, "Unknown Error during uploadVote: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
 
 
 
