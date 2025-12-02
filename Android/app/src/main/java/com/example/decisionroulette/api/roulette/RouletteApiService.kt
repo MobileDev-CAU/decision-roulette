@@ -21,4 +21,32 @@ interface RouletteApiService {
     suspend fun deleteRoulette(
         @Path("id") id: Int
     ): RouletteDeleteResponse
+
+    // 룰렛 상세 조회
+    @GET("roulette/{id}")
+    suspend fun getRouletteDetail(
+        @Path("id") id: Int
+    ): RouletteDetailResponse
+
+    // 룰렛 항목 이름 수정
+    @PUT("roulette/{id}/item/{itemId}")
+    suspend fun updateRouletteItem(
+        @Path("id") rouletteId: Int,
+        @Path("itemId") itemId: Int,
+        @Body request: UpdateItemRequest // {"newItemName": "..."}
+    ): UpdateItemResponse
+
+    // 최종 결과 저장
+    @POST("roulette/result/final-choice")
+    suspend fun saveFinalChoice(
+        @Query("userId") userId: Int,
+        @Body request: FinalChoiceRequest
+    ): FinalChoiceResponse
+
+    // 룰렛 만족도 피드백 전송
+    @POST("roulette/result/feedback")
+    suspend fun saveFeedback(
+        @Query("userId") userId: Int,
+        @Body request: RouletteFeedbackRequest
+    ): RouletteFeedbackResponse
 }

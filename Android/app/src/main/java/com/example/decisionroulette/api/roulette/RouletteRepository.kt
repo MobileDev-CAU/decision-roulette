@@ -3,11 +3,8 @@ package com.example.decisionroulette.api.roulette
 import com.example.decisionroulette.api.RetrofitClient
 import com.example.decisionroulette.api.roulette.RouletteApiService
 import com.example.decisionroulette.api.roulette.RouletteDto
-// RetrofitClient가 있는 패키지를 import 하세요 (예: com.example.decisionroulette.api.RetrofitClient)
 
 class RouletteRepository(
-    // 생성자에서 Service를 주입받게 만들면 나중에 테스트하기 좋습니다.
-    // 기본값으로 RetrofitClient.instance를 넣어주면 호출할 때 편합니다.
     private val api: RouletteApiService = RetrofitClient.instance
 ) {
 
@@ -15,10 +12,8 @@ class RouletteRepository(
     suspend fun getRouletteList(ownerId: Int): Result<List<RouletteDto>> {
         return try {
             val response = api.getRouletteList(ownerId)
-            // 성공하면 Result.success로 감싸서 반환
             Result.success(response)
         } catch (e: Exception) {
-            // 실패하면 Result.failure로 에러 반환 (네트워크 에러 등)
             Result.failure(e)
         }
     }
@@ -32,7 +27,6 @@ class RouletteRepository(
                 items = items,
                 ownerId = ownerId
             )
-            // API 호출
             val response = api.createRoulette(request)
             Result.success(response)
         } catch (e: Exception) {
@@ -44,6 +38,57 @@ class RouletteRepository(
     suspend fun deleteRoulette(rouletteId: Int): Result<RouletteDeleteResponse> {
         return try {
             val response = api.deleteRoulette(rouletteId)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // 상세 조회
+    suspend fun getRouletteDetail(id: Int): Result<RouletteDetailResponse> {
+        return try {
+            val response = api.getRouletteDetail(id)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // 항목 수정
+    suspend fun updateItemName(rouletteId: Int, itemId: Int, newName: String): Result<UpdateItemResponse> {
+        return try {
+            val request = UpdateItemRequest(newItemName = newName)
+            val response = api.updateRouletteItem(rouletteId, itemId, request)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // 최종 선택 저장
+    suspend fun saveFinalChoice(rouletteId: Int, spinResult: String, finalChosenItem: String, userId: Int): Result<FinalChoiceResponse> {
+        return try {
+            val request = FinalChoiceRequest(
+                rouletteId = rouletteId,
+                spinResult = spinResult,
+                finalChosenItem = finalChosenItem
+            )
+            val response = api.saveFinalChoice(userId = userId, request = request)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // 피드백 전송 함수
+    suspend fun saveFeedback(rouletteId: Int, spinResult: String, satisfied: Boolean, userId: Int): Result<RouletteFeedbackResponse> {
+        return try {
+            val request = RouletteFeedbackRequest(
+                rouletteId = rouletteId,
+                spinResult = spinResult,
+                satisfied = satisfied
+            )
+            val response = api.saveFeedback(userId = userId, request = request)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)

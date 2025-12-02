@@ -17,7 +17,7 @@ import com.example.decisionroulette.api.roulette.RouletteRepository
 
 
 sealed interface OptionCreateUiEvent {
-    object NavigateToRoulette: OptionCreateUiEvent
+    data class NavigateToRoulette(val rouletteId: Int) : OptionCreateUiEvent
     object NavigateAi: OptionCreateUiEvent
     object NavigateToBack : OptionCreateUiEvent
 }
@@ -81,8 +81,7 @@ class OptionCreateViewModel : ViewModel() {
 
             result.onSuccess { response ->
                 println("룰렛 생성 성공! ID: ${response.rouletteId}")
-                // 성공 시 룰렛 화면으로 이동 (필요하다면 response.rouletteId를 넘겨줄 수 있음)
-                _events.send(OptionCreateUiEvent.NavigateToRoulette)
+                _events.send(OptionCreateUiEvent.NavigateToRoulette(response.rouletteId))
             }.onFailure { e ->
                 println("룰렛 생성 실패: ${e.message}")
                 // 실패 처리 (토스트 메시지 등)
