@@ -115,7 +115,8 @@ fun OtherVoteScreen(
 
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        // 🚨 수정: 상단 Spacer 제거 (Spacer(modifier = Modifier.weight(1f)))
+        Spacer(modifier = Modifier.height(20.dp)) // 고정된 간격 추가
 
         // ⭐ 로딩 및 에러 상태 표시
         if (uiState.isLoading) {
@@ -149,31 +150,25 @@ fun OtherVoteScreen(
             }
         }
 
-        // 🚨🚨🚨 불필요한 BlackBorder 컴포넌트 제거 🚨🚨🚨
-        // BlackBorder( ... ) 제거
+        // 🚨 수정: 하단 Spacer에만 weight(1f)를 주어 남은 공간을 밀어내 Button을 하단에 붙입니다.
+     //   Spacer(modifier = Modifier.weight(1f))
 
-        // 이게 진자용
+
         Button(
             // 로딩 중이 아닐 때만 버튼 활성화
             enabled = selectedOptionId != null && !uiState.isLoading,
             onClick = {
                 // 4. 투표하기 버튼 클릭 시 ViewModel의 vote 함수를 호출
                 viewModel.vote(selectedOptionId)
-
-                // 5. 투표 완료 후 화면 전환은 ViewModel 이벤트(NavigateToRoulette)를 통해 처리되어야 합니다.
-                // onNavigateToVoteClear() 호출은 ViewModel의 책임을 침범하므로 제거
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp)
-                .padding(top = 20.dp, bottom = 40.dp),
+                // ⭐ 수정: 하단 패딩 40dp 제거 (Scaffold 패딩을 따름)
+                .padding(top = 20.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
         ) {
             Text("투표하기", color = Color.White)
         }
-
-
-        Spacer(modifier = Modifier.weight(1f))
-
     }
 }
