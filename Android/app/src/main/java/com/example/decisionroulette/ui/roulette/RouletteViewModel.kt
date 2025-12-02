@@ -266,6 +266,7 @@ class RouletteViewModel(
         sendFeedback(false) // 룰렛 결과를 따르지 않았으므로 불만족 피드백 전송 (가정)
 
         val rouletteId = _uiState.value.rouletteId
+        val userId = TokenManager.getUserId()
 
         if (rouletteId <= 0) {
             println("투표 업로드 실패: 유효하지 않은 룰렛 ID입니다.")
@@ -274,7 +275,7 @@ class RouletteViewModel(
 
         viewModelScope.launch {
             // VoteRepository를 사용하여 룰렛을 투표로 업로드
-            val result = voteRepository.uploadVote(rouletteId = rouletteId)
+            val result = voteRepository.uploadVote(rouletteId = rouletteId, userId = userId)
 
             result.onSuccess { response ->
                 println("투표 업로드 성공: Vote ID: ${response.voteId}, Message: ${response.message}")

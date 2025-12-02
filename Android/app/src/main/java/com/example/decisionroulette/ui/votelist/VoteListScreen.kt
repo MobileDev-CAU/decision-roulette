@@ -23,8 +23,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.R
 import com.example.decisionroulette.ui.reusable.VoteCard
 import com.example.decisionroulette.ui.votelist.VoteListViewModel
-import com.example.decisionroulette.api.vote.VoteListItem // 모델 경로 통일
-import com.example.decisionroulette.ui.votelist.VoteListUiEvent // VoteListUiEvent 임포트
+import com.example.decisionroulette.api.vote.VoteListItem
+import com.example.decisionroulette.ui.votelist.VoteListUiEvent
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 
 private val MAX_CONTAINER_WIDTH = 400.dp
 
@@ -36,6 +38,10 @@ fun VoteListScreen (
 ) {
     // ViewModel의 UI 상태를 수집
     val uiState by viewModel.uiState.collectAsState()
+
+//    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+//        viewModel.loadVoteItems()
+//    }
 
     // [핵심 추가] ViewModel의 이벤트를 수집하여 라우팅을 실행합니다.
     LaunchedEffect(key1 = Unit) {

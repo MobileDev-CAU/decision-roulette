@@ -1,5 +1,6 @@
 package com.example.decisionroulette.ui.votelist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.decisionroulette.api.auth.AuthRepository
@@ -42,7 +43,7 @@ class VoteListViewModel(
     /**
      * 투표 목록을 Repository를 통해 비동기로 불러오는 함수
      */
-    private fun loadVoteItems() {
+    fun loadVoteItems() {
         viewModelScope.launch {
             // 1. 로딩 상태 시작
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
@@ -61,7 +62,7 @@ class VoteListViewModel(
                 }
             }.onFailure { throwable ->
                 // 실패 시: 에러 메시지 업데이트 및 로딩 종료
-                val errorMessage = throwable.message ?: "알 수 없는 오류로 투표 목록을 불러오는 데 실패했습니다."
+                val errorMessage = throwable.message ?: "투표 목록 로드 실패"
 
                 _uiState.update {
                     it.copy(
@@ -80,23 +81,27 @@ class VoteListViewModel(
      */
     fun onVoteItemClicked(voteId: Long) {
         viewModelScope.launch {
-            val clickedItem = _uiState.value.voteItems.find { it.voteId == voteId }
+//            loadVoteItems()
+            val currentList = _uiState.value.voteItems
+            val clickedItem = currentList.find { it.voteId == voteId }
 
             if (clickedItem != null) {
-                // 1. 현재 로그인된 사용자의 닉네임을 가져옵니다. (AuthRepository 사용 가정)
-                // AuthRepository의 getCurrentUserNickname() 함수가 닉네임을 반환한다고 가정
-                // 닉네임은 null이거나 비어있을 수 있으므로 안전하게 처리합니다.
                 val currentUserNickname = authRepository.getCurrentUserNickname()
 
-                // 2. 투표 작성자의 닉네임과 현재 사용자 닉네임을 비교합니다.
-                // 닉네임은 대소문자나 공백에 민감할 수 있으므로, 서버/로컬 규칙에 맞게 처리 필요
-                val isMyVote = currentUserNickname != null && currentUserNickname == clickedItem.userNickname
+                Log.d("VoteListVM", "클릭한 투표 ID: $voteId, 작성자: ${clickedItem.userNickname}, 나: $currentUserNickname")
 
-                // 3. 분기된 네비게이션 이벤트를 보냅니다.
+                val isMyVote = !currentUserNickname.isNullOrBlank() && currentUserNickname == clickedItem.userNickname
+
+                Log.d("VoteListVM", "이동 결정: isMyVote=$isMyVote (투표 ID: $voteId)")
+
                 _events.send(VoteListUiEvent.NavigateToVoteStatus(
                     voteId = voteId,
                     isMyVote = isMyVote
                 ))
+            } else {
+                val loadedIds = currentList.map { it.voteId }
+                Log.e("VoteListVM", "에러: 클릭한 아이템($voteId)을 찾을 수 없음. 현재 로드된 ID 목록: $loadedIds")
+                loadVoteItems()
             }
         }
     }
