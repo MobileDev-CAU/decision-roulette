@@ -124,7 +124,12 @@ fun MyVoteScreen (
          // ------------------------------------------------
          // ⭐ 실제 데이터로 VotePieChart 데이터 생성
          // currentVotes는 투표율(%)이므로, 이를 기반으로 파이 차트 조각을 만듭니다.
-         val colors = listOf(Color.Red, Color.Blue, Color(0xFF4CAF50), Color(0xFFFF9800), Color(0xFF9C27B0))
+         val colors = listOf(Color(0xFFD7CCC8),
+            Color(0xFFFFCCBC),
+            Color(0xFFC5E1A5),
+            Color(0xFFFFF59D),
+            Color(0xFFB39DDB),
+            Color(0xFF80CBC4))
          val currentVoteData = optionsList.mapIndexed { index, item ->
             PieSlice(
                color = colors[index % colors.size], // 색상 순환 사용
