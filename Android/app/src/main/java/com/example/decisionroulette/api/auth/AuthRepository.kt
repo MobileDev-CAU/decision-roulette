@@ -40,16 +40,17 @@ class AuthRepository(private val api: AuthApiService = RetrofitClient.authInstan
             val response = api.login(request)
 
             if (response.isSuccessful) {
-                response.body()?.let { loginResponse ->
-                    // ⭐ 추가: 로그인 성공 시 토큰 및 사용자 정보 저장
+                response.body()?.let { loginResponse -> // ⭐ 응답 DTO를 loginResponse로 받음
+                    // ⭐ 수정: TokenManager의 새로운 시그니처에 맞춰 userId(id)를 전달
                     TokenManager.saveTokensAndUser(
-                        accessToken = loginResponse.accessToken, // 이 필드가 LoginResponse에 있다고 가정
-                        refreshToken = loginResponse.refreshToken, // 이 필드가 LoginResponse에 있다고 가정
-                        nickname = loginResponse.nickname, // 이 필드가 LoginResponse에 있다고 가정
-                        userId = loginResponse.id
+                        accessToken = loginResponse.accessToken,
+                        refreshToken = loginResponse.refreshToken,
+                        nickname = loginResponse.nickname,
+                        userId = loginResponse.id // ⭐ LoginResponse의 'id'를 userId로 전달
                     )
-                    // ⭐ 추가: userId 저장
-                    TokenManager.setUserId(loginResponse.id) // LoginResponse에 userId가 있다고 가정
+
+                    // 🚨 제거: saveTokensAndUser에서 이미 ID를 저장하므로 중복 호출 제거
+                    // TokenManager.setUserId(loginResponse.id)
 
                     Result.success(loginResponse)
                 } ?: Result.failure(IOException("Server returned empty body on successful login."))

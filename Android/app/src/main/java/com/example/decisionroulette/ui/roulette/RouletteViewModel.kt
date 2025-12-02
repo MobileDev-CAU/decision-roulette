@@ -12,9 +12,12 @@ import kotlin.collections.toMutableList
 import com.example.decisionroulette.api.roulette.RouletteRepository
 import com.example.decisionroulette.ui.auth.TokenManager
 import kotlinx.coroutines.launch
+import com.example.decisionroulette.data.repository.VoteRepository // ⭐ VoteRepository import
 
-class RouletteViewModel: ViewModel() {
-    private val repository = RouletteRepository()
+class RouletteViewModel(
+    private val repository: RouletteRepository = RouletteRepository(),
+    private val voteRepository: VoteRepository = VoteRepository() // ⭐ VoteRepository 주입
+) : ViewModel() {
     private val _uiState = MutableStateFlow(RouletteUiState())
     val uiState: StateFlow<RouletteUiState> = _uiState.asStateFlow()
 //    private val rawVoteItems = listOf(
@@ -257,11 +260,30 @@ class RouletteViewModel: ViewModel() {
         sendFeedback(false)
     }
 
-    // [버튼 3] 유저 투표 올리기
+    // ⭐ [버튼 3] 유저 투표 올리기 로직 완성
     fun uploadVote() {
         closeDialog()
-        sendFeedback(false)
-        // TODO: 투표 화면으로 이동
+        sendFeedback(false) // 룰렛 결과를 따르지 않았으므로 불만족 피드백 전송 (가정)
+
+        val rouletteId = _uiState.value.rouletteId
+
+        if (rouletteId <= 0) {
+            println("투표 업로드 실패: 유효하지 않은 룰렛 ID입니다.")
+            return
+        }
+
+        viewModelScope.launch {
+            // VoteRepository를 사용하여 룰렛을 투표로 업로드
+            val result = voteRepository.uploadVote(rouletteId = rouletteId)
+
+            result.onSuccess { response ->
+                println("투표 업로드 성공: Vote ID: ${response.voteId}, Message: ${response.message}")
+                // TODO: 투표 화면으로 이동 이벤트 발생 (예: NavigateToVoteList)
+            }.onFailure { e ->
+                println("투표 업로드 실패: ${e.message}")
+                // 사용자에게 실패 메시지를 보여줄 수 있는 UI 상태 업데이트 필요
+            }
+        }
     }
 
     fun addDummyItem() {
