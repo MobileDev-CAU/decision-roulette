@@ -345,18 +345,46 @@ fun AppScreen(
             }
 
             // 8. 룰렛 돌아가기
-            composable("${Routes.ROULETTE}/{rouletteId}") { backStackEntry ->
+            composable(
+                // 🔥 [수정] voteId를 쿼리 파라미터로 받을 수 있게 설정
+                route = "${Routes.ROULETTE}/{rouletteId}?voteId={voteId}",
+                arguments = listOf(
+                    navArgument("rouletteId") { type = NavType.StringType },
+                    navArgument("voteId") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = "-1"
+                    }
+                )
+            ) { backStackEntry ->
                 val rouletteId = backStackEntry.arguments?.getString("rouletteId")?.toIntOrNull() ?: -1
+                // 🔥 voteId를 꺼내서 전달
+                val voteId = backStackEntry.arguments?.getString("voteId")?.toLongOrNull() ?: -1L
 
                 RouletteScreen(
                     rouletteId = rouletteId,
+                    voteId = voteId, // 전달
                     onNavigateToVoteList = { navController.navigate(Routes.VOTE_LIST) },
+
+//                     onNavigateToBack = { navController.popBackStack(Routes.TOPIC_CREATE, inclusive = false) },
                     onNavigateToBack = { navController.popBackStack() },
                     onNavigateToEdit = {
                         navController.navigate("${Routes.EDIT_OPTION}/$rouletteId")
                     }
                 )
             }
+//            composable("${Routes.ROULETTE}/{rouletteId}") { backStackEntry ->
+//                val rouletteId = backStackEntry.arguments?.getString("rouletteId")?.toIntOrNull() ?: -1
+//
+//                RouletteScreen(
+//                    rouletteId = rouletteId,
+//                    onNavigateToVoteList = { navController.navigate(Routes.VOTE_LIST) },
+//                    onNavigateToBack = { navController.popBackStack(Routes.TOPIC_CREATE, inclusive = false)  },
+//                    onNavigateToEdit = {
+//                        navController.navigate("${Routes.EDIT_OPTION}/$rouletteId")
+//                    }
+//                )
+//            }
 
             composable("${Routes.EDIT_OPTION}/{rouletteId}") { backStackEntry ->
                 val rouletteId = backStackEntry.arguments?.getString("rouletteId")?.toIntOrNull() ?: -1
@@ -396,7 +424,12 @@ fun AppScreen(
                     voteViewModel.events.collect { event ->
                         when (event) {
                             VoteUiEvent.NavigateToBack -> { navController.popBackStack() }
-                            VoteUiEvent.NavigateToRoulette -> { navController.navigate(Routes.ROULETTE) }
+                            is VoteUiEvent.NavigateToRoulette -> {
+                                //TODO 여기 다시 고쳐보기
+//                                navController.navigate("roulette_route/${event.rouletteId}?voteId=${event.voteId}")
+                                navController.navigate("roulette_route/13?voteId=${event.voteId}")
+                            }
+//                             VoteUiEvent.NavigateToVoteClear -> { navController.popBackStack() } // 투표 후 목록으로 돌아감
                             VoteUiEvent.NavigateToVoteClear -> { navController.navigate(Routes.VOTE_LIST) }
                         }
                     }
@@ -427,7 +460,10 @@ fun AppScreen(
                     voteViewModel.events.collect { event ->
                         when (event) {
                             VoteUiEvent.NavigateToBack -> { navController.popBackStack() }
-                            VoteUiEvent.NavigateToRoulette -> { navController.navigate(Routes.ROULETTE) }
+                            is VoteUiEvent.NavigateToRoulette -> {
+                                navController.navigate("roulette_route/${event.rouletteId}?voteId=${event.voteId}")
+                            }
+//                             VoteUiEvent.NavigateToVoteClear -> { navController.popBackStack() } // 투표 후 목록으로 돌아감
                             VoteUiEvent.NavigateToVoteClear -> { navController.navigate(Routes.VOTE_LIST) }
                         }
                     }

@@ -39,6 +39,7 @@ interface VoteApiService {
     // -------------------------------------------------------------------
     // ⭐ 변경: 'fun'에 'suspend' 추가, 반환 타입을 'Call<T>'에서 'Response<T>'로 변경
     suspend fun uploadVote(
+        @Query("userId") userId: Int,
         @Body request: VoteUploadRequest
     ): Response<VoteUploadResponse>
     // -------------------------------------------------------------------

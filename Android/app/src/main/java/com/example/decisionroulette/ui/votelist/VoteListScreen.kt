@@ -17,6 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.ui.reusable.VoteCard
+import com.example.decisionroulette.ui.votelist.VoteListViewModel
+import com.example.decisionroulette.api.vote.VoteListItem
+import com.example.decisionroulette.ui.votelist.VoteListUiEvent
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.example.decisionroulette.ui.theme.Galmuri
 
 val MainBrown = Color(0xFF685C57)
@@ -31,7 +36,10 @@ fun VoteListScreen (
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // ViewModel 이벤트 처리 로직 (생략 없음)
+//    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+//        viewModel.loadVoteItems()
+//    }
+
     LaunchedEffect(key1 = Unit) {
         viewModel.events.collect { event ->
             when (event) {

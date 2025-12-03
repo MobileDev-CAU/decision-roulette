@@ -1,5 +1,6 @@
 package com.example.decisionroulette.ui.votelist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.decisionroulette.api.auth.AuthRepository
@@ -15,16 +16,12 @@ import kotlinx.coroutines.launch
 
 
 sealed interface VoteListUiEvent {
-    // 네비게이션 이벤트에 화면 타입(MY/OTHER) 정보가 포함됩니다.
     data class NavigateToVoteStatus(
         val voteId: Long,
         val isMyVote: Boolean
     ) : VoteListUiEvent
 }
 
-// ----------------------------------------------------------
-// 🚨 VoteListViewModel
-// ----------------------------------------------------------
 class VoteListViewModel(
     private val repository: VoteRepository = VoteRepository(),
     private val authRepository: AuthRepository = AuthRepository()
@@ -40,10 +37,7 @@ class VoteListViewModel(
         loadVoteItems()
     }
 
-    /**
-     * 투표 목록을 비동기로 불러와 isMyVote를 계산하여 UI State에 저장하는 함수
-     */
-    private fun loadVoteItems() {
+    fun loadVoteItems() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
@@ -72,7 +66,9 @@ class VoteListViewModel(
                     )
                 }
             }.onFailure { throwable ->
-                val errorMessage = throwable.message ?: "Failed to load the voting list with unknown error."
+                // 실패 시: 에러 메시지 업데이트 및 로딩 종료
+                val errorMessage = throwable.message ?: "투표 목록 로드 실패"
+
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -82,18 +78,29 @@ class VoteListViewModel(
             }
         }
     }
-
-
     fun onVoteItemClicked(voteId: Long) {
         viewModelScope.launch {
-            val clickedItem = _uiState.value.voteItems.find { it.voteId == voteId }
+//            loadVoteItems()
+            val currentList = _uiState.value.voteItems
+            val clickedItem = currentList.find { it.voteId == voteId }
 
             if (clickedItem != null) {
-                // 🚨 State에 이미 isMyVote 정보가 있으므로 바로 사용 🚨
+                val currentUserNickname = authRepository.getCurrentUserNickname()
+
+                Log.d("VoteListVM", "클릭한 투표 ID: $voteId, 작성자: ${clickedItem.userNickname}, 나: $currentUserNickname")
+
+                val isMyVote = !currentUserNickname.isNullOrBlank() && currentUserNickname == clickedItem.userNickname
+
+                Log.d("VoteListVM", "이동 결정: isMyVote=$isMyVote (투표 ID: $voteId)")
+
                 _events.send(VoteListUiEvent.NavigateToVoteStatus(
                     voteId = voteId,
                     isMyVote = clickedItem.isMyVote // 👈 계산된 isMyVote 값 사용
                 ))
+            } else {
+                val loadedIds = currentList.map { it.voteId }
+                Log.e("VoteListVM", "에러: 클릭한 아이템($voteId)을 찾을 수 없음. 현재 로드된 ID 목록: $loadedIds")
+                loadVoteItems()
             }
         }
     }
