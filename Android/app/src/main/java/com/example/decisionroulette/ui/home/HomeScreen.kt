@@ -25,7 +25,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(top = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 타이틀
