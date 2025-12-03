@@ -17,8 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.ui.reusable.VoteCard
-import com.example.decisionroulette.ui.votelist.VoteListViewModel
-import com.example.decisionroulette.ui.votelist.VoteListUiEvent
 import com.example.decisionroulette.ui.theme.Galmuri
 
 val MainBrown = Color(0xFF685C57)
@@ -33,7 +31,7 @@ fun VoteListScreen (
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // ViewModel 이벤트 처리 로직
+    // ViewModel 이벤트 처리 로직 (생략 없음)
     LaunchedEffect(key1 = Unit) {
         viewModel.events.collect { event ->
             when (event) {
@@ -45,24 +43,8 @@ fun VoteListScreen (
     }
 
     Scaffold(
-        topBar = {
-            // 상단 바 디자인을 갈색 테마로 강조
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Real-Time Voting List",
-                        fontSize = 20.sp,
-                        fontFamily = Galmuri,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MainBrown
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    titleContentColor = MainBrown
-                )
-            )
-        },
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        containerColor = Color.Transparent
     ) { paddingValues ->
 
         Column(
@@ -73,15 +55,21 @@ fun VoteListScreen (
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            Spacer(modifier = Modifier.height(60.dp))
+
             Text(
-                text = "What should we eat today?",
-                fontSize = 15.sp,
+                text = "Real-Time Voting List",
+                fontSize = 25.sp,
                 fontFamily = Galmuri,
-                color = Color.Gray,
+                color = MainBrown,
+                fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
             )
 
-            // -----------------------------------------------------------------
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // -------------------------------------------------------------------
+
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize().padding(top = 100.dp),

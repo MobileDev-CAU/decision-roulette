@@ -9,7 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember // ⭐ remember import
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -46,12 +46,11 @@ import com.example.decisionroulette.ui.auth.TokenManager
 import com.example.decisionroulette.ui.home.VoteUiEvent
 import com.example.decisionroulette.ui.home.VoteViewModel
 import com.example.decisionroulette.ui.vote.OtherVoteScreen
-import com.example.decisionroulette.data.repository.VoteRepository // Repository import
+import com.example.decisionroulette.data.repository.VoteRepository
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.decisionroulette.api.auth.AuthRepository // AuthRepository import
+import com.example.decisionroulette.api.auth.AuthRepository
 
-// 화면 경로(Route)를 정의하는 상수 객체
 object Routes {
     const val HOME = "home_route"
     //    const val TOPIC_LIST = "topic_list_route"
@@ -103,10 +102,9 @@ fun AppScreen(
     //rouletteViewModel: RouletteViewModel =viewModel()
     voteListViewModel: VoteListViewModel=viewModel(),
 
-    // ⭐ Repository를 AppScreen에서 직접 생성 (DI 컨테이너 대신 사용)
-    // 크래시 방지를 위해 remember 블록 내에서 생성합니다.
+
     voteRepository: VoteRepository = remember { VoteRepository() },
-    authRepository: AuthRepository = remember { AuthRepository() } // ⭐ AuthRepository도 remember로 생성
+    authRepository: AuthRepository = remember { AuthRepository() }
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -114,10 +112,11 @@ fun AppScreen(
 
     val onMyPageClicked: () -> Unit = {
         if (authViewModel.uiState.isLoggedIn) {
-            // 로그인 상태: 마이페이지(USER_PAGE)로 이동
             navController.navigate(Routes.USER_PAGE) {
-                // 하단 탭 이동 최적화
-                popUpTo(Routes.HOME) { saveState = true }
+                popUpTo(navController.graph.id) {
+                    inclusive = false
+                    saveState = true
+                }
                 launchSingleTop = true
                 restoreState = true
             }
@@ -129,8 +128,7 @@ fun AppScreen(
         }
     }
 
-    // 하단바 생성: 필요한 화면만 포함 (LOGIN, SIGN_UP은 제외)
-    // TODO 투표리스트 포함해야함
+
     val BOTTOM_NAV_SCREENS = listOf(Routes.HOME, Routes.USER_PAGE, Routes.VOTE_LIST)
 
 
@@ -139,20 +137,18 @@ fun AppScreen(
     LaunchedEffect(authViewModel.events) {
         authViewModel.events.collect { event ->
             when (event) {
-                AuthUiEvent.NavigateToUserPage -> {
-                    navController.navigate(Routes.USER_PAGE) {
+                AuthUiEvent.NavigateToLoginSuccess -> {
+                    navController.navigate(Routes.HOME) {
                         popUpTo(navController.graph.id) { inclusive = true }
                     }
                 }
 
                 AuthUiEvent.NavigateToSignUp -> {
-                    // 🚨🚨 수정: 회원가입 화면 진입 전에 입력 필드 초기화 🚨🚨
                     authViewModel.clearAuthInputFields()
                     navController.navigate(Routes.SIGN_UP)
                 }
 
                 AuthUiEvent.NavigateToLogin -> {
-                    // 🚨🚨 수정: 로그인 화면 진입 전에 입력 필드 초기화 🚨🚨
                     authViewModel.clearAuthInputFields()
                     navController.navigate(Routes.LOGIN)
                 }
@@ -225,7 +221,6 @@ fun AppScreen(
             }
         }
     }
-    // 🚨🚨 VoteListViewModel 이벤트 처리 수정 🚨🚨
     LaunchedEffect(voteListViewModel.events) {
         voteListViewModel.events.collect { event ->
             when (event) {
@@ -236,8 +231,7 @@ fun AppScreen(
                     } else {
                         Routes.VOTE_STATUS_OTHER
                     }
-                    // 추출된 voteId를 경로에 포함하여 네비게이션
-                    // 경로가 "vote_status_my_route/{voteId}" 형태이므로 {voteId} 부분을 대체합니다.
+
                     navController.navigate(route.replace("{voteId}", event.voteId.toString()))
                 }
 
@@ -246,7 +240,6 @@ fun AppScreen(
         }
     }
 
-    // 주석 처리된 VoteViewModel 이벤트 처리 블록 제거 (각 화면 내에서 처리)
 
     if (BOTTOM_NAV_SCREENS.contains(currentRoute)) {
         Image(
@@ -267,7 +260,6 @@ fun AppScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Color.Transparent,
-        // 🚨 조건부 bottomBar 렌더링
         bottomBar = {
             if (BOTTOM_NAV_SCREENS.contains(currentRoute)) {
                 BottomNavigationBar(navController = navController,onMyPageClicked = onMyPageClicked)
@@ -277,23 +269,22 @@ fun AppScreen(
 
         NavHost(
             navController = navController,
-            startDestination = Routes.LOGIN, // 앱 시작 화면을 HOME으로 유지
+            startDestination = Routes.LOGIN,
             modifier = Modifier.padding(innerPadding)
         ) {
 
-            // 🚨 1. 로그인 화면 (하단 바 없음)
             composable(Routes.LOGIN) {
                 LoginScreen(
-                    viewModel = authViewModel, // ⬅️ AppScreen의 ViewModel 인스턴스 전달
-                    onNavigateToUserPage = { navController.navigate(Routes.USER_PAGE) },
+                    viewModel = authViewModel,
+                    onNavigateToLoginSuccess = { navController.navigate(Routes.USER_PAGE) },
                     onNavigateToSignUp = { navController.navigate(Routes.SIGN_UP) }
                 )
             }
 
-            // 🚨 2. 회원가입 화면 (하단 바 없음)
+            // 2. 회원가입 화면 (하단 바 없음)
             composable(Routes.SIGN_UP) {
                 SignUpScreen(
-                    viewModel = authViewModel, // ⬅️ AppScreen의 ViewModel 인스턴스 전달
+                    viewModel = authViewModel,
                     onNavigateToLogin = { navController.navigate(Routes.LOGIN) }
                 )
             }
@@ -313,10 +304,10 @@ fun AppScreen(
 //                )
 //            }
 
-            // 🚨 5. 사용자 정보 화면 (MyPage) (하단 바 있음)
+            // 5. 사용자 정보 화면 (MyPage) (하단 바 있음)
             composable(Routes.USER_PAGE) {
                 MyPageScreen(
-                    authViewModel = authViewModel, // ⬅️ AppScreen의 ViewModel 인스턴스 전달
+                    authViewModel = authViewModel,
                     navController = navController
                 )
             }
@@ -339,7 +330,7 @@ fun AppScreen(
             composable(
                 route = "option_create_route/{topicTitle}"
             ) { backStackEntry ->
-                val topicTitle = backStackEntry.arguments?.getString("topicTitle") ?: "제목 없음"
+                val topicTitle = backStackEntry.arguments?.getString("topicTitle") ?: "Untitled"
                 val viewModel: OptionCreateViewModel = viewModel()
                 LaunchedEffect(topicTitle) {
                     viewModel.updateTitle(topicTitle)
@@ -383,58 +374,48 @@ fun AppScreen(
 
             composable(Routes.VOTE_LIST) {
                 VoteListScreen(
-                    // onVoteItemClicked는 VoteListViewModel의 메서드를 참조하며, ViewModel이 이벤트를 발생시킵니다.
                     onNavigateToVoteStatus = voteListViewModel::onVoteItemClicked
                 )
             }
 
-            // 🚨🚨 VOTE_STATUS_MY 경로 처리 (파라미터 읽기)
             composable(
                 route = Routes.VOTE_STATUS_MY,
-                arguments = listOf(navArgument("voteId") { type = NavType.StringType }) // NavType 정의
+                arguments = listOf(navArgument("voteId") { type = NavType.StringType })
             ) { backStackEntry ->
-                // voteId는 ViewModel의 key로 사용하며, ViewModel은 SavedStateHandle로 argument를 읽습니다.
                 val voteId = backStackEntry.arguments?.getString("voteId")
 
-                // ⭐ Factory를 사용하여 ViewModel 생성 (크래시 방지)
                 val voteViewModel: VoteViewModel = viewModel(
-                    // ⭐ Key 안정화: backStackEntry ID 사용
                     key = backStackEntry.id,
                     factory = VoteViewModel.provideFactory(
-                        voteRepository = voteRepository, // AppScreen에서 생성된 인스턴스
-                        authRepository = authRepository // ⭐ AppScreen에서 생성된 AuthRepository 인스턴스
+                        voteRepository = voteRepository,
+                        authRepository = authRepository
                     )
                 )
 
-                // ⭐ 개별 화면의 VoteViewModel 이벤트 처리
                 LaunchedEffect(voteViewModel.events) {
                     voteViewModel.events.collect { event ->
                         when (event) {
                             VoteUiEvent.NavigateToBack -> { navController.popBackStack() }
                             VoteUiEvent.NavigateToRoulette -> { navController.navigate(Routes.ROULETTE) }
-                            // 🚨 수정: VOTE_LIST로 명시적 이동
                             VoteUiEvent.NavigateToVoteClear -> { navController.navigate(Routes.VOTE_LIST) }
                         }
                     }
                 }
 
                 MyVoteScreen(
-                    onNavigateToBack = { voteViewModel.onBackButtonClicked() }, // ViewModel 함수 호출
-                    onNavigateToRoulette = { voteViewModel.onRouletteStartClicked() }, // 룰렛 시작 함수 호출
-                    viewModel = voteViewModel // 인스턴스 전달
+                    onNavigateToBack = { voteViewModel.onBackButtonClicked() },
+                    onNavigateToRoulette = { voteViewModel.onRouletteStartClicked() },
+                    viewModel = voteViewModel
                 )
             }
 
-            // 🚨🚨 VOTE_STATUS_OTHER 경로 처리 (파라미터 읽기)
             composable(
                 route = Routes.VOTE_STATUS_OTHER,
-                arguments = listOf(navArgument("voteId") { type = NavType.StringType }) // NavType 정의
+                arguments = listOf(navArgument("voteId") { type = NavType.StringType })
             ) { backStackEntry ->
                 val voteId = backStackEntry.arguments?.getString("voteId")
 
-                // ⭐ Factory를 사용하여 ViewModel 생성 (크래시 방지)
                 val voteViewModel: VoteViewModel = viewModel(
-                    // ⭐ Key 안정화: backStackEntry ID 사용
                     key = backStackEntry.id,
                     factory = VoteViewModel.provideFactory(
                         voteRepository = voteRepository,
@@ -453,7 +434,7 @@ fun AppScreen(
                 }
 
                 OtherVoteScreen(
-                    viewModel = voteViewModel // 인스턴스 전달
+                    viewModel = voteViewModel
                 )
             }
         }

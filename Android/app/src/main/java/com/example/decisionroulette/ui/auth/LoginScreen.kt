@@ -22,7 +22,7 @@ private val CustomBrown = Color(0xFF685C57)
 
 @Composable
 fun LoginScreen(
-    onNavigateToUserPage: () -> Unit,
+    onNavigateToLoginSuccess: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     viewModel: AuthViewModel = viewModel()
 ) {
@@ -31,7 +31,7 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         viewModel.events.collectLatest { event ->
             when (event) {
-                AuthUiEvent.NavigateToUserPage -> onNavigateToUserPage()
+                AuthUiEvent.NavigateToLoginSuccess -> onNavigateToLoginSuccess()
                 AuthUiEvent.NavigateToSignUp -> onNavigateToSignUp()
                 is AuthUiEvent.ShowError -> {
                     println("Login Error: ${event.message}")
