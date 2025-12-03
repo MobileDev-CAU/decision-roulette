@@ -29,7 +29,7 @@ data class VoteUiState(
 
 sealed interface VoteUiEvent {
     object NavigateToBack : VoteUiEvent
-    object NavigateToRoulette : VoteUiEvent
+    data class NavigateToRoulette(val voteId: Long, val rouletteId: Int) : VoteUiEvent
     object NavigateToVoteClear : VoteUiEvent // 투표 완료 후 돌아가기 이벤트
 }
 
@@ -187,9 +187,27 @@ class VoteViewModel(
 
     // 5. 룰렛 시작 버튼 클릭 함수 (MyVoteScreen에서 사용)
     fun onRouletteStartClicked() {
-        // 투표 결과를 기반으로 룰렛을 시작하는 로직
+        if (currentVoteId <= 0) return
+
         viewModelScope.launch {
-            _events.send(VoteUiEvent.NavigateToRoulette)
+            // 로딩 시작
+            _uiState.update { it.copy(isLoading = true) }
+
+            // 🔥 [핵심] 이동 전에 API를 호출해서 진짜 룰렛 ID를 알아옵니다!
+            val result = voteRepository.getVoteRouletteDetail(currentVoteId)
+
+            result.onSuccess { response ->
+                _uiState.update { it.copy(isLoading = false) }
+
+                // 성공하면 진짜 rouletteId를 담아서 이벤트 전송
+                _events.send(VoteUiEvent.NavigateToRoulette(
+                    voteId = currentVoteId,
+                    rouletteId = response.rouletteId // 여기서 받아온 진짜 ID 사용!
+                ))
+            }.onFailure { e ->
+                // 실패 시 에러 처리
+                _uiState.update { it.copy(isLoading = false, errorMessage = "룰렛 정보를 불러오지 못했습니다: ${e.message}") }
+            }
         }
     }
 

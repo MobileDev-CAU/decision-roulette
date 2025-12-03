@@ -18,6 +18,7 @@ import com.example.decisionroulette.ui.roulette.components.*
 @Composable
 fun RouletteScreen(
     rouletteId: Int,
+    voteId: Long = -1L,
     viewModel: RouletteViewModel = viewModel(),
     onNavigateToVoteList: () -> Unit,
     onNavigateToBack: () -> Unit,
@@ -27,8 +28,12 @@ fun RouletteScreen(
     val rotation = remember { Animatable(0f) }
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(rouletteId) {
-        viewModel.loadRouletteDetail(rouletteId)
+    LaunchedEffect(rouletteId, voteId) {
+        if (voteId > 0) {
+            viewModel.loadRouletteFromVote(voteId)
+        } else if (rouletteId > 0) {
+            viewModel.loadRouletteDetail(rouletteId)
+        }
     }
 
     LaunchedEffect(uiState.isSpinning) {

@@ -20,6 +20,9 @@ class RouletteViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(RouletteUiState())
     val uiState: StateFlow<RouletteUiState> = _uiState.asStateFlow()
+
+    private var originalItems: List<RouletteItem> = emptyList()
+
 //    private val rawVoteItems = listOf(
 //        RouletteItem("파스타", 0.2f), // 20%
 //        RouletteItem("국밥", 0.2f),   // 20%
@@ -50,14 +53,12 @@ class RouletteViewModel(
     }
 
     fun toggleMode(isVote: Boolean) {
-        val currentItems = _uiState.value.items
-
         val newItems = if (isVote) {
-            // 투표 모드: 가중치 유지 (서버에서 받은 값)
-            currentItems
+            // 투표 모드: 원본 가중치 데이터로 복구
+            originalItems
         } else {
-            // 기본 모드: 가중치 1.0으로 통일
-            currentItems.map { it.copy(weight = 1.0f) }
+            // 기본 모드: 모든 가중치를 1.0으로 통일
+            originalItems.map { it.copy(weight = 1.0f) }
         }
 
         _uiState.update {
@@ -136,11 +137,60 @@ class RouletteViewModel(
             result.onSuccess { response ->
                 // DTO -> UI Model 변환
                 val uiItems = response.items.map { dto ->
-                    RouletteItem(
-                        name = dto.name,
-                        weight = dto.weight.toFloat()
+                    // weight가 0이거나 없으면 기본 1.0 처리, 있으면 그대로 사용
+                    val weight = if (dto.weight > 0) dto.weight.toFloat() else 1.0f
+                    RouletteItem(name = dto.name, weight = weight)
+                }
+//                val uiItems = response.items.map { dto ->
+//                    RouletteItem(
+//                        name = dto.name,
+//                        weight = dto.weight.toFloat()
+//                    )
+//                }
+                originalItems = uiItems
+                val basicItems = uiItems.map { it.copy(weight = 1.0f) }
+
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        rouletteId = response.rouletteId,
+                        title = response.title,
+                        items = basicItems,
+                        isVoteMode = false,
+                        top3Keywords = emptyList()
                     )
                 }
+                analyzeRoulette(response.title, uiItems.map { it.name })
+            }.onFailure { e ->
+                println("룰렛 상세 조회 실패: ${e.message}")
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    // 투표 결과로 룰렛 데이터 로드 (Vote % 모드로 시작)
+    fun loadRouletteFromVote(voteId: Long) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            // VoteRepository를 통해 투표 상세 정보(룰렛용) 가져오기
+            val result = voteRepository.getVoteRouletteDetail(voteId)
+
+            result.onSuccess { response ->
+                // 투표 결과(voteRate)를 weight로 매핑
+                val uiItems = response.items.map { dto ->
+
+                    val minWeight = 5.0f
+                    val adjustedWeight = if (dto.weight.toFloat() <= 0f) minWeight else dto.weight.toFloat()
+
+                    RouletteItem(
+                        name = dto.name,
+                        weight = adjustedWeight
+                    )
+                }
+
+                // 🔥 원본 데이터 저장
+                originalItems = uiItems
 
                 _uiState.update {
                     it.copy(
@@ -148,12 +198,12 @@ class RouletteViewModel(
                         rouletteId = response.rouletteId,
                         title = response.title,
                         items = uiItems,
+                        isVoteMode = true,
                         top3Keywords = emptyList()
                     )
                 }
-                analyzeRoulette(response.title, uiItems.map { it.name })
             }.onFailure { e ->
-                println("룰렛 상세 조회 실패: ${e.message}")
+                println("투표 룰렛 정보 로드 실패: ${e.message}")
                 _uiState.update { it.copy(isLoading = false) }
             }
         }

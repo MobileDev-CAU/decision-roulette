@@ -45,7 +45,7 @@ data class VoteRouletteDetailResponse(
 
 data class RouletteItemDto(
     val name: String,
-    val weight: Int
+    val weight: Double
 )
 
 data class VoteSelectRequest(
