@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle // ⭐ 필수 import 추가
 import com.example.decisionroulette.ui.roulettelist.TopicCreateUiEvent
 
-data class OptionItem(val id: Int, val title: String, val currentVotes: Int = 0)
+data class OptionItem(val id: Int, val title: String, val currentVotes: Double = 0.0)
 
 data class VoteUiState(
     val options: List<OptionItem> = emptyList(),

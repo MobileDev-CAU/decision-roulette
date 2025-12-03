@@ -46,7 +46,7 @@ val BackgroundWhite = Color(0xFFFDFBF7)
 
 @Composable
 private fun VoteChartLegend(
-   data: List<Triple<String, Color, Int>>,
+   data: List<Triple<String, Color, Double>>,
    modifier: Modifier = Modifier
 ) {
    Column(
@@ -79,7 +79,7 @@ private fun VoteChartLegend(
             }
 
             Text(
-               text = "$percentage%",
+               text = String.format("%.2f%%", percentage),
                fontSize = 16.sp,
                fontFamily = Galmuri,
                fontWeight = FontWeight.Bold,
@@ -112,7 +112,7 @@ fun MyVoteScreen (
          .padding(horizontal = 40.dp),
       horizontalAlignment = Alignment.CenterHorizontally
    ) {
-      BackButton("Voting status", onClick = onNavigateToBack)
+      BackButton("Voting Status", onClick = onNavigateToBack)
 
       // -------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ fun MyVoteScreen (
             modifier = Modifier.fillMaxWidth(0.65f)
          ) {
             Text(
-               text = "START ROULETTE",
+               text = "MOVE TO ROULETTE",
                fontSize = 16.sp,
                fontFamily = Galmuri,
                fontWeight = FontWeight.Bold,

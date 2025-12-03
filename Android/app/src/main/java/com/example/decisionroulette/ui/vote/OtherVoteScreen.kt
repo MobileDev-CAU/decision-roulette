@@ -46,7 +46,7 @@ fun VoteOptionItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(55.dp)
+            .height(60.dp)
             .padding(vertical = 4.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
@@ -77,7 +77,8 @@ fun VoteOptionItem(
 
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "${item.currentVotes}%",
+//                text = "${item.currentVotes}%",
+                text = String.format("%.2f%%", item.currentVotes),
                 fontSize = 16.sp,
                 fontFamily = Galmuri,
                 fontWeight = FontWeight.ExtraBold,
@@ -112,7 +113,7 @@ fun OtherVoteScreen(
 
         // -------------------------------------------------------------------
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
         Text(
             text = "\" ${uiState.title.uppercase()} \"",
@@ -124,7 +125,7 @@ fun OtherVoteScreen(
         )
         // -------------------------------------------------------------------
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         if (uiState.isLoading) {
             CircularProgressIndicator(color = MainBrown, modifier = Modifier.padding(top = 50.dp))
@@ -145,13 +146,13 @@ fun OtherVoteScreen(
         }
 
 
-        // ----------------- 투표 항목 섹션 (스크롤 가능) -----------------
         Column(
             modifier = Modifier
-                .heightIn(max = 350.dp)
+//                .heightIn(max = 400.dp)
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(vertical = 10.dp),
+                .padding(vertical = 10.dp)
+                .padding(horizontal = 20.dp),
 
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -177,8 +178,9 @@ fun OtherVoteScreen(
             shape = RoundedCornerShape(16.dp),
             contentPadding = PaddingValues(vertical = 12.dp),
             modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
+//                .fillMaxWidth()
+                .width(150.dp)
+                .height(40.dp)
         ) {
             Text(
                 text = "VOTE",
@@ -189,6 +191,6 @@ fun OtherVoteScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(150.dp))
+        Spacer(modifier = Modifier.height(100.dp))
     }
 }

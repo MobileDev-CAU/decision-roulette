@@ -15,7 +15,7 @@ data class VoteListItem(
  */
 data class VoteItem(
     val name: String,
-    val voteRate: Int // 백분율 (0 ~ 100)
+    val voteRate: Double // 백분율 (0 ~ 100)
 )
 
 /**
