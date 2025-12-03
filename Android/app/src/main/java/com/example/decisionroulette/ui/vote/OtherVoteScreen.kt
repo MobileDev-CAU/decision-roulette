@@ -27,8 +27,7 @@ import com.example.decisionroulette.ui.home.OptionItem // VoteViewModel이 사�
 import com.example.decisionroulette.ui.theme.Galmuri // ⭐ 폰트 임포트 (가정)
 import androidx.compose.material3.CircularProgressIndicator
 import com.example.decisionroulette.ui.reusable.BackButton // ⭐ BackButton import 추가
-
-
+import com.example.decisionroulette.ui.votelist.MainBrown
 
 
 @Composable
@@ -109,10 +108,23 @@ fun OtherVoteScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        BackButton(title = uiState.title, onClick = viewModel::onBackButtonClicked)
+        BackButton("Vote for an Item", onClick = viewModel::onBackButtonClicked)
+
         // -------------------------------------------------------------------
 
-        Spacer(modifier = Modifier.height(70.dp))
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Text(
+            text = "\" ${uiState.title.uppercase()} \"",
+            modifier = Modifier.padding(bottom =20.dp),
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp,
+            fontFamily = Galmuri,
+            color = Color.Gray
+        )
+        // -------------------------------------------------------------------
+
+        Spacer(modifier = Modifier.height(80.dp))
 
         if (uiState.isLoading) {
             CircularProgressIndicator(color = MainBrown, modifier = Modifier.padding(top = 50.dp))
@@ -177,6 +189,6 @@ fun OtherVoteScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(150.dp))
     }
 }

@@ -35,6 +35,8 @@ import com.example.decisionroulette.ui.home.VoteUiState // VoteUiState import
 import com.example.decisionroulette.ui.theme.Galmuri // 폰트 임포트
 import androidx.compose.ui.text.font.FontFamily // 폰트 패밀리 임포트
 import androidx.compose.foundation.background
+import com.example.decisionroulette.ui.votelist.LightBrown
+import com.example.decisionroulette.ui.votelist.MainBrown
 
 val MainBrown = Color(0xFF685C57)
 val LightBrown = Color(0xFFD7CCC8)
@@ -110,10 +112,23 @@ fun MyVoteScreen (
          .padding(horizontal = 40.dp),
       horizontalAlignment = Alignment.CenterHorizontally
    ) {
-      BackButton(title = voteTitle, onClick = onNavigateToBack)
+      BackButton("Voting status", onClick = onNavigateToBack)
 
-      // ----------------- 차트 섹션 -----------------
-      Spacer(modifier = Modifier.height(30.dp))
+      // -------------------------------------------------------------------
+
+      Spacer(modifier = Modifier.height(40.dp))
+
+
+      Text(
+         text = "\" ${voteTitle.uppercase()} \"",
+         modifier = Modifier.padding(bottom =20.dp),
+         fontWeight = FontWeight.Bold,
+         fontSize = 25.sp,
+         fontFamily = Galmuri,
+         color = Color.Gray
+      )
+
+      // -------------------------------------------------------------------
 
       if (uiState.isLoading) {
          Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
@@ -125,7 +140,7 @@ fun MyVoteScreen (
          Text("There are no voting items.", color = LightBrown, fontFamily = Galmuri)
       } else {
          // ------------------------------------------------
-         val colors = remember { // 테마에 맞는 색상 팔레트
+         val colors = remember {
             listOf(
                Color(0xFFE0B99B), // 연한 베이지
                Color(0xFFB39D85), // 중간 갈색
@@ -156,7 +171,7 @@ fun MyVoteScreen (
 
          VoteChartLegend(data = legendData)
 
-         // ----------------- 리스트 섹션 (제거됨) -----------------
+         // -------------------------------------------------------------------
 
          Spacer(modifier = Modifier.height(40.dp))
 
