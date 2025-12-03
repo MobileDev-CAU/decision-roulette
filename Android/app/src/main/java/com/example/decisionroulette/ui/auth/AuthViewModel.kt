@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 // AuthUiEvent 정의
 sealed interface AuthUiEvent {
-    object NavigateToUserPage : AuthUiEvent
+    object NavigateToLoginSuccess : AuthUiEvent
     object NavigateToSignUp : AuthUiEvent
     object NavigateToLogin : AuthUiEvent
     data class ShowError(val message: String) : AuthUiEvent
@@ -100,7 +100,7 @@ class AuthViewModel() : ViewModel() {
                     isLoggedIn = true
                 )
 
-                _events.send(AuthUiEvent.NavigateToUserPage)
+                _events.send(AuthUiEvent.NavigateToLoginSuccess)
 
             }.onFailure { e ->
                 val errorMessage = e.message ?: "Login failed due to an unknown error."

@@ -5,8 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.decisionroulette.api.auth.AuthRepository
 import com.example.decisionroulette.data.repository.VoteRepository
-import com.example.decisionroulette.api.vote.VoteListItem // API 모델 임포트
-// import com.example.decisionroulette.ui.votelist.VoteListState // 같은 패키지이므로 import는 생략되거나 자동으로 처리됨
+import com.example.decisionroulette.api.vote.VoteListItem
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,18 +39,29 @@ class VoteListViewModel(
 
     fun loadVoteItems() {
         viewModelScope.launch {
-            // 1. 로딩 상태 시작
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            // 2. Repository 호출 (결과는 Kotlin 표준 Result<T> 형태)
-            val result = repository.getVoteList()
+            // 1. 현재 로그인된 사용자 닉네임 가져오기
+            val currentUserNickname = authRepository.getCurrentUserNickname()
 
-            // 3. Kotlin 표준 Result<T> 처리
-            result.onSuccess { voteList ->
-                // 성공 시: 데이터 업데이트 및 로딩 종료
+            repository.getVoteList().onSuccess { voteList ->
+                // 2. API 모델(VoteListItem)을 UI 모델(VoteItemUiModel)로 변환하며 isMyVote 플래그 계산
+                val uiModels = voteList.map { apiItem ->
+                    val isMyVote = currentUserNickname != null && currentUserNickname == apiItem.userNickname
+
+                    VoteItemUiModel(
+                        voteId = apiItem.voteId,
+                        userNickname = apiItem.userNickname,
+                        title = apiItem.title,
+                        itemCount = apiItem.itemCount,
+                        isMyVote = isMyVote       // 👈 계산된 값 삽입
+                    )
+                }
+
+                // 3. UI 모델 리스트로 상태 업데이트
                 _uiState.update {
                     it.copy(
-                        voteItems = voteList,
+                        voteItems = uiModels,
                         isLoading = false
                     )
                 }
@@ -85,7 +95,7 @@ class VoteListViewModel(
 
                 _events.send(VoteListUiEvent.NavigateToVoteStatus(
                     voteId = voteId,
-                    isMyVote = isMyVote
+                    isMyVote = clickedItem.isMyVote // 👈 계산된 isMyVote 값 사용
                 ))
             } else {
                 val loadedIds = currentList.map { it.voteId }
