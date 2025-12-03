@@ -16,37 +16,39 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.decisionroulette.ui.theme.Galmuri
 
-@androidx.compose.runtime.Composable
+// 🎨 디자인 컬러 (갈색)
+private val CustomBrown = Color(0xFF685C57)
+private val LightBrownBg = Color(0xFFEFEBE9) // 연한 갈색 배경
+
+@Composable
 fun AiRecommendationDialog(
     recommendations: List<String>,
     onDismiss: () -> Unit,
     onConfirm: (List<String>) -> Unit
 ) {
     // 사용자가 선택한 항목들을 담을 리스트
-    val selectedItems =
-        _root_ide_package_.androidx.compose.runtime.remember { _root_ide_package_.androidx.compose.runtime.mutableStateListOf<String>() }
+    val selectedItems = remember { mutableStateListOf<String>() }
 
-    _root_ide_package_.androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
-        _root_ide_package_.androidx.compose.material3.Card(
-            shape = _root_ide_package_.androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-            colors = _root_ide_package_.androidx.compose.material3.CardDefaults.cardColors(
-                containerColor = _root_ide_package_.androidx.compose.ui.graphics.Color.Companion.White
-            ),
-            modifier = _root_ide_package_.androidx.compose.ui.Modifier.Companion
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = 500.dp) // 너무 길어지지 않게 제한
                 .padding(16.dp)
         ) {
-            _root_ide_package_.androidx.compose.foundation.layout.Column(
-                modifier = _root_ide_package_.androidx.compose.ui.Modifier.Companion.padding(24.dp),
-                horizontalAlignment = _root_ide_package_.androidx.compose.ui.Alignment.Companion.CenterHorizontally
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                _root_ide_package_.androidx.compose.material3.Text(
+                // 타이틀 (갈색 + 폰트)
+                Text(
                     text = "AI Recommendations",
                     fontSize = 20.sp,
                     fontFamily = Galmuri,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = CustomBrown // 🔥 갈색 적용
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -66,11 +68,12 @@ fun AiRecommendationDialog(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(recommendations) { item ->
+                        val isSelected = selectedItems.contains(item)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    if (selectedItems.contains(item)) {
+                                    if (isSelected) {
                                         selectedItems.remove(item)
                                     } else {
                                         selectedItems.add(item)
@@ -80,13 +83,13 @@ fun AiRecommendationDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Checkbox(
-                                checked = selectedItems.contains(item),
+                                checked = isSelected,
                                 onCheckedChange = { checked ->
                                     if (checked) selectedItems.add(item)
                                     else selectedItems.remove(item)
                                 },
                                 colors = CheckboxDefaults.colors(
-                                    checkedColor = Color.Black,
+                                    checkedColor = CustomBrown, // 🔥 체크 시 갈색
                                     uncheckedColor = Color.Gray,
                                     checkmarkColor = Color.White
                                 )
@@ -95,10 +98,12 @@ fun AiRecommendationDialog(
                             Text(
                                 text = item,
                                 fontSize = 16.sp,
-                                fontFamily = Galmuri
+                                fontFamily = Galmuri,
+                                color = if (isSelected) CustomBrown else Color.Black, // 선택 시 글자색 변경
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             )
                         }
-                        Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                        HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.5f))
                     }
                 }
 
@@ -109,24 +114,30 @@ fun AiRecommendationDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // 취소 버튼
+                    // 취소 버튼 (연한 갈색)
                     Button(
                         onClick = onDismiss,
                         modifier = Modifier.weight(1f).height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0E0E0)),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = LightBrownBg,
+                            contentColor = CustomBrown
+                        ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Cancel", color = Color.Black, fontFamily = Galmuri)
+                        Text("Cancel", fontSize = 16.sp, fontFamily = Galmuri, fontWeight = FontWeight.Bold)
                     }
 
-                    // 추가 버튼
+                    // 추가 버튼 (진한 갈색)
                     Button(
                         onClick = { onConfirm(selectedItems) },
                         modifier = Modifier.weight(1f).height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CustomBrown,
+                            contentColor = Color.White
+                        ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Add", color = Color.White, fontFamily = Galmuri)
+                        Text("Add", fontSize = 16.sp, fontFamily = Galmuri, fontWeight = FontWeight.Bold)
                     }
                 }
             }
