@@ -17,17 +17,15 @@ import kotlinx.coroutines.launch
 
 
 sealed interface VoteListUiEvent {
-    // 네비게이션 이벤트에 화면 타입(MY/OTHER) 정보 추가
     data class NavigateToVoteStatus(
         val voteId: Long,
         val isMyVote: Boolean
     ) : VoteListUiEvent
 }
 
-// VoteRepository와 AuthRepository를 생성자로 주입받습니다.
 class VoteListViewModel(
     private val repository: VoteRepository = VoteRepository(),
-    private val authRepository: AuthRepository = AuthRepository() // AuthRepository 주입
+    private val authRepository: AuthRepository = AuthRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(VoteListState())
@@ -40,9 +38,6 @@ class VoteListViewModel(
         loadVoteItems()
     }
 
-    /**
-     * 투표 목록을 Repository를 통해 비동기로 불러오는 함수
-     */
     fun loadVoteItems() {
         viewModelScope.launch {
             // 1. 로딩 상태 시작
@@ -67,18 +62,12 @@ class VoteListViewModel(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        // Result의 Throwable에서 메시지를 추출하여 사용
                         errorMessage = errorMessage
                     )
                 }
             }
         }
     }
-
-    /**
-     * 🌟🌟🌟 투표 항목 클릭 시, 닉네임이 본인인지 확인하여 네비게이션 이벤트를 보냅니다. 🌟🌟🌟
-     * @param voteId 클릭된 투표 항목의 ID
-     */
     fun onVoteItemClicked(voteId: Long) {
         viewModelScope.launch {
 //            loadVoteItems()

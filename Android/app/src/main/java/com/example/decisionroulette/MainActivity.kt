@@ -430,6 +430,7 @@ fun AppScreen(
                         when (event) {
                             VoteUiEvent.NavigateToBack -> { navController.popBackStack() }
                             is VoteUiEvent.NavigateToRoulette -> {
+                                //TODO 여기 다시 고쳐보기
 //                                navController.navigate("roulette_route/${event.rouletteId}?voteId=${event.voteId}")
                                 navController.navigate("roulette_route/13?voteId=${event.voteId}")
                             }
