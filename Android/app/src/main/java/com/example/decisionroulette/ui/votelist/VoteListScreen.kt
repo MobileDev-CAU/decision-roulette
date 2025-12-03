@@ -71,7 +71,7 @@ fun VoteListScreen (
                 fontFamily = Galmuri,
                 color = MainBrown,
                 fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -117,7 +117,7 @@ fun VoteListScreen (
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(bottom = 16.dp),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp)
                     ) {
                         items(items = reversedVoteItems, key = { it.voteId }) { voteItem ->
                             VoteCard(

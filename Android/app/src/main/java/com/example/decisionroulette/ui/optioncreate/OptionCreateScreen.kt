@@ -22,9 +22,8 @@ import com.example.decisionroulette.ui.optioncreate.components.AiRecommendationD
 import com.example.decisionroulette.ui.theme.Galmuri
 import kotlinx.coroutines.flow.collectLatest
 
-// 🎨 디자인 컬러 (갈색)
 private val CustomBrown = Color(0xFF685C57)
-private val LightBrownBg = Color(0xFFEFEBE9) // 연한 갈색 배경
+private val LightBrownBg = Color(0xFFEFEBE9)
 
 @Composable
 fun OptionCreateScreen(
@@ -62,7 +61,7 @@ fun OptionCreateScreen(
 
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = CustomBrown) // 🔥 로딩바 갈색
+            CircularProgressIndicator(color = CustomBrown)
         }
     } else {
         Column(
