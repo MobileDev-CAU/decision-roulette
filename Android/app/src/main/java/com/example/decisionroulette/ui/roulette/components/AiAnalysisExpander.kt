@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import com.example.decisionroulette.api.roulette.AiAnalysisItem
 import com.example.decisionroulette.ui.theme.Galmuri
 
-//private val CustomBrown = Color(0xFF685C57)
 
 @Composable
 fun AiAnalysisExpander(
@@ -49,12 +48,12 @@ fun AiAnalysisExpander(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = Galmuri,
-                color = CustomBrown // 🔥 갈색 적용
+                color = CustomBrown
             )
             Icon(
                 imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = "Toggle",
-                tint = CustomBrown // 🔥 아이콘도 갈색
+                tint = CustomBrown
             )
         }
 
@@ -92,14 +91,14 @@ fun AnalysisItemRow(item: AiAnalysisItem) {
             text = "[ ${item.item} ]",
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
-            color = CustomBrown, // 항목 이름도 갈색 계열
+            color = CustomBrown,
             fontFamily = Galmuri
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "👍 ${item.pros}",
             fontSize = 13.sp,
-            color = Color(0xFF558B2F), // 차분한 녹색
+            color = Color(0xFF558B2F),
             fontFamily = Galmuri,
             lineHeight = 18.sp
         )
@@ -107,7 +106,7 @@ fun AnalysisItemRow(item: AiAnalysisItem) {
         Text(
             text = "👎 ${item.cons}",
             fontSize = 13.sp,
-            color = Color(0xFFC62828), // 차분한 빨강
+            color = Color(0xFFC62828),
             fontFamily = Galmuri,
             lineHeight = 18.sp
         )

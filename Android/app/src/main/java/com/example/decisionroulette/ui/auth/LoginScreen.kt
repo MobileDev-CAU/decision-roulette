@@ -17,7 +17,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.ui.theme.Galmuri
 import kotlinx.coroutines.flow.collectLatest
 
-// 🎨 디자인 컬러 (갈색)
 private val CustomBrown = Color(0xFF685C57)
 
 @Composable
@@ -35,7 +34,7 @@ fun LoginScreen(
                 AuthUiEvent.NavigateToSignUp -> onNavigateToSignUp()
                 is AuthUiEvent.ShowError -> {
                     println("Login Error: ${event.message}")
-                    // TODO: Snackbar 또는 Toast로 오류 메시지 표시
+
                 }
                 else -> {}
             }
@@ -50,7 +49,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // 타이틀 (갈색 + 폰트)
+
         Text(
             text = "Login",
             fontSize = 32.sp,
@@ -95,7 +94,7 @@ fun LoginScreen(
             )
         )
 
-        // 로그인 버튼 (갈색 배경)
+        // 로그인 버튼
         Button(
             onClick = viewModel::onLoginClicked,
             enabled = !state.isLoginLoading,
@@ -121,7 +120,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 회원가입 링크 (갈색 텍스트)
+        // 회원가입 화면 링크 버튼
         TextButton(
             onClick = viewModel::navigateToSignUpScreen,
             colors = ButtonDefaults.textButtonColors(contentColor = CustomBrown)

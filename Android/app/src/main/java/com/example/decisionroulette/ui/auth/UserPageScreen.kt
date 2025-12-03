@@ -3,14 +3,11 @@ package com.example.decisionroulette.ui.mypage
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.* import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,10 +15,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.decisionroulette.ui.auth.AuthViewModel
-import com.example.decisionroulette.Routes // Routes 객체 Import 필수
+import com.example.decisionroulette.Routes
 import com.example.decisionroulette.ui.theme.Galmuri
 
 @Composable
@@ -34,7 +30,7 @@ fun MyPageScreen(
 
     LaunchedEffect(uiState.isLoggedIn) {
         if (!uiState.isLoggedIn) {
-            // 로그인 화면으로 이동시키고, 이전 백 스택을 모두 지워버립니다.
+            // 로그인 화면으로 이동시키고 이전 백 스택을 모두 지움
             navController.navigate(Routes.LOGIN) {
                 popUpTo(navController.graph.id) { inclusive = true }
             }
@@ -124,18 +120,6 @@ fun MyPagePasswordField(actualPassword: String) {
                     fontSize = 16.sp,
                     modifier = Modifier.padding(start = 16.dp)
                 )
-
-//                Icon(
-//                    imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-//                    contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
-//                    modifier = Modifier
-//                        .padding(end = 16.dp)
-//                        .size(24.dp)
-//                        .clickable {
-//                            isPasswordVisible = !isPasswordVisible
-//                        },
-//                    tint = Color.Gray
-//                )
             }
         }
     }

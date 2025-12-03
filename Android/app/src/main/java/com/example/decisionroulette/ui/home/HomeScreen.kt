@@ -47,7 +47,6 @@ fun HomeScreen(
                 .size(300.dp)
         )
 
-        // START 버튼 (갈색 테마 적용)
         Button(
             onClick = onNavigateToTopicCreate,
             modifier = Modifier
@@ -56,7 +55,7 @@ fun HomeScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = CustomBrown
             ),
-            shape = RoundedCornerShape(12.dp) // 둥근 모서리
+            shape = RoundedCornerShape(12.dp)
         ) {
             Text(
                 text = "START",

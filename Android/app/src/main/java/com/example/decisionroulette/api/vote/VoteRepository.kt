@@ -5,10 +5,10 @@ import com.example.decisionroulette.api.vote.VoteApiService
 import com.example.decisionroulette.api.vote.VoteListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException // HTTP 상태 코드를 포함하는 예외 처리용
+import retrofit2.HttpException
 import java.io.IOException
 import java.lang.Exception
-import android.util.Log // 로깅 추가
+import android.util.Log
 import com.example.decisionroulette.api.vote.VoteDetail
 import com.example.decisionroulette.api.vote.VoteRouletteDetailResponse
 import com.example.decisionroulette.api.vote.VoteSelectRequest
@@ -16,18 +16,12 @@ import com.example.decisionroulette.api.vote.VoteSelectResponse
 import com.example.decisionroulette.api.vote.VoteUploadRequest
 import com.example.decisionroulette.api.vote.VoteUploadResponse
 
-// 참고: Kotlin 표준 라이브러리의 Result<T>는 data.common.Result 대신 사용됩니다.
 
 class VoteRepository(
-    // 기본값으로 RetrofitClient.voteInstance를 사용하여 DI 컨테이너 없이도 사용 가능하게 합니다.
     private val api: VoteApiService = RetrofitClient.voteInstance
 ) {
     private val TAG = "VoteRepository"
 
-    /**
-     * GET /vote/list: 전체 투표 목록을 조회합니다.
-     * @return Result<List<VoteListItem>> Kotlin 표준 Result를 반환합니다.
-     */
     suspend fun getVoteList(): Result<List<VoteListItem>> = withContext(Dispatchers.IO) {
         return@withContext try {
             val response = api.getVoteList()
@@ -59,11 +53,7 @@ class VoteRepository(
         }
     }
 
-    /**
-     * GET /vote/{voteId}: 특정 투표의 상세 정보를 조회합니다.
-     * @param voteId 조회할 투표의 ID
-     * @return Result<VoteDetail> Kotlin 표준 Result를 반환합니다.
-     */
+
     suspend fun getVoteDetail(voteId: Long): Result<VoteDetail> = withContext(Dispatchers.IO) {
         return@withContext try {
             val response = api.getVoteDetail(voteId)
@@ -129,10 +119,10 @@ class VoteRepository(
 
     suspend fun selectVote(voteId: Long, selectedOptionName: String, userId: Int): Result<VoteSelectResponse> = withContext(Dispatchers.IO) {
         return@withContext try {
-            // 1. 요청 DTO 생성 (itemName만 포함)
+            // 요청 DTO 생성 (itemName만 포함)
             val requestBody = VoteSelectRequest(itemName = selectedOptionName)
 
-            // 2. API 호출 (voteId와 userId는 URL로 전달)
+            // API 호출 (voteId와 userId는 URL로 전달)
             val response = api.selectVote(
                 voteId = voteId,
                 userId = userId,
@@ -166,11 +156,10 @@ class VoteRepository(
 
     suspend fun uploadVote(rouletteId: Int, userId: Int): Result<VoteUploadResponse> = withContext(Dispatchers.IO) {
         return@withContext try {
-            // 1. 요청 DTO 생성
+            // 요청 DTO 생성
             val requestBody = VoteUploadRequest(rouletteId = rouletteId)
 
-            // 2. API 호출
-            // ⚠️ 주의: VoteApiService의 uploadVote 함수에도 userId 인자가 추가되어야 합니다!
+            // API 호출
             val response = api.uploadVote(request = requestBody, userId = userId)
 
             if (response.isSuccessful) {
@@ -196,41 +185,4 @@ class VoteRepository(
             Log.e(TAG, "Unknown Error during uploadVote: ${e.message}")
             Result.failure(e)
         }
-    }
-//    suspend fun uploadVote(rouletteId: Int): Result<VoteUploadResponse> = withContext(Dispatchers.IO) {
-//        return@withContext try {
-//            // 1. 요청 DTO 생성
-//            val requestBody = VoteUploadRequest(rouletteId = rouletteId)
-//
-//            // 2. API 호출
-//            val response = api.uploadVote(requestBody)
-//
-//            if (response.isSuccessful) {
-//                response.body()?.let {
-//                    Result.success(it)
-//                } ?: run {
-//                    val errorMsg = "Server returned empty body on successful vote upload."
-//                    Log.e(TAG, errorMsg)
-//                    Result.failure(IOException(errorMsg))
-//                }
-//            } else {
-//                // HTTP 실패 코드 (4xx, 5xx) 처리
-//                val errorMsg = "HTTP Error during vote upload: ${response.code()}"
-//                Log.e(TAG, "API call failed: $errorMsg, Body: ${response.errorBody()?.string()}")
-//                Result.failure(HttpException(response))
-//            }
-//        } catch (e: IOException) {
-//            // 네트워크 오류
-//            Log.e(TAG, "Network Error during uploadVote: ${e.message}")
-//            Result.failure(e)
-//        } catch (e: Exception) {
-//            // 그 외 예외
-//            Log.e(TAG, "Unknown Error during uploadVote: ${e.message}")
-//            Result.failure(e)
-//        }
-//    }
-
-
-
-
-}
+    }}

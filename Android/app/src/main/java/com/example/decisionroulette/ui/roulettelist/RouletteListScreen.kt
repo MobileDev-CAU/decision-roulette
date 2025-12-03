@@ -30,7 +30,6 @@ import com.example.decisionroulette.ui.reusable.VerticalScrollbarThumb
 import com.example.decisionroulette.ui.theme.Galmuri
 import kotlinx.coroutines.flow.collectLatest
 
-// 🎨 디자인 컬러 (갈색)
 private val CustomBrown = Color(0xFF685C57)
 
 @Composable
@@ -66,27 +65,26 @@ fun TopicCreateScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // 1. 헤더 (고정)
+            // 헤더 (고정)
             Box(modifier = Modifier.padding(horizontal = 40.dp)) {
                 BackButton(title = "My Roulette List", onClick = viewModel::onBackButtonClicked)
             }
 
-            // 2. 스크롤 가능한 내용
+            // 스크롤 가능한 내용
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 40.dp) // 전체 패딩 40dp 통일
+                    .padding(horizontal = 40.dp)
                     .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.weight(1f)) // 위쪽 여백 (적절히 조절됨)
+                Spacer(modifier = Modifier.weight(1f))
 
-                // 메인 텍스트
                 Text(
                     text = "What's Your Concern Today?",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = Galmuri, // 폰트 적용
+                    fontFamily = Galmuri,
                     color = Color.Black
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -98,7 +96,7 @@ fun TopicCreateScreen(
                     fontFamily = Galmuri
                 )
 
-                // 3. 리스트 영역 (Box)
+                // 리스트 영역
                 val listScrollState = rememberScrollState()
                 Box(
                     modifier = Modifier
@@ -147,7 +145,7 @@ fun TopicCreateScreen(
                     )
                 }
 
-                // 4. 입력 필드
+                // 입력 필드
                 Box(modifier = Modifier.padding(10.dp)) {
                     TopicField(
                         value = currentInputValue,
@@ -165,7 +163,7 @@ fun TopicCreateScreen(
 
                 Spacer(modifier = Modifier.height(36.dp))
 
-                // 5. Choice 버튼 (갈색 적용)
+                // Choice 버튼
                 Button(
                     onClick = viewModel::onChoiceButtonClicked,
                     enabled = state.selectedTopicId != null,
@@ -176,7 +174,7 @@ fun TopicCreateScreen(
                         containerColor = CustomBrown,
                         disabledContainerColor = Color.Gray
                     ),
-                    shape = RoundedCornerShape(12.dp) // 둥근 모서리
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
                         "Choice",
@@ -187,8 +185,6 @@ fun TopicCreateScreen(
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
-
-                // 하단 여백 확보
                 Spacer(modifier = Modifier.height(50.dp))
             }
         }

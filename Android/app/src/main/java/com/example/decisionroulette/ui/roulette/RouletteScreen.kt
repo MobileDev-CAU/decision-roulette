@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.ui.roulette.components.*
@@ -55,7 +54,7 @@ fun RouletteScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // 1. 헤더 (고정)
+            // 헤더 (고정)
             Box(modifier = Modifier.padding(horizontal = 40.dp)) {
                 RouletteHeader(
                     title = uiState.title,
@@ -64,7 +63,7 @@ fun RouletteScreen(
                 )
             }
 
-            // 2. 스크롤 가능한 영역
+            // 스크롤 가능한 영역
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -85,7 +84,7 @@ fun RouletteScreen(
                 // AI 분석 리포트
                 AiAnalysisExpander(analysisResult = uiState.analysisResult)
 
-                Spacer(modifier = Modifier.height(80.dp)) // 룰렛과 간격 확보
+                Spacer(modifier = Modifier.height(80.dp))
 
                 // 룰렛 휠
                 RouletteWheel(

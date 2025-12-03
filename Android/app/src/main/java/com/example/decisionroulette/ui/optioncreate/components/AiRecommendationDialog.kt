@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.decisionroulette.ui.theme.Galmuri
 
-// 🎨 디자인 컬러 (갈색)
 private val CustomBrown = Color(0xFF685C57)
 private val LightBrownBg = Color(0xFFEFEBE9) // 연한 갈색 배경
 
@@ -35,7 +34,7 @@ fun AiRecommendationDialog(
             colors = CardDefaults.cardColors(containerColor = Color.White),
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 500.dp) // 너무 길어지지 않게 제한
+                .heightIn(max = 500.dp)
                 .padding(16.dp)
         ) {
             Column(
@@ -48,7 +47,7 @@ fun AiRecommendationDialog(
                     fontSize = 20.sp,
                     fontFamily = Galmuri,
                     fontWeight = FontWeight.Bold,
-                    color = CustomBrown // 🔥 갈색 적용
+                    color = CustomBrown
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -89,7 +88,7 @@ fun AiRecommendationDialog(
                                     else selectedItems.remove(item)
                                 },
                                 colors = CheckboxDefaults.colors(
-                                    checkedColor = CustomBrown, // 🔥 체크 시 갈색
+                                    checkedColor = CustomBrown,
                                     uncheckedColor = Color.Gray,
                                     checkmarkColor = Color.White
                                 )
@@ -99,7 +98,7 @@ fun AiRecommendationDialog(
                                 text = item,
                                 fontSize = 16.sp,
                                 fontFamily = Galmuri,
-                                color = if (isSelected) CustomBrown else Color.Black, // 선택 시 글자색 변경
+                                color = if (isSelected) CustomBrown else Color.Black,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                             )
                         }
@@ -114,7 +113,6 @@ fun AiRecommendationDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // 취소 버튼 (연한 갈색)
                     Button(
                         onClick = onDismiss,
                         modifier = Modifier.weight(1f).height(50.dp),
@@ -127,7 +125,6 @@ fun AiRecommendationDialog(
                         Text("Cancel", fontSize = 16.sp, fontFamily = Galmuri, fontWeight = FontWeight.Bold)
                     }
 
-                    // 추가 버튼 (진한 갈색)
                     Button(
                         onClick = { onConfirm(selectedItems) },
                         modifier = Modifier.weight(1f).height(50.dp),

@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 sealed interface EditOptionUiEvent {
     object NavigateBack : EditOptionUiEvent
-    object NavigateToRoulette : EditOptionUiEvent // 수정 완료 후 룰렛으로 이동
+    object NavigateToRoulette : EditOptionUiEvent
 }
 
 class EditOptionViewModel : ViewModel() {
@@ -24,13 +24,12 @@ class EditOptionViewModel : ViewModel() {
     private val _events = Channel<EditOptionUiEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
-    // UI 상태 (옵션 리스트 포함)
     private val _options = mutableStateListOf<Option>()
 
     var uiState by mutableStateOf(EditOptionUiState(options = _options))
         private set
 
-    // 🔥 1. 화면 진입 시 데이터 로드
+    //  화면 진입 시 데이터 로드
     fun loadRouletteData(rouletteId: Int) {
         if (uiState.rouletteId != 0) return // 이미 로드했으면 패스
 
@@ -62,7 +61,7 @@ class EditOptionViewModel : ViewModel() {
         }
     }
 
-    // 2. 수정 완료 (Save)
+    // 수정 완료 (Save)
     fun onSaveButtonClicked() {
         val rouletteId = uiState.rouletteId
         if (rouletteId == 0) return
@@ -70,7 +69,6 @@ class EditOptionViewModel : ViewModel() {
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true)
 
-            // 예시: 모든 항목을 순회하며 업데이트 시도 (실제로는 변경된 것만 골라야 함)
             _options.forEach { option ->
                 repository.updateItemName(rouletteId, option.id, option.value)
             }

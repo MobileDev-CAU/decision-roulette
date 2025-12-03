@@ -1,44 +1,33 @@
 package com.example.decisionroulette.ui.vote
 
-
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.ui.home.VoteViewModel
 import com.example.decisionroulette.ui.reusable.BackButton
-import com.example.decisionroulette.ui.reusable.BlackBorder
 import com.example.decisionroulette.ui.reusable.PieSlice
 import com.example.decisionroulette.ui.reusable.VotePieChart
-import com.example.decisionroulette.ui.home.VoteUiState // VoteUiState import
-import com.example.decisionroulette.ui.theme.Galmuri // 폰트 임포트
-import androidx.compose.ui.text.font.FontFamily // 폰트 패밀리 임포트
+import com.example.decisionroulette.ui.theme.Galmuri
 import androidx.compose.foundation.background
 import com.example.decisionroulette.ui.votelist.LightBrown
 import com.example.decisionroulette.ui.votelist.MainBrown
 
-val MainBrown = Color(0xFF685C57)
 val LightBrown = Color(0xFFD7CCC8)
 val BackgroundWhite = Color(0xFFFDFBF7)
 
@@ -63,7 +52,6 @@ private fun VoteChartLegend(
             horizontalArrangement = Arrangement.SpaceBetween
          ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-               // 1. 색상 사각형
                Box(
                   modifier = Modifier
                      .size(12.dp)

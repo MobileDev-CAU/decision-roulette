@@ -66,7 +66,7 @@ class OptionCreateViewModel : ViewModel() {
         _options.removeIf { it.id == id }
     }
 
-    // 1. AI 추천 버튼 클릭 (API 호출 -> 다이얼로그 오픈)
+    // AI 추천 버튼 클릭 (API 호출 -> 다이얼로그 오픈)
     fun onAiButtonClicked() {
         val title = uiState.topicTitle
         val userId = TokenManager.getUserId()
@@ -84,29 +84,29 @@ class OptionCreateViewModel : ViewModel() {
                     aiRecommendations = response.recommendations
                 )
             }.onFailure {
-                // 실패 시 에러 처리 (일단 로딩만 끔)
-                println("AI 추천 실패: ${it.message}")
+                // 실패 시 에러 처리
+                println("AI recommendation failed: ${it.message}")
                 uiState = uiState.copy(isLoading = false)
             }
         }
     }
 
-    // 2. 다이얼로그 닫기
+    // 다이얼로그 닫기
     fun dismissAiDialog() {
         uiState = uiState.copy(showAiDialog = false)
     }
 
-    // 3. 다이얼로그 완료 (선택된 항목들 추가)
+    // 다이얼로그 완료 (선택된 항목들 추가)
     fun addAiSelectedOptions(selectedItems: List<String>) {
         selectedItems.forEach { item ->
-            // 1. 현재 옵션 목록 중 비어있는(공백) 칸 찾기
+            // 현재 옵션 목록 중 비어있는(공백) 칸 찾기
             val emptyIndex = _options.indexOfFirst { it.value.isBlank() }
 
             if (emptyIndex != -1) {
-                // 2. 비어있는 칸이 있으면 그 자리에 값 채워넣기
+                // 비어있는 칸이 있으면 그 자리에 값 채워넣기
                 _options[emptyIndex] = _options[emptyIndex].copy(value = item)
             } else {
-                // 3. 비어있는 칸이 없으면 새로 추가하기
+                // 비어있는 칸이 없으면 새로 추가하기
                 addOption(initialValue = item)
             }
         }
@@ -120,38 +120,28 @@ class OptionCreateViewModel : ViewModel() {
         val title = uiState.topicTitle
         val userId = TokenManager.getUserId()
 
-        if (itemsList.isEmpty()) return // 빈 값이면 요청 안 함
+        if (itemsList.isEmpty()) return
 
         viewModelScope.launch {
-            // 로딩 시작
             uiState = uiState.copy(isLoading = true)
 
             val result = repository.createRoulette(title, itemsList, ownerId = userId)
 
             result.onSuccess { response ->
-                println("룰렛 생성 성공! ID: ${response.rouletteId}")
+                println("Successfully created roulette! ID: ${response.rouletteId}")
                 _events.send(OptionCreateUiEvent.NavigateToRoulette(response.rouletteId))
             }.onFailure { e ->
-                println("룰렛 생성 실패: ${e.message}")
-                // 실패 처리 (토스트 메시지 등)
+                println("Failed to create roulette: ${e.message}")
             }
 
-            // 로딩 종료
             uiState = uiState.copy(isLoading = false)
         }
     }
 
-   // 백 버튼
     fun onBackButtonClicked() {
         viewModelScope.launch {
             _events.send(OptionCreateUiEvent.NavigateToBack)
         }
     }
 
-    // ai 추천
-//    fun onAiButtonClicked() {
-//        viewModelScope.launch {
-//            _events.send(OptionCreateUiEvent.NavigateAi)
-//        }
-//    }
 }

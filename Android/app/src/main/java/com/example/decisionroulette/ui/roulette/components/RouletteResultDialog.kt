@@ -1,8 +1,6 @@
 package com.example.decisionroulette.ui.roulette.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -25,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.decisionroulette.ui.theme.Galmuri
 
-// 🎨 디자인 컬러 (갈색 테마)
+
 val MainBrown = Color(0xFF685C57)
 val LightBrown = Color(0xFFD7CCC8)
 val BackgroundWhite = Color(0xFFFDFBF7)
@@ -54,7 +51,7 @@ fun RouletteResultDialog(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 1. 상단 타이틀 (고정)
+                // 상단 타이틀 (고정)
                 Text(
                     text = "🎉 Result",
                     fontSize = 24.sp,
@@ -65,7 +62,7 @@ fun RouletteResultDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 2. 결과 표시 (원형 테두리)
+                // 결과 표시 (원형 테두리)
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.size(220.dp)
@@ -102,7 +99,7 @@ fun RouletteResultDialog(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 3. 하단 버튼 영역 (Step에 따라 변경)
+                // 하단 버튼 영역 (Step에 따라 변경)
                 when (step) {
                     1 -> Step1Buttons(
                         onConfirm = { step = 2 },
@@ -128,7 +125,7 @@ fun RouletteResultDialog(
     }
 }
 
-// [Step 1] 결과 확인 단계 버튼들
+//  결과 확인 단계 버튼들
 @Composable
 fun Step1Buttons(
     onConfirm: () -> Unit,
@@ -161,7 +158,7 @@ fun Step1Buttons(
     }
 }
 
-// [Step 2] 만족 여부 확인 버튼들
+// 만족 여부 확인 버튼들
 @Composable
 fun Step2Buttons(onYes: () -> Unit, onNo: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -188,7 +185,7 @@ fun Step2Buttons(onYes: () -> Unit, onNo: () -> Unit) {
     }
 }
 
-// [Step 3] 직접 입력 필드
+// 직접 입력 필드
 @Composable
 fun Step3Input(
     text: String,
@@ -229,7 +226,7 @@ fun Step3Input(
     }
 }
 
-// 🎨 공통 버튼 컴포넌트 (강조)
+// 공통 버튼 컴포넌트
 @Composable
 fun PrimaryButton(
     text: String,
@@ -252,7 +249,7 @@ fun PrimaryButton(
     }
 }
 
-// 🎨 공통 버튼 컴포넌트 (보조)
+// 공통 버튼 컴포넌트 - 보조
 @Composable
 fun SecondaryButton(
     text: String,

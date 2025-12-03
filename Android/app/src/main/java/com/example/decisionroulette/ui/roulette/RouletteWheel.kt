@@ -34,10 +34,10 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-// 🎨 디자인 컬러 정의
+// 디자인 컬러 정의
 val CustomBrown = Color(0xFF685C57)
 
-// 🎨 빈티지 파스텔톤 룰렛 색상
+// 빈티지 파스텔톤 룰렛 색상
 val RouletteColors = listOf(
     Color(0xFFD7CCC8), // 연한 갈색
     Color(0xFFFFCCBC), // 살구색
@@ -54,7 +54,7 @@ fun RouletteWheel(
     onStartClick: () -> Unit
 ) {
     Box(contentAlignment = Alignment.Center) {
-        // 3-1. 돌아가는 원판
+        // 돌아가는 원판
         Canvas(
             modifier = Modifier
                 .size(300.dp)
@@ -75,7 +75,7 @@ fun RouletteWheel(
                         RouletteColors[index % RouletteColors.size]
                     }
 
-                    // (A) 부채꼴 그리기
+                    // 부채꼴 그리기
                     drawArc(
                         color = color,
                         startAngle = currentStartAngle,
@@ -84,10 +84,9 @@ fun RouletteWheel(
                         size = Size(size.width, size.height)
                     )
 
-                    // (B) 글자 그리기
+                    // 글자 그리기
                     drawIntoCanvas { canvas ->
                         val paint = Paint().apply {
-//                            color = android.graphics.Color.BLACK
                             textSize = 40f
                             textAlign = Paint.Align.CENTER
                             typeface = Typeface.DEFAULT_BOLD
@@ -107,16 +106,16 @@ fun RouletteWheel(
             }
         }
 
-        // 3-2. 테두리 (갈색)
+
         Canvas(modifier = Modifier.size(300.dp)) {
             drawCircle(
                 color = CustomBrown,
                 radius = size.width / 2,
-                style = Stroke(width = 4.dp.toPx()) // 테두리 조금 더 두껍게
+                style = Stroke(width = 4.dp.toPx())
             )
         }
 
-        // 3-3. START 버튼
+        // START 버튼
         Button(
             onClick = onStartClick,
             shape = CircleShape,
@@ -124,18 +123,18 @@ fun RouletteWheel(
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier
                 .size(80.dp)
-                .border(3.dp, CustomBrown, CircleShape) // 갈색 테두리
+                .border(3.dp, CustomBrown, CircleShape)
         ) {
             Text(
                 text = "START",
-                color = CustomBrown, // 갈색 텍스트
+                color = CustomBrown,
                 fontWeight = FontWeight.Bold,
                 fontFamily = Galmuri,
                 fontSize = 18.sp
             )
         }
 
-        // 3-4. 화살표 핀 (둥근 삼각형)
+        // 화살표 핀 (둥근 삼각형)
         Canvas(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -151,7 +150,7 @@ fun RouletteWheel(
             drawIntoCanvas { canvas ->
                 val paint = Paint().apply {
                     isAntiAlias = true
-                    pathEffect = CornerPathEffect(10f) // 둥근 모서리 효과
+                    pathEffect = CornerPathEffect(10f)
                 }
 
                 // 내부 채우기 (흰색)

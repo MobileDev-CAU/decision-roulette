@@ -26,17 +26,15 @@ fun OptionInputField(
         // 'option N' 텍스트
         Text(
             text = "option $index",
-            modifier = Modifier.width(75.dp) // 너비 고정
+            modifier = Modifier.width(75.dp)
         )
 
         Spacer(Modifier.width(8.dp))
 
-        // 텍스트 필드
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = { Text(placeholder) },
-            // 필드가 Row의 남은 공간을 모두 차지하도록 weight(1f) 적용
             modifier = Modifier.weight(1f),
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
@@ -45,7 +43,6 @@ fun OptionInputField(
             )
         )
 
-        // 삭제 버튼 (옵션이 최소 2개 이상일 때만 표시하는 로직은 ViewModel에서 관리)
         if (onRemove != null) {
             IconButton(onClick = onRemove) {
                 Icon(Icons.Default.Close, contentDescription = "Remove option")

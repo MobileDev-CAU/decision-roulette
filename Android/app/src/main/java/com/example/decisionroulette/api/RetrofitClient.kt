@@ -16,20 +16,16 @@ object RetrofitClient {
     private val headerInterceptor = Interceptor { chain ->
         val originalRequest = chain.request()
 
-        // 1. TokenManager에서 Access Token을 가져옵니다.
         val accessToken = TokenManager.getAccessToken()
 
-        // 2. 새로운 요청 빌더를 시작합니다.
         val requestBuilder = originalRequest.newBuilder()
             .header("accept", "*/*")
 
-        // 3. Access Token이 존재하면 Authorization 헤더를 추가합니다.
         if (accessToken != null) {
             requestBuilder.header("Authorization", "Bearer $accessToken")
         }
 
         val newRequest = requestBuilder.build()
-        // ----------------------------------------------------
 
         chain.proceed(newRequest)
     }

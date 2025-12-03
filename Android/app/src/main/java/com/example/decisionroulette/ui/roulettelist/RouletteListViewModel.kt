@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.decisionroulette.data.topiclist.RouletteList // 수정: RouletteList를 사용합니다.
+import com.example.decisionroulette.data.topiclist.RouletteList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -20,12 +20,6 @@ sealed interface TopicCreateUiEvent {
     object NavigateToBack : TopicCreateUiEvent
 }
 
-// 초기 더미 데이터
-private val initialExistingTopics = listOf(
-    RouletteList(rouletteId = 10, title = "점심 메뉴", itemCount = 3),
-    RouletteList(rouletteId = 20, title = "오늘 할 일", itemCount = 5),
-    RouletteList(rouletteId = 30, title = "입을 옷", itemCount = 5)
-)
 
 class TopicCreateViewModel : ViewModel() {
     private val repository = RouletteRepository()
@@ -55,11 +49,10 @@ class TopicCreateViewModel : ViewModel() {
     private fun loadExistingTopics() {
         val userId = TokenManager.getUserId()
         if (userId == -1) {
-            println("로그인 정보가 없습니다.")
+            println("There is no login information")
             return
         }
         viewModelScope.launch {
-            // 로딩 시작
             uiState = uiState.copy(isLoading = true)
 
             val result = repository.getRouletteList(ownerId = userId)
@@ -82,7 +75,7 @@ class TopicCreateViewModel : ViewModel() {
                 )
             }.onFailure { exception ->
                 // 실패 시 에러 처리
-                println("API 로드 실패: ${exception.message}")
+                println("API load failed: ${exception.message}")
                 uiState = uiState.copy(
                     isLoading = false,
                     error = exception.message
@@ -148,7 +141,7 @@ class TopicCreateViewModel : ViewModel() {
                     val updatedList = uiState.existingTopics.filter { it.rouletteId != topicId }
                     uiState = uiState.copy(existingTopics = updatedList)
                 }.onFailure {
-                    println("삭제 실패: ${it.message}")
+                    println("Failed to delete: ${it.message}")
                     // 실패 시 에러 메시지를 띄우거나 복구 로직 추가 가능
                 }
             }
@@ -170,10 +163,10 @@ class TopicCreateViewModel : ViewModel() {
         val selectedId = uiState.selectedTopicId
 
         if (selectedId != null) {
-            // 1. 기존 주제에서 찾기
+            // 기존 주제에서 찾기
             val existingTopic = uiState.existingTopics.find { it.rouletteId == selectedId }
 
-            // 2. 사용자 생성 주제에서 찾기
+            // 사용자 생성 주제에서 찾기
             val userTopic = uiState.userCreatedTopics.find { it.tempId == selectedId }
 
             // 기존 주제가 있다면 itemCount를 사용하고, 새 주제라면 itemCount는 0으로 간주합니다.
@@ -181,10 +174,6 @@ class TopicCreateViewModel : ViewModel() {
 
             val selectedTitle = existingTopic?.title ?: userTopic?.title ?: ""
 
-
-            // TODO: 실제 앱에서는 여기서 선택된 주제를 저장하거나,
-            // 옵션 생성/룰렛 화면으로 이동 시 해당 주제의 ID/제목을 전달해야 합니다.
-            // 예를 들어: navigate(Screen.Roulette, selectedId)
 
             viewModelScope.launch {
                 // 옵션이 있는 경우 (itemCount > 0): 룰렛 화면으로 이동
@@ -200,7 +189,6 @@ class TopicCreateViewModel : ViewModel() {
         }
     }
 
-   // 백 버튼
     fun onBackButtonClicked() {
         viewModelScope.launch {
             _events.send(TopicCreateUiEvent.NavigateToBack)

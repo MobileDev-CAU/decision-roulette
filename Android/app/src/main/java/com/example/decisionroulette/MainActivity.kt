@@ -63,7 +63,6 @@ object Routes {
     const val LOGIN = "login_route"
     const val USER_PAGE="user_page_route"
     const val VOTE_LIST="vote_list_route"
-    // 🚨🚨 경로 수정: voteId를 파라미터로 받을 수 있게 경로를 변경
     const val VOTE_STATUS_MY = "vote_status_my_route/{voteId}"
 
     const val VOTE_STATUS_OTHER = "vote_status_other_route/{voteId}"
@@ -77,16 +76,10 @@ class MainActivity : ComponentActivity() {
 
         TokenManager.initialize(this)
 
-//        enableEdgeToEdge()
         setContent {
             DecisionRouletteTheme {
                 AppScreen()
-//                 Surface(
-//                     modifier = Modifier.fillMaxSize(),
-//                     color = MaterialTheme.colorScheme.background
-//                 ) {
-//                     RouletteScreen()
-//                 }
+
             }
         }
     }
@@ -95,11 +88,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppScreen(
     homeViewModel: HomeViewModel = viewModel(),
-//    topicListViewModel: TopicListViewModel = viewModel(),
     topicCreateViewModel: TopicCreateViewModel = viewModel(),
     optionCreateViewModel: OptionCreateViewModel=viewModel(),
     authViewModel: AuthViewModel = viewModel(),
-    //rouletteViewModel: RouletteViewModel =viewModel()
     voteListViewModel: VoteListViewModel=viewModel(),
 
 
@@ -133,7 +124,7 @@ fun AppScreen(
 
 
     // ------------------------------------------------------------------
-    // 0. 인증 (로그인/회원가입) 네비게이션 처리
+    // 인증 (로그인/회원가입) 네비게이션 처리
     LaunchedEffect(authViewModel.events) {
         authViewModel.events.collect { event ->
             when (event) {
@@ -158,7 +149,7 @@ fun AppScreen(
         }
     }
     // ------------------------------------------------------------------
-    // 1. 홈 화면 -> 주제 목록 이동 (HomeViewModel 이벤트)
+    // 홈 화면 -> 주제 목록 이동 (HomeViewModel 이벤트)
     LaunchedEffect(homeViewModel.events) {
         homeViewModel.events.collect { event ->
             when (event) {
@@ -171,20 +162,7 @@ fun AppScreen(
         }
     }
 
-    // 2. 주제 목록 -> 주제 생성 화면 이동 (TopicListViewModel 이벤트)
-//    LaunchedEffect(topicListViewModel.events) {
-//        topicListViewModel.events.collect { event ->
-//            when (event) {
-//                TopicListUiEvent.NavigateToAddTopic -> {
-//                    navController.navigate(Routes.TOPIC_CREATE)
-//                }
-//
-//                else -> {}
-//            }
-//        }
-//    }
-
-    // 3. 주제 생성 (분기)
+    // 주제 생성 (분기)
     LaunchedEffect(topicCreateViewModel.events) {
         topicCreateViewModel.events.collect { event ->
             when (event) {
@@ -203,7 +181,7 @@ fun AppScreen(
         }
     }
 
-    // 4. 옵션 생성 (분기)
+    // 옵션 생성 (분기)
     LaunchedEffect(optionCreateViewModel.events) {
         optionCreateViewModel.events.collect { event ->
             when (event) {
@@ -224,7 +202,6 @@ fun AppScreen(
     LaunchedEffect(voteListViewModel.events) {
         voteListViewModel.events.collect { event ->
             when (event) {
-                // 🌟 NavigateToVoteStatus 이벤트에서 voteId와 isMyVote 플래그 추출
                 is VoteListUiEvent.NavigateToVoteStatus -> {
                     val route = if (event.isMyVote) {
                         Routes.VOTE_STATUS_MY
@@ -281,7 +258,7 @@ fun AppScreen(
                 )
             }
 
-            // 2. 회원가입 화면 (하단 바 없음)
+            // 회원가입 화면
             composable(Routes.SIGN_UP) {
                 SignUpScreen(
                     viewModel = authViewModel,
@@ -289,22 +266,13 @@ fun AppScreen(
                 )
             }
 
-            // 3. 홈 화면 (하단 바 있음)
+            // 홈 화면
             composable(Routes.HOME) {
                 HomeScreen(
                     onNavigateToTopicCreate = homeViewModel::onRouletteButtonClicked
                 )
             }
-
-            // 4. 주제 목록 (하단 바 있음)
-//            composable(Routes.TOPIC_LIST) {
-//                TopicListScreen(
-//                    onNavigateToCreateTopic = topicListViewModel::onAddListButtonClicked,
-//                    onNavigateBack = { navController.popBackStack() }
-//                )
-//            }
-
-            // 5. 사용자 정보 화면 (MyPage) (하단 바 있음)
+            // 사용자 정보 화면 (MyPage)
             composable(Routes.USER_PAGE) {
                 MyPageScreen(
                     authViewModel = authViewModel,
@@ -313,7 +281,7 @@ fun AppScreen(
             }
 
 
-            // 6. 주제 생성 (하단 바 없음)
+            // 주제 생성
             composable(Routes.TOPIC_CREATE) {
                 TopicCreateScreen(
                     onNavigateToCreateOption = { title ->
@@ -326,7 +294,7 @@ fun AppScreen(
                 )
             }
 
-            // 7. 옵션 생성 (하단 바 없음)
+            // 옵션 생성
             composable(
                 route = "option_create_route/{topicTitle}"
             ) { backStackEntry ->
@@ -344,9 +312,8 @@ fun AppScreen(
                 )
             }
 
-            // 8. 룰렛 돌아가기
+            // 룰렛 돌아가기
             composable(
-                // 🔥 [수정] voteId를 쿼리 파라미터로 받을 수 있게 설정
                 route = "${Routes.ROULETTE}/{rouletteId}?voteId={voteId}",
                 arguments = listOf(
                     navArgument("rouletteId") { type = NavType.StringType },
@@ -358,7 +325,6 @@ fun AppScreen(
                 )
             ) { backStackEntry ->
                 val rouletteId = backStackEntry.arguments?.getString("rouletteId")?.toIntOrNull() ?: -1
-                // 🔥 voteId를 꺼내서 전달
                 val voteId = backStackEntry.arguments?.getString("voteId")?.toLongOrNull() ?: -1L
 
                 RouletteScreen(
@@ -366,26 +332,12 @@ fun AppScreen(
                     voteId = voteId, // 전달
                     onNavigateToVoteList = { navController.navigate(Routes.VOTE_LIST) },
 
-//                     onNavigateToBack = { navController.popBackStack(Routes.TOPIC_CREATE, inclusive = false) },
                     onNavigateToBack = { navController.popBackStack() },
                     onNavigateToEdit = {
                         navController.navigate("${Routes.EDIT_OPTION}/$rouletteId")
                     }
                 )
             }
-//            composable("${Routes.ROULETTE}/{rouletteId}") { backStackEntry ->
-//                val rouletteId = backStackEntry.arguments?.getString("rouletteId")?.toIntOrNull() ?: -1
-//
-//                RouletteScreen(
-//                    rouletteId = rouletteId,
-//                    onNavigateToVoteList = { navController.navigate(Routes.VOTE_LIST) },
-//                    onNavigateToBack = { navController.popBackStack(Routes.TOPIC_CREATE, inclusive = false)  },
-//                    onNavigateToEdit = {
-//                        navController.navigate("${Routes.EDIT_OPTION}/$rouletteId")
-//                    }
-//                )
-//            }
-
             composable("${Routes.EDIT_OPTION}/{rouletteId}") { backStackEntry ->
                 val rouletteId = backStackEntry.arguments?.getString("rouletteId")?.toIntOrNull() ?: -1
 
@@ -425,11 +377,9 @@ fun AppScreen(
                         when (event) {
                             VoteUiEvent.NavigateToBack -> { navController.popBackStack() }
                             is VoteUiEvent.NavigateToRoulette -> {
-                                //TODO 여기 다시 고쳐보기
-//                                navController.navigate("roulette_route/${event.rouletteId}?voteId=${event.voteId}")
+
                                 navController.navigate("roulette_route/13?voteId=${event.voteId}")
                             }
-//                             VoteUiEvent.NavigateToVoteClear -> { navController.popBackStack() } // 투표 후 목록으로 돌아감
                             VoteUiEvent.NavigateToVoteClear -> { navController.navigate(Routes.VOTE_LIST) }
                         }
                     }
@@ -463,7 +413,6 @@ fun AppScreen(
                             is VoteUiEvent.NavigateToRoulette -> {
                                 navController.navigate("roulette_route/${event.rouletteId}?voteId=${event.voteId}")
                             }
-//                             VoteUiEvent.NavigateToVoteClear -> { navController.popBackStack() } // 투표 후 목록으로 돌아감
                             VoteUiEvent.NavigateToVoteClear -> { navController.navigate(Routes.VOTE_LIST) }
                         }
                     }

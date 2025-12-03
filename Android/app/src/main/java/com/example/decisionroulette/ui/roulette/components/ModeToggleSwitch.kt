@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.decisionroulette.ui.theme.Galmuri
 
-//private val CustomBrown = Color(0xFF685C57)
 
 @Composable
 fun ModeToggleSwitch(
@@ -26,7 +25,7 @@ fun ModeToggleSwitch(
 ) {
     Row(
         modifier = Modifier
-            .background(Color(0xFFEFEBE9), RoundedCornerShape(50)) // 연한 갈색 배경
+            .background(Color(0xFFEFEBE9), RoundedCornerShape(50))
             .padding(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

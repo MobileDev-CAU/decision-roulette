@@ -17,7 +17,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.ui.theme.Galmuri
 import kotlinx.coroutines.flow.collectLatest
 
-// 🎨 디자인 컬러 (갈색)
 private val CustomBrown = Color(0xFF685C57)
 
 @Composable
@@ -47,7 +46,7 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // 타이틀 (갈색 + 폰트)
+
         Text(
             text = "Sign Up",
             fontSize = 32.sp,
@@ -57,7 +56,7 @@ fun SignUpScreen(
             modifier = Modifier.padding(bottom = 40.dp)
         )
 
-        // 1. 이메일 입력 필드
+        //  이메일 입력 필드
         OutlinedTextField(
             value = state.emailInput,
             onValueChange = viewModel::updateEmail,
@@ -72,7 +71,7 @@ fun SignUpScreen(
             )
         )
 
-        // 2. 닉네임 입력 필드
+        //  닉네임 입력 필드
         OutlinedTextField(
             value = state.nicknameInput,
             onValueChange = viewModel::updateNickname,
@@ -87,7 +86,7 @@ fun SignUpScreen(
             )
         )
 
-        // 3. 비밀번호 입력 필드
+        // 비밀번호 입력 필드
         OutlinedTextField(
             value = state.passwordInput,
             onValueChange = viewModel::updatePassword,
@@ -103,7 +102,7 @@ fun SignUpScreen(
             )
         )
 
-        // 4. 회원가입 버튼 (갈색 배경)
+        // 회원가입 버튼
         Button(
             onClick = viewModel::onSignUpClicked,
             enabled = !state.isLoginLoading,
@@ -123,7 +122,7 @@ fun SignUpScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 5. 로그인 화면으로 돌아가기 버튼 (갈색 텍스트)
+        // 로그인 화면 링크 버튼
         TextButton(
             onClick = viewModel::navigateToLoginScreen,
             colors = ButtonDefaults.textButtonColors(contentColor = CustomBrown)

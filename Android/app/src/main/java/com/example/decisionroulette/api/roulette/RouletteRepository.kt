@@ -1,9 +1,6 @@
 package com.example.decisionroulette.api.roulette
 
 import com.example.decisionroulette.api.RetrofitClient
-import com.example.decisionroulette.api.roulette.RouletteApiService
-import com.example.decisionroulette.api.roulette.RouletteDto
-
 class RouletteRepository(
     private val api: RouletteApiService = RetrofitClient.instance
 ) {

@@ -25,7 +25,7 @@ class AuthRepository(private val api: AuthApiService = RetrofitClient.authInstan
             }
         } catch (e: IOException) {
             // 네트워크 오류 (연결 끊김, Timeout 등)
-            Log.e("AUTH_FAIL", "네트워크 오류 발생: ${e.message}")
+            Log.e("AUTH_FAIL", "Network Error Occurred: ${e.message}")
             Result.failure(e)
         } catch (e: Exception) {
             // 그 외 예외
@@ -40,17 +40,14 @@ class AuthRepository(private val api: AuthApiService = RetrofitClient.authInstan
             val response = api.login(request)
 
             if (response.isSuccessful) {
-                response.body()?.let { loginResponse -> // ⭐ 응답 DTO를 loginResponse로 받음
-                    // ⭐ 수정: TokenManager의 새로운 시그니처에 맞춰 userId(id)를 전달
+                response.body()?.let { loginResponse ->
                     TokenManager.saveTokensAndUser(
                         accessToken = loginResponse.accessToken,
                         refreshToken = loginResponse.refreshToken,
                         nickname = loginResponse.nickname,
-                        userId = loginResponse.id // ⭐ LoginResponse의 'id'를 userId로 전달
+                        userId = loginResponse.id
                     )
 
-                    // 🚨 제거: saveTokensAndUser에서 이미 ID를 저장하므로 중복 호출 제거
-                    // TokenManager.setUserId(loginResponse.id)
 
                     Result.success(loginResponse)
                 } ?: Result.failure(IOException("Server returned empty body on successful login."))
@@ -94,11 +91,6 @@ class AuthRepository(private val api: AuthApiService = RetrofitClient.authInstan
         return TokenManager.getUserNickname()
     }
 
-    // ⭐ 추가: VoteViewModel에서 사용하는 userId 가져오는 함수
-    /**
-     * 로컬 저장소(TokenManager)에서 현재 로그인된 사용자의 ID를 가져옵니다.
-     * @return 유효한 userId(Int) 또는 인증되지 않았을 경우 null
-     */
     fun getCurrentUserId(): Int? {
         val userId = TokenManager.getUserId()
         // TokenManager에서 -1을 반환하는 경우 유효하지 않은 것으로 간주

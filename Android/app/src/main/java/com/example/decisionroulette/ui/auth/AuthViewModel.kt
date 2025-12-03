@@ -30,7 +30,7 @@ class AuthViewModel() : ViewModel() {
     private val _events = Channel<AuthUiEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
-    // 1. 초기화 블록: 앱 시작 시 로컬 저장소에서 토큰을 읽어와 로그인 상태를 복원
+    // 초기화 블록:앱 시작 시 로컬 저장소에서 토큰을 읽어와 로그인 상태를 복원
     init {
         // Access Token과 사용자 정보가 로컬 저장소에 남아있는지 확인
         val accessToken = TokenManager.getAccessToken()
@@ -63,7 +63,7 @@ class AuthViewModel() : ViewModel() {
 
 
     // ----------------------------------------------------
-    // 1. 로그인
+    // 로그인
     fun onLoginClicked() {
         if (uiState.emailInput.isBlank() || uiState.passwordInput.isBlank()) {
             viewModelScope.launch {
@@ -115,7 +115,7 @@ class AuthViewModel() : ViewModel() {
     }
 
     // ----------------------------------------------------
-    // 2. 회원가입 로직 (실제 API 호출)
+    // 회원가입
     fun onSignUpClicked() {
         if (uiState.emailInput.isBlank() || uiState.passwordInput.isBlank() || uiState.nicknameInput.isBlank() || uiState.passwordInput.length < 6) {
             viewModelScope.launch {
@@ -159,9 +159,7 @@ class AuthViewModel() : ViewModel() {
         }
     }
 
-    // ----------------------------------------------------
-    // 3. 네비게이션 헬퍼
-    // ----------------------------------------------------
+
     fun navigateToSignUpScreen() {
         viewModelScope.launch { _events.send(AuthUiEvent.NavigateToSignUp) }
     }
@@ -169,7 +167,7 @@ class AuthViewModel() : ViewModel() {
         viewModelScope.launch { _events.send(AuthUiEvent.NavigateToLogin) }
     }
 
-    // 4. 로그아웃 로직 (로컬 삭제만 구현)
+    // 로그아웃 로직
     fun onLogoutClicked() {
         viewModelScope.launch {
             TokenManager.clearTokens()
@@ -178,7 +176,7 @@ class AuthViewModel() : ViewModel() {
         }
     }
 
-    // 5. 입력 필드 초기화 (화면 이동 시 사용)
+    // 입력 필드 초기화 (화면 이동 시 사용)
     fun clearAuthInputFields() {
         uiState = uiState.copy(
             emailInput = "",

@@ -20,7 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment // ⬅️ 추가: Box 정렬 속성
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -52,8 +52,8 @@ fun TopicButton(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp), // 양옆 여백
-            verticalAlignment = Alignment.CenterVertically // 수직 중앙 정렬
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = title,
@@ -66,16 +66,16 @@ fun TopicButton(
 
             Box {
                 Button(
-                    onClick = onMenuClick, // 메뉴 열기
+                    onClick = onMenuClick,
                     modifier = Modifier
                         .size(width = 40.dp, height = 40.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent, // 배경 투명하게 (Surface 색 따르도록)
+                        containerColor = Color.Transparent,
                         contentColor = Color.Black
                     ),
-                    contentPadding = PaddingValues(0.dp), // 패딩 제거해서 아이콘 중앙 정렬
-                    elevation = null // 그림자 제거 (선택 사항)
+                    contentPadding = PaddingValues(0.dp),
+                    elevation = null
                 ) {
                     Text(
                         text = "⋮",

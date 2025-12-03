@@ -16,13 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.decisionroulette.ui.votelist.VoteItemUiModel
 import com.example.decisionroulette.ui.theme.Galmuri
 
-// 🎨 디자인 컬러 (RouletteResultDialog에서 가져옴)
+
 val MainBrown = Color(0xFF685C57)
 val LightBrown = Color(0xFFD7CCC8)
 val BackgroundWhite = Color(0xFFFDFBF7)

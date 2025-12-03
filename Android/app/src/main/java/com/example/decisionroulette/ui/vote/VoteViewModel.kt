@@ -14,8 +14,7 @@ import kotlinx.coroutines.launch
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle // ⭐ 필수 import 추가
-import com.example.decisionroulette.ui.roulettelist.TopicCreateUiEvent
+import androidx.lifecycle.createSavedStateHandle
 
 data class OptionItem(val id: Int, val title: String, val currentVotes: Double = 0.0)
 
@@ -24,7 +23,7 @@ data class VoteUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val voteId: Long = -1L,
-    val title: String = "Loading..." // ⭐ 투표 제목 필드 추가 및 초기화
+    val title: String = "Loading..."
 )
 
 sealed interface VoteUiEvent {
@@ -52,20 +51,20 @@ class VoteViewModel(
         if (currentVoteId > 0) {
             loadVoteDetails(currentVoteId)
         } else {
-            _uiState.update { it.copy(errorMessage = "네비게이션 오류: 유효한 투표 ID를 찾을 수 없습니다.") }
+            _uiState.update { it.copy(errorMessage = "Navigation Error: No valid voting ID was found.") }
         }
     }
 
     fun loadVoteDetails(voteId: Long) {
         if (voteId <= 0) {
-            _uiState.update { it.copy(errorMessage = "유효하지 않은 투표 ID입니다.") }
+            _uiState.update { it.copy(errorMessage = "Invalid Vote ID.") }
             return
         }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            // 2. Repository 호출 (GET /vote/{voteId} 호출)
+            // Repository 호출 (GET /vote/{voteId} 호출)
             val result = voteRepository.getVoteDetail(voteId)
 
             result.onSuccess { voteDetail ->
@@ -77,18 +76,18 @@ class VoteViewModel(
                     )
                 }
 
-                Log.d(TAG, "투표 상세 정보 로드 성공: ${options.size}개 항목")
+                Log.d(TAG, "Successful loading of voting details: ${options.size} items")
 
                 _uiState.update {
                     it.copy(
                         options = options,
                         isLoading = false,
-                        title = voteDetail.title // ⭐ 투표 제목 저장
+                        title = voteDetail.title
                     )
                 }
             }.onFailure { throwable ->
-                val errorMessage = throwable.message ?: "알 수 없는 오류로 투표 상세 정보를 불러오는 데 실패했습니다."
-                Log.e(TAG, "투표 상세 정보 로드 실패", throwable)
+                val errorMessage = throwable.message ?: "Failed to retrieve voting details due to unknown error."
+                Log.e(TAG, "Failed to load voting details", throwable)
 
                 _uiState.update {
                     it.copy(
@@ -104,27 +103,26 @@ class VoteViewModel(
         if (selectedOptionId == null) return
 
         viewModelScope.launch {
-            // 1. 선택된 항목 및 투표 ID 유효성 검사
+            // 선택된 항목 및 투표 ID 유효성 검사
             val selectedItem = _uiState.value.options.find { it.id == selectedOptionId }
             val currentVoteId = _uiState.value.voteId
 
             if (selectedItem == null || currentVoteId <= 0) {
-                _uiState.update { it.copy(errorMessage = "투표 정보가 유효하지 않습니다.") }
+                _uiState.update { it.copy(errorMessage = "Voting information is invalid.") }
                 return@launch
             }
 
-            // 2. AuthRepository에서 현재 사용자 ID를 가져옵니다.
+            // AuthRepository에서 현재 사용자 ID를 가져옴
             val currentUserId = authRepository.getCurrentUserId()
 
             if (currentUserId == null || currentUserId <= 0) {
-                _uiState.update { it.copy(errorMessage = "로그인이 필요하거나 유효한 사용자 ID를 찾을 수 없습니다.") }
+                _uiState.update { it.copy(errorMessage = "Login is required or a valid user ID was not found.") }
                 return@launch
             }
 
-            // 3. 로딩 상태 시작
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            // 4. 투표 API 호출 로직
+            // 투표 API 호출 로직
             val result = voteRepository.selectVote(
                 voteId = currentVoteId, // Long 타입 그대로 사용
                 selectedOptionName = selectedItem.title, // 항목의 이름으로 투표한다고 가정
@@ -132,9 +130,9 @@ class VoteViewModel(
             )
 
             result.onSuccess {
-                Log.d(TAG, "투표 전송 성공: ${selectedItem.title}")
+                Log.d(TAG, "Vote Transfer Successful: ${selectedItem.title}")
 
-                // 5. UI 상태 업데이트 및 이벤트 전송
+                // UI 상태 업데이트 및 이벤트 전송
 
                 loadVoteDetails(currentVoteId)
 
@@ -142,8 +140,8 @@ class VoteViewModel(
 
             }.onFailure { throwable ->
                 // 실패 시: 에러 메시지 업데이트 및 로딩 종료
-                val errorMessage = throwable.message ?: "투표 전송에 실패했습니다."
-                Log.e(TAG, "투표 전송 실패", throwable)
+                val errorMessage = throwable.message ?: "Failed to send the vote."
+                Log.e(TAG, "Failed to send a vote", throwable)
 
                 _uiState.update {
                     it.copy(
@@ -155,19 +153,18 @@ class VoteViewModel(
         }
     }
 
-    // 4. Back 버튼 클릭 이벤트 함수 추가
+    // Back 버튼 클릭 이벤트 함수 추가
     fun onBackButtonClicked() {
         viewModelScope.launch {
             _events.send(VoteUiEvent.NavigateToBack)
         }
     }
 
-    // 5. 룰렛 시작 버튼 클릭 함수 (MyVoteScreen에서 사용)
+    // 룰렛 시작 버튼 클릭 함수 (MyVoteScreen에서 사용)
     fun onRouletteStartClicked() {
         if (currentVoteId <= 0) return
 
         viewModelScope.launch {
-            // 로딩 시작
             _uiState.update { it.copy(isLoading = true) }
 
             val result = voteRepository.getVoteRouletteDetail(currentVoteId)
@@ -181,7 +178,7 @@ class VoteViewModel(
                     rouletteId = response.rouletteId
                 ))
             }.onFailure { e ->
-                _uiState.update { it.copy(isLoading = false, errorMessage = "룰렛 정보를 불러오지 못했습니다: ${e.message}") }
+                _uiState.update { it.copy(isLoading = false, errorMessage = "Failed to retrieve roulette information: ${e.message}") }
             }
         }
     }

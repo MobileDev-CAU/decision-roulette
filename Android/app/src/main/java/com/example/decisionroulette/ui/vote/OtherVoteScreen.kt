@@ -20,13 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.decisionroulette.ui.home.VoteViewModel
-import com.example.decisionroulette.ui.home.OptionItem // VoteViewModel이 사용하는 OptionItem import
-import com.example.decisionroulette.ui.theme.Galmuri // ⭐ 폰트 임포트 (가정)
+import com.example.decisionroulette.ui.home.OptionItem
+import com.example.decisionroulette.ui.theme.Galmuri
 import androidx.compose.material3.CircularProgressIndicator
-import com.example.decisionroulette.ui.reusable.BackButton // ⭐ BackButton import 추가
+import com.example.decisionroulette.ui.reusable.BackButton
 import com.example.decisionroulette.ui.votelist.MainBrown
 
 
@@ -176,7 +175,7 @@ fun OtherVoteScreen(
             },
             colors = ButtonDefaults.buttonColors(containerColor = MainBrown),
             shape = RoundedCornerShape(16.dp),
-            contentPadding = PaddingValues(vertical = 12.dp),
+            contentPadding = PaddingValues(vertical = 10.dp),
             modifier = Modifier
 //                .fillMaxWidth()
                 .width(150.dp)
@@ -184,7 +183,7 @@ fun OtherVoteScreen(
         ) {
             Text(
                 text = "VOTE",
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 fontFamily = Galmuri,
                 fontWeight = FontWeight.Bold,
                 color = Color.White

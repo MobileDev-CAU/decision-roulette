@@ -31,7 +31,7 @@ fun EditOptionScreen(
     val scrollState = rememberScrollState()
     val listScrollState = rememberScrollState()
 
-    // 1. 화면 진입 시 데이터 로드
+    // 화면 진입 시 데이터 로드
     LaunchedEffect(rouletteId) {
         viewModel.loadRouletteData(rouletteId)
     }
@@ -54,8 +54,7 @@ fun EditOptionScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // 1. 상단 헤더 (고정)
-            // 좌우 패딩을 40.dp로 주어 다른 화면과 통일감을 줍니다.
+            // 상단 헤더 (고정)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -64,18 +63,15 @@ fun EditOptionScreen(
                 BackButton(title = "Edit Options", onClick = viewModel::onBackButtonClicked)
             }
 
-            // 2. 스크롤 가능한 내용 영역
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 40.dp) // 내용 패딩 통일
+                    .padding(horizontal = 40.dp)
                     .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 헤더와의 간격
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // 주제 제목 표시
                 Text(
                     text = "Today's Concern",
                     fontSize = 20.sp,
@@ -93,7 +89,6 @@ fun EditOptionScreen(
                     color = Color.Gray
                 )
 
-                // 옵션 리스트 (Box + Column)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,7 +98,7 @@ fun EditOptionScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(listScrollState)
-                            .padding(end = 20.dp), // 스크롤바 공간 확보
+                            .padding(end = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         state.options.forEachIndexed { index, option ->
@@ -114,7 +109,7 @@ fun EditOptionScreen(
                                 onValueChange = { newValue ->
                                     viewModel.updateOptionValue(option.id, newValue)
                                 },
-                                onRemove = null // 수정 화면에서는 삭제 버튼 숨김 (필요시 추가 가능)
+                                onRemove = null
                             )
                         }
                     }
@@ -126,17 +121,15 @@ fun EditOptionScreen(
                     )
                 }
 
-                // 하단 버튼 영역
                 Spacer(modifier = Modifier.height(48.dp))
 
-                // Save 버튼 (갈색 테마 적용)
                 Button(
                     onClick = viewModel::onSaveButtonClicked,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF685C57) // 갈색 테마 적용
+                        containerColor = Color(0xFF685C57)
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -151,7 +144,6 @@ fun EditOptionScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // 하단 여백 확보
                 Spacer(modifier = Modifier.height(50.dp))
             }
         }

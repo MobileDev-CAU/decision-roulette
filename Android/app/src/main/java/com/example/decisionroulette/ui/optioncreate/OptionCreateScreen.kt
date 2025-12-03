@@ -67,21 +67,19 @@ fun OptionCreateScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 40.dp) // 전체 패딩 40dp 통일
+                .padding(horizontal = 40.dp)
                 .verticalScroll(screenScrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 헤더
             BackButton(title = "Fill the Roulette", onClick = viewModel::onBackButtonClicked)
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // 타이틀
             Text(
                 text = "Today's Concern",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = Galmuri, // 폰트 적용
+                fontFamily = Galmuri,
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(10.dp))
@@ -90,7 +88,7 @@ fun OptionCreateScreen(
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 36.dp),
                 fontSize = 17.sp,
-                fontFamily = Galmuri // 폰트 적용
+                fontFamily = Galmuri
             )
 
             // 옵션 리스트 영역
@@ -130,14 +128,12 @@ fun OptionCreateScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 보조 버튼들 (+, AI)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // 1-1. '+' 버튼
                 Button(
                     onClick = { viewModel.addOption() },
                     modifier = Modifier
@@ -145,14 +141,13 @@ fun OptionCreateScreen(
                         .height(60.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = LightBrownBg, // 연한 갈색 배경
-                        contentColor = CustomBrown     // 진한 갈색 텍스트
+                        containerColor = LightBrownBg,
+                        contentColor = CustomBrown
                     )
                 ) {
                     Text("+", fontSize = 24.sp, fontFamily = Galmuri, fontWeight = FontWeight.Bold)
                 }
 
-                // 1-2. 'AI 추천' 버튼
                 Button(
                     onClick = viewModel::onAiButtonClicked,
                     modifier = Modifier
@@ -160,22 +155,21 @@ fun OptionCreateScreen(
                         .height(60.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = LightBrownBg, // 연한 갈색 배경
-                        contentColor = CustomBrown     // 진한 갈색 텍스트
+                        containerColor = LightBrownBg,
+                        contentColor = CustomBrown
                     )
                 ) {
                     Text("AI recommend", fontSize = 16.sp, fontFamily = Galmuri, fontWeight = FontWeight.Bold)
                 }
             }
 
-            // 메인 액션 버튼 (Next)
             Button(
                 onClick = viewModel::onSaveButtonClicked,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = CustomBrown // 진한 갈색 배경
+                    containerColor = CustomBrown
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
