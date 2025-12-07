@@ -53,10 +53,10 @@ fun RouletteWheel(
     rotationValue: Float,
     onStartClick: () -> Unit
 ) {
-    Box(contentAlignment = Alignment.Center) {
+    Box(contentAlignment = Alignment.Companion.Center) {
         // 돌아가는 원판
         Canvas(
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .size(300.dp)
                 .rotate(rotationValue)
         ) {
@@ -107,7 +107,7 @@ fun RouletteWheel(
         }
 
 
-        Canvas(modifier = Modifier.size(300.dp)) {
+        Canvas(modifier = Modifier.Companion.size(300.dp)) {
             drawCircle(
                 color = CustomBrown,
                 radius = size.width / 2,
@@ -119,16 +119,16 @@ fun RouletteWheel(
         Button(
             onClick = onStartClick,
             shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Companion.White),
             contentPadding = PaddingValues(0.dp),
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .size(80.dp)
                 .border(3.dp, CustomBrown, CircleShape)
         ) {
             Text(
                 text = "START",
                 color = CustomBrown,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Companion.Bold,
                 fontFamily = Galmuri,
                 fontSize = 18.sp
             )
@@ -136,8 +136,8 @@ fun RouletteWheel(
 
         // 화살표 핀 (둥근 삼각형)
         Canvas(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
+            modifier = Modifier.Companion
+                .align(Alignment.Companion.TopCenter)
                 .size(45.dp)
                 .offset(y = (-15).dp)
         ) {
