@@ -154,7 +154,7 @@ fun TopicCreateScreen(
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                viewModel.addTopicFromInput()
+//                                viewModel.addTopicFromInput()
                                 focusManager.clearFocus()
                             }
                         )
@@ -165,8 +165,17 @@ fun TopicCreateScreen(
 
                 // Choice 버튼
                 Button(
-                    onClick = viewModel::onChoiceButtonClicked,
-                    enabled = state.selectedTopicId != null,
+//                    onClick = viewModel::onChoiceButtonClicked,
+                    onClick = {
+                        // 1. 엔터를 안 쳤다면, 버튼 누를 때 강제로 저장 먼저 수행
+                        if (currentInputValue.isNotBlank()) {
+                            viewModel.addTopicFromInput()
+                        }
+                        // 2. 그 다음 기존 로직 실행
+                        viewModel.onChoiceButtonClicked()
+                    },
+//                    enabled = state.selectedTopicId != null,
+                    enabled = state.selectedTopicId != null || currentInputValue.isNotBlank(),
                     modifier = Modifier
                         .width(150.dp)
                         .height(45.dp),
