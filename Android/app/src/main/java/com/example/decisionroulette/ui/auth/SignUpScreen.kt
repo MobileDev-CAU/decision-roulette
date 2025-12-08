@@ -90,7 +90,7 @@ fun SignUpScreen(
         OutlinedTextField(
             value = state.passwordInput,
             onValueChange = viewModel::updatePassword,
-            label = { Text("Password", fontFamily = Galmuri) },
+            label = { Text("Password (min 6 chars)", fontFamily = Galmuri) },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
