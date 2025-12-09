@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 sealed interface HomeUiEvent {
-    object NavigateToTopicList : HomeUiEvent
+    object NavigateToTopicCreate : HomeUiEvent
 }
 
 class HomeViewModel : ViewModel() {
@@ -20,7 +20,7 @@ class HomeViewModel : ViewModel() {
     fun onRouletteButtonClicked() {
 
         viewModelScope.launch {
-            _events.send(HomeUiEvent.NavigateToTopicList)
+            _events.send(HomeUiEvent.NavigateToTopicCreate)
         }
     }
 }

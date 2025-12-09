@@ -1,122 +1,127 @@
-package com.example.decisionroulette.ui.topiclist
+package com.example.decisionroulette.ui.votelist
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.decisionroulette.R
 import com.example.decisionroulette.ui.reusable.VoteCard
-import com.example.decisionroulette.ui.votelist.VoteListViewModel
-import com.example.decisionroulette.ui.votelist.VoteOption
-import com.example.decisionroulette.ui.votelist.VoteItem
+import com.example.decisionroulette.ui.theme.Galmuri
 
+val MainBrown = Color(0xFF685C57)
+val LightBrown = Color(0xFFD7CCC8)
 
-
-private val MAX_CONTAINER_WIDTH = 400.dp
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoteListScreen (
-    onNavigateToVoteStatus: () -> Unit,
+    onNavigateToVoteStatus: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: VoteListViewModel = viewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
 
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        Text(
-            text = "a real-time voting list",
-            modifier = Modifier.padding(top = 50.dp),
-            fontSize = 36.sp
-        )
-
-        // -----------------------------------------------------------------
-
-        val voteItems = listOf(
-            VoteItem(
-                id = "1",
-                title = "주말 데이트 장소",
-                options = listOf(
-                    VoteOption("서순라길", 70),
-                    VoteOption("성수동", 20),
-                    VoteOption("노들섬", 18)
-                ),
-            ),
-            VoteItem(
-                id = "2",
-                title = "강남역 저녁 메뉴",
-                options = listOf(
-                    VoteOption("라멘", 70),
-                    VoteOption("닭갈비", 20),
-                    VoteOption("스시", 18)
-                ),
-            ),
-            VoteItem(
-                id = "3",
-                title = "결혼식장 착장",
-                options = listOf(
-                    VoteOption("블랙 블라우스", 70),
-                    VoteOption("화이트 셔츠", 20),
-                    VoteOption("체크자켓", 18)
-                ),
-            ),
-            VoteItem(
-                id = "4",
-                title = "저녁 메뉴",
-                options = listOf(
-                    VoteOption("마라엽떡", 70),
-                    VoteOption("마라탕", 20),
-                    VoteOption("치킨", 18)
-                ),
-            ),
-            VoteItem(
-                id = "5",
-                title = "점심 메뉴",
-                options = listOf(
-                    VoteOption("김치찌개", 40),
-                    VoteOption("돈까스", 30),
-                    VoteOption("파스타", 30)
-                ),
-            )
-        )
-
-        Column(modifier = modifier.padding(horizontal = 16.dp)) {
-
-
-            LazyColumn(
-
-                verticalArrangement = Arrangement.spacedBy(8.dp), // 아이템 간 간격
-                contentPadding = PaddingValues(bottom = 16.dp) // 하단 패딩
-            ) {
-                items(items = voteItems, key = { it.id }) { voteItem ->
-                    VoteCard(
-                        voteItem = voteItem,
-                        onClick = {
-                            onNavigateToVoteStatus() // 여기 일단 이렇게 해놓고 사용자 id 도 추가해서 자신/다른사람 분기 만들기
-                        } )// 재사용 가능한 VoteCard 컴포넌트 사용
+    LaunchedEffect(key1 = Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is VoteListUiEvent.NavigateToVoteStatus -> {
+                    onNavigateToVoteStatus(event.voteId)
                 }
             }
+        }
+    }
 
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        containerColor = Color.Transparent
+    ) { paddingValues ->
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Spacer(modifier = Modifier.height(60.dp))
+
+            Text(
+                text = "Real-Time Voting List",
+                fontSize = 25.sp,
+                fontFamily = Galmuri,
+                color = MainBrown,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // -------------------------------------------------------------------
+
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(top = 100.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    CircularProgressIndicator(color = MainBrown)
+                }
+            } else if (uiState.errorMessage != null) {
+                Text(
+                    text = uiState.errorMessage ?: "Error loading voting list.",
+                    modifier = Modifier.padding(24.dp),
+                    fontFamily = Galmuri,
+                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                val voteItems = uiState.voteItems
+
+                if (voteItems.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize().padding(top = 50.dp),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        Text(
+                            text = "There are no votes currently in progress.\n" +
+                                    "Make a new vote!",
+                            modifier = Modifier.padding(16.dp),
+                            fontFamily = Galmuri,
+                            textAlign = TextAlign.Center,
+                            color = LightBrown,
+                            fontSize = 16.sp
+                        )
+                    }
+                } else {
+                    val reversedVoteItems = voteItems.reversed()
+
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp)
+                    ) {
+                        items(items = reversedVoteItems, key = { it.voteId }) { voteItem ->
+                            VoteCard(
+                                voteItem = voteItem,
+                                onClick = {
+                                    viewModel.onVoteItemClicked(voteItem.voteId)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
-
-
-

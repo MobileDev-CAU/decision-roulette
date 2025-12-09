@@ -1,25 +1,42 @@
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Box // ⬅️ 추가: 정렬 컨테이너
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment // ⬅️ 추가: Box 정렬 속성
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.decisionroulette.ui.theme.Galmuri
 
 @Composable
 fun TopicButton(
     title: String,
     isSelected: Boolean,
     onClick: () -> Unit,
+    isMenuExpanded: Boolean,
+    onMenuClick: () -> Unit,
+    onDismissMenu: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -32,20 +49,67 @@ fun TopicButton(
             .height(55.dp)
             .padding(vertical = 4.dp)
     ) {
-        // ⬅️ 핵심 수정: Box 컨테이너를 사용하여 내부 콘텐츠(Text)를 중앙 정렬
-        Box(
-            modifier = Modifier.fillMaxSize(), // Box가 Surface 영역 전체를 차지하도록 설정
-            contentAlignment = Alignment.Center // ⬅️ Box 내부의 항목을 수직/수평 중앙에 정렬
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = title,
                 fontSize = 20.sp,
                 color = if (isSelected) Color.Black else Color.Gray,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                textAlign = TextAlign.Center // ⬅️ 수평 정렬 (가로)
+                    .weight(1f),
+                textAlign = TextAlign.Start
             )
+
+            Box {
+                Button(
+                    onClick = onMenuClick,
+                    modifier = Modifier
+                        .size(width = 40.dp, height = 40.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.Black
+                    ),
+                    contentPadding = PaddingValues(0.dp),
+                    elevation = null
+                ) {
+                    Text(
+                        text = "⋮",
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                // 드롭다운 메뉴
+                DropdownMenu(
+                    expanded = isMenuExpanded,
+                    onDismissRequest = onDismissMenu,
+                    containerColor = Color.White
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete",
+                                    tint = Color.Red,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text("Delete", color = Color.Red, fontFamily = Galmuri)
+                            }
+                        },
+                        onClick = {
+                            onDelete()
+                            onDismissMenu()
+                        }
+                    )
+                }
+            }
         }
     }
 }

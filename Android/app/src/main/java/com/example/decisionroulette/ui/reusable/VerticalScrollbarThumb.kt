@@ -24,29 +24,26 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.max
 
-// LocalContext, LocalDensity 오류를 해결하고 Scrollbar Thumb의 위치와 크기를 계산하여 그리는 컴포넌트입니다.
 @Composable
 fun VerticalScrollbarThumb(
     listScrollState: ScrollState,
     modifier: Modifier = Modifier,
-    thickness: Dp = 4.dp, // 스크롤 바 두께
-    color: Color = Color.Gray.copy(alpha = 0.5f) // 스크롤 바 색상
+    thickness: Dp = 4.dp,
+    color: Color = Color.Gray.copy(alpha = 0.5f)
 ) {
-    // 1. Composable Context 값을 읽어 변수에 저장 (오류 방지)
+    // Composable Context 값을 읽어 변수에 저장 (오류 방지)
     val density = LocalDensity.current
     val context = LocalContext.current
 
-    // 2. 부모 Box의 높이 (px)를 저장하여 썸의 위치 계산에 사용
+    // 부모 Box의 높이 (px)를 저장하여 썸의 위치 계산에 사용
     var parentHeightPx by remember { mutableStateOf(0f) }
 
     // 스크롤 가능한 콘텐츠의 전체 높이
     val maxScroll = listScrollState.maxValue
     val currentScroll = listScrollState.value
 
-    // 스크롤이 불가능하면 썸을 표시하지 않습니다.
     if (maxScroll == 0) return
 
-    // 뷰포트 높이 (px)
     val viewportHeightPx = with(density) { listScrollState.viewportSize.toDp().toPx() }
     // 전체 콘텐츠 높이 (스크롤 가능 범위 + 뷰포트)
     val contentHeightPx = maxScroll + viewportHeightPx
@@ -74,12 +71,11 @@ fun VerticalScrollbarThumb(
         modifier = modifier
             .width(thickness)
             .fillMaxHeight()
-            // 부모 Box의 높이를 측정
             .onGloballyPositioned { coordinates ->
                 parentHeightPx = coordinates.size.height.toFloat()
             }
             .clip(RoundedCornerShape(4.dp))
-            .background(Color.Transparent) // 썸을 감싸는 컨테이너
+            .background(Color.Transparent)
     ) {
         if (parentHeightPx > 0f) {
             Spacer(

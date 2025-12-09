@@ -1,120 +1,3 @@
-/*package com.example.decisionroulette.ui.auth
-
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
-
-// 🚨 화면 상태 정의
-data class AuthUiState(
-    val emailInput: String = "",
-    val passwordInput: String = "",
-    val passwordConfirmInput: String = "", // ⬅️ 1. 비밀번호 확인 필드 추가
-    val isLoginLoading: Boolean = false,
-    val loginError: String? = null
-)
-
-// 🚨 이벤트 정의 (네비게이션 및 오류 처리)
-sealed interface AuthUiEvent {
-    object NavigateToUserPage : AuthUiEvent // ⬅️ 2. 로그인 성공 시 사용자 정보 페이지로 이동 이벤트
-    object NavigateToSignUp : AuthUiEvent
-    object NavigateToLogin : AuthUiEvent
-    data class ShowError(val message: String) : AuthUiEvent
-}
-
-class AuthViewModel : ViewModel() {
-
-    var uiState by mutableStateOf(AuthUiState())
-        private set
-
-    private val _events = Channel<AuthUiEvent>(Channel.BUFFERED)
-    val events = _events.receiveAsFlow()
-
-    fun updateEmail(newEmail: String) {
-        uiState = uiState.copy(emailInput = newEmail)
-    }
-
-    fun updatePassword(newPassword: String) {
-        uiState = uiState.copy(passwordInput = newPassword)
-    }
-
-    // ⬅️ 3. 비밀번호 확인 필드 업데이트 함수 추가
-    fun updatePasswordConfirm(newPasswordConfirm: String) {
-        uiState = uiState.copy(passwordConfirmInput = newPasswordConfirm)
-    }
-
-    // ----------------------------------------------------
-    // 1. 로그인 로직 (성공 시 NavigateToMyPage 이벤트 발행)
-    fun onLoginClicked() {
-        if (uiState.emailInput.isBlank() || uiState.passwordInput.isBlank()) {
-            viewModelScope.launch {
-                _events.send(AuthUiEvent.ShowError("이메일과 비밀번호를 입력해주세요."))
-            }
-            return
-        }
-
-        // 🚨 실제 로그인 처리 (서버 연동)
-        uiState = uiState.copy(isLoginLoading = true, loginError = null)
-        viewModelScope.launch {
-            // TODO: 실제 서버 API 호출 로직 (예: Retrofit)
-            kotlinx.coroutines.delay(1500) // 로딩 시뮬레이션
-
-            if (uiState.emailInput == "test@a.com" && uiState.passwordInput == "1234") {
-                // ⬅️ 4. 로그인 성공 시 사용자 정보 페이지로 이동
-                _events.send(AuthUiEvent.NavigateToUserPage)
-            } else {
-                _events.send(AuthUiEvent.ShowError("이메일 또는 비밀번호가 올바르지 않습니다."))
-            }
-            uiState = uiState.copy(isLoginLoading = false)
-        }
-    }
-
-    // 2. 회원가입 로직 (비밀번호 일치 여부 확인 추가)
-    fun onSignUpClicked() {
-        if (uiState.passwordInput.length < 6) {
-            viewModelScope.launch {
-                _events.send(AuthUiEvent.ShowError("비밀번호는 6자리 이상이어야 합니다."))
-            }
-            return
-        }
-
-        // ⬅️ 5. 비밀번호 일치 여부 확인
-        if (uiState.passwordInput != uiState.passwordConfirmInput) {
-            viewModelScope.launch {
-                _events.send(AuthUiEvent.ShowError("비밀번호가 일치하지 않습니다."))
-            }
-            return
-        }
-
-
-        // 🚨 실제 회원가입 처리 (서버 연동)
-        uiState = uiState.copy(isLoginLoading = true, loginError = null)
-        viewModelScope.launch {
-            // TODO: 실제 서버 API 호출 로직
-            kotlinx.coroutines.delay(1500)
-
-            // 성공했다고 가정 후 로그인 화면으로 복귀
-            _events.send(AuthUiEvent.NavigateToLogin)
-            uiState = uiState.copy(isLoginLoading = false)
-        }
-    }
-
-    // 3. 네비게이션 헬퍼
-    fun navigateToSignUpScreen() {
-        viewModelScope.launch { _events.send(AuthUiEvent.NavigateToSignUp) }
-    }
-    fun navigateToLoginScreen() {
-        viewModelScope.launch { _events.send(AuthUiEvent.NavigateToLogin) }
-    }
-
-    fun navigateToUserPageScreen() {
-        viewModelScope.launch { _events.send(AuthUiEvent.NavigateToUserPage) }
-    }
-}*/
 package com.example.decisionroulette.ui.auth
 
 import androidx.compose.runtime.getValue
@@ -122,20 +5,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.decisionroulette.api.auth.AuthRepository
+import com.example.decisionroulette.api.auth.LoginRequest
+import com.example.decisionroulette.api.auth.SignUpRequest
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay // ⬅️ delay 함수를 위해 필요
 
-
+// AuthUiEvent 정의
 sealed interface AuthUiEvent {
-    object NavigateToUserPage : AuthUiEvent // 로그인 성공 후 사용자 정보 페이지로 이동
+    object NavigateToLoginSuccess : AuthUiEvent
     object NavigateToSignUp : AuthUiEvent
     object NavigateToLogin : AuthUiEvent
     data class ShowError(val message: String) : AuthUiEvent
 }
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel() : ViewModel() {
+
+    private val authRepository = AuthRepository()
 
     var uiState by mutableStateOf(AuthUiState())
         private set
@@ -143,6 +30,25 @@ class AuthViewModel : ViewModel() {
     private val _events = Channel<AuthUiEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
+    // 초기화 블록:앱 시작 시 로컬 저장소에서 토큰을 읽어와 로그인 상태를 복원
+    init {
+        // Access Token과 사용자 정보가 로컬 저장소에 남아있는지 확인
+        val accessToken = TokenManager.getAccessToken()
+        val (email, nickname) = TokenManager.getUserInfo()
+
+        // Access Token이 있고 사용자 정보도 있다면 로그인 상태로 간주
+        val isUserLoggedIn = !accessToken.isNullOrBlank() && email != null && nickname != null
+
+        if (isUserLoggedIn) {
+            uiState = uiState.copy(
+                emailInput = email!!, // 널 아님
+                nicknameInput = nickname!!, // 널 아님
+                isLoggedIn = true
+            )
+        }
+    }
+
+    // UI 입력 업데이트 함수
     fun updateEmail(newEmail: String) {
         uiState = uiState.copy(emailInput = newEmail)
     }
@@ -151,12 +57,13 @@ class AuthViewModel : ViewModel() {
         uiState = uiState.copy(passwordInput = newPassword)
     }
 
-    fun updatePasswordConfirm(newPasswordConfirm: String) {
-        uiState = uiState.copy(passwordConfirmInput = newPasswordConfirm)
+    fun updateNickname(newNickname: String) {
+        uiState = uiState.copy(nicknameInput = newNickname)
     }
 
+
     // ----------------------------------------------------
-    // 1. 로그인 로직 (더미 데이터 기반)
+    // 로그인
     fun onLoginClicked() {
         if (uiState.emailInput.isBlank() || uiState.passwordInput.isBlank()) {
             viewModelScope.launch {
@@ -165,57 +72,94 @@ class AuthViewModel : ViewModel() {
             return
         }
 
+        val userEmailUsedForLogin = uiState.emailInput
+        val passwordEntered = uiState.passwordInput
+
         uiState = uiState.copy(isLoginLoading = true, loginError = null)
 
         viewModelScope.launch {
-            delay(1000)
+            val request = LoginRequest(
+                userId = userEmailUsedForLogin,
+                password = uiState.passwordInput
+            )
 
-            // 더미 로그인 성공 조건: 이메일=test@a.com, 비밀번호=1234
-            if (uiState.emailInput == "test" && uiState.passwordInput == "1234") {
+            authRepository.login(request).onSuccess { response ->
+                // 로그인 성공 하면 토큰과 사용자 정보를 로컬 저장소에 저장
+                TokenManager.saveTokensAndUser(
+                    accessToken = response.accessToken,
+                    refreshToken = response.refreshToken,
+                    nickname = response.nickname,
+                    userId = response.id
+                    )
 
-                // 로그인 성공 시, 사용자 정보 페이지로 이동 이벤트 발행
-                _events.send(AuthUiEvent.NavigateToUserPage)
+                // UI State 업데이트 (로그인 상태를 true로 설정)
+                uiState = uiState.copy(
+                    emailInput = userEmailUsedForLogin,
+                    nicknameInput = response.nickname,
+                    passwordInput = passwordEntered,
+                    isLoggedIn = true
+                )
 
-            } else {
-                // 로그인 실패 시, 오류 메시지 이벤트 발행
-                _events.send(AuthUiEvent.ShowError("The login information is invalid"))
+                _events.send(AuthUiEvent.NavigateToLoginSuccess)
+
+            }.onFailure { e ->
+                val errorMessage = e.message ?: "Login failed due to an unknown error."
+                _events.send(AuthUiEvent.ShowError(errorMessage))
+
+                // 로그인 실패 시, 상태를 false로 유지
+                uiState = uiState.copy(isLoginLoading = false, isLoggedIn = false)
             }
 
             uiState = uiState.copy(isLoginLoading = false)
         }
     }
 
-    // 2. 회원가입 로직 (비밀번호 일치 여부 확인 포함)
+    // ----------------------------------------------------
+    // 회원가입
     fun onSignUpClicked() {
-        // 유효성 검사
-        if (uiState.passwordInput.length < 6) {
+        if (uiState.emailInput.isBlank() || uiState.passwordInput.isBlank() || uiState.nicknameInput.isBlank() || uiState.passwordInput.length < 6) {
             viewModelScope.launch {
-                _events.send(AuthUiEvent.ShowError("Password must be at least 6 digits"))
+                _events.send(AuthUiEvent.ShowError("Please fill in all fields (min 6 chars for password)."))
             }
             return
         }
 
-        // 비밀번호 일치 여부 확인
-        if (uiState.passwordInput != uiState.passwordConfirmInput) {
-            viewModelScope.launch {
-                _events.send(AuthUiEvent.ShowError("Password does not match"))
-            }
-            return
-        }
+        val passwordEntered = uiState.passwordInput // 비밀번호 값 보존
 
-        // 실제 회원가입 처리 시뮬레이션
         uiState = uiState.copy(isLoginLoading = true, loginError = null)
         viewModelScope.launch {
-            // TODO: 실제 서버 API 호출 로직
-            delay(1500)
+            val request = SignUpRequest(
+                userId = uiState.emailInput,
+                password = uiState.passwordInput,
+                nickname = uiState.nicknameInput
+            )
 
-            // 성공했다고 가정 후 로그인 화면으로 복귀
-            _events.send(AuthUiEvent.NavigateToLogin)
+            authRepository.signUp(request).onSuccess { response ->
+                // 회원가입 성공 시: 사용자 정보만 로컬 저장소에 저장
+                TokenManager.saveUser(
+                    email = response.userId,
+                    nickname = response.nickname
+                )
+
+                // UI State 업데이트
+                uiState = uiState.copy(
+                    emailInput = response.userId,
+                    nicknameInput = response.nickname,
+                    passwordInput = passwordEntered // 비밀번호 보존
+                )
+
+                _events.send(AuthUiEvent.NavigateToLogin)
+
+            }.onFailure { e ->
+                val errorMessage = e.message ?: "Sign up failed due to an unknown error."
+                _events.send(AuthUiEvent.ShowError(errorMessage))
+            }
+
             uiState = uiState.copy(isLoginLoading = false)
         }
     }
 
-    // 3. 네비게이션 헬퍼
+
     fun navigateToSignUpScreen() {
         viewModelScope.launch { _events.send(AuthUiEvent.NavigateToSignUp) }
     }
@@ -223,4 +167,21 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch { _events.send(AuthUiEvent.NavigateToLogin) }
     }
 
+    // 로그아웃 로직
+    fun onLogoutClicked() {
+        viewModelScope.launch {
+            TokenManager.clearTokens()
+            // 로그아웃 시 모든 상태 초기화
+            uiState = AuthUiState()
+        }
+    }
+
+    // 입력 필드 초기화 (화면 이동 시 사용)
+    fun clearAuthInputFields() {
+        uiState = uiState.copy(
+            emailInput = "",
+            passwordInput = "",
+            nicknameInput = ""
+        )
+    }
 }

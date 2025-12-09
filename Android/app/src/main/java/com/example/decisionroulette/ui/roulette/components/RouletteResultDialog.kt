@@ -1,25 +1,31 @@
 package com.example.decisionroulette.ui.roulette.components
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.decisionroulette.ui.theme.Galmuri
+
+
+val MainBrown = Color(0xFF685C57)
+val LightBrown = Color(0xFFD7CCC8)
+val BackgroundWhite = Color(0xFFFDFBF7)
 
 @Composable
 fun RouletteResultDialog(
@@ -27,16 +33,16 @@ fun RouletteResultDialog(
     onDismiss: () -> Unit,
     onRetry: () -> Unit,
     onVote: () -> Unit,
-    onFinalConfirm: (String) -> Unit
-    // viewModel: RouletteViewModel = viewModel()
+    onFinalConfirm: (String, Boolean) -> Unit
 ) {
     var step by remember { mutableIntStateOf(1) }
     var manualInputText by remember { mutableStateOf("") }
+
     Dialog(onDismissRequest = onDismiss) {
-        // 흰색 배경 카드
         Card(
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = BackgroundWhite),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -45,141 +51,224 @@ fun RouletteResultDialog(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 1. 상단 타이틀
+                // 상단 타이틀 (고정)
                 Text(
-                    text = "오늘의 메뉴",
-                    fontSize = 20.sp,
+                    text = "🎉 Result",
+                    fontSize = 24.sp,
+                    fontFamily = Galmuri,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MainBrown
                 )
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                // 2. 중앙 점선 원 + 텍스트
+                // 결과 표시 (원형 테두리)
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(200.dp)
+                    modifier = Modifier.size(220.dp)
                 ) {
-                    // (A) 점선 원 그리기
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         drawCircle(
-                            color = Color.Black,
+                            color = MainBrown,
                             style = Stroke(
-                                width = 8f, // 선 두께
-                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f), 0f) // 점선 패턴
+                                width = 6f,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f), 0f)
                             )
                         )
                     }
-                    Text(
-                        text = resultName,
-                        fontSize = 40.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.Black
-                    )
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "Today's Pick",
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            fontFamily = Galmuri
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = resultName,
+                            fontSize = 32.sp,
+                            fontFamily = Galmuri,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MainBrown,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 40.sp
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
+                // 하단 버튼 영역 (Step에 따라 변경)
                 when (step) {
-                    1 -> {
-                        // [Step 1] 기본 버튼 3개
-                        ResultButton(text = "선택 확정하기", onClick = { step = 2 }) // 누르면 2단계로
-                        Spacer(modifier = Modifier.height(12.dp))
-                        ResultButton(text = "룰렛 다시 돌리기", onClick = onRetry)
-                        Spacer(modifier = Modifier.height(12.dp))
-                        ResultButton(text = "유저 투표 올리기", onClick = {
-                            Log.d("VOTE_DEBUG", "1. 다이얼로그 버튼 클릭 감지: onVote 콜백 호출 시작")
-                            onVote()
-                        })
-                    }
-
-                    2 -> {
-                        // [Step 2] 결과를 따르시겠습니까? (예/아니오)
-                        Text(
-                            text = "룰렛 결과를 따르시겠습니까?",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            // [예] -> 룰렛 결과(resultName) 그대로 확정
-                            Button(
-                                onClick = { onFinalConfirm(resultName) },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0E0E0)),
-                                modifier = Modifier.weight(1f).height(50.dp)
-                            ) {
-                                Text("예", color = Color.Black, fontWeight = FontWeight.Bold)
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            // [아니오] -> 3단계(직접 입력)로 이동
-                            Button(
-                                onClick = { step = 3 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                                modifier = Modifier.weight(1f).height(50.dp)
-                            ) {
-                                Text("아니오", color = Color.White, fontWeight = FontWeight.Bold)
+                    1 -> Step1Buttons(
+                        onConfirm = { step = 2 },
+                        onRetry = onRetry,
+                        onVote = onVote
+                    )
+                    2 -> Step2Buttons(
+                        onYes = { onFinalConfirm(resultName, true) },
+                        onNo = { step = 3 }
+                    )
+                    3 -> Step3Input(
+                        text = manualInputText,
+                        onValueChange = { manualInputText = it },
+                        onConfirm = {
+                            if (manualInputText.isNotBlank()) {
+                                onFinalConfirm(manualInputText, false)
                             }
                         }
-                    }
-
-                    3 -> {
-                        // [Step 3] 최종 결정 직접 입력
-                        Text(
-                            text = "최종 결정은 무엇인가요?",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        // 입력창 (TextField)
-                        OutlinedTextField(
-                            value = manualInputText,
-                            onValueChange = { manualInputText = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.Black,
-                                cursorColor = Color.Black
-                            )
-                        )
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // 확인 버튼 -> 사용자가 입력한 값(manualInputText)으로 확정
-                        Button(
-                            onClick = {
-                                if (manualInputText.isNotBlank()) {
-                                    onFinalConfirm(manualInputText)
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                            modifier = Modifier.fillMaxWidth().height(50.dp),
-                            shape = RoundedCornerShape(25.dp)
-                        ) {
-                            Text("확인", color = Color.White, fontWeight = FontWeight.Bold)
-                        }
-                    }
+                    )
                 }
             }
         }
     }
 }
 
-// 버튼 스타일 통일을 위한 컴포넌트
+//  결과 확인 단계 버튼들
 @Composable
-fun ResultButton(text: String, onClick: () -> Unit) {
+fun Step1Buttons(
+    onConfirm: () -> Unit,
+    onRetry: () -> Unit,
+    onVote: () -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        // 확정 버튼 (가장 강조)
+        PrimaryButton(
+            text = "Confirm Selection",
+            icon = Icons.Default.Check,
+            onClick = onConfirm
+        )
+
+        // 보조 버튼들 (나란히 배치)
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            SecondaryButton(
+                text = "Retry",
+                icon = Icons.Default.Refresh,
+                modifier = Modifier.weight(1f),
+                onClick = onRetry
+            )
+            SecondaryButton(
+                text = "Vote",
+                icon = Icons.Default.Share, // 투표 아이콘 적절한 걸로 교체 가능
+                modifier = Modifier.weight(1f),
+                onClick = onVote
+            )
+        }
+    }
+}
+
+// 만족 여부 확인 버튼들
+@Composable
+fun Step2Buttons(onYes: () -> Unit, onNo: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = "Are you satisfied?",
+            fontSize = 18.sp,
+            fontFamily = Galmuri,
+            fontWeight = FontWeight.Bold,
+            color = MainBrown
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            PrimaryButton(
+                text = "Yes!",
+                modifier = Modifier.weight(1f),
+                onClick = onYes
+            )
+            SecondaryButton(
+                text = "No...",
+                modifier = Modifier.weight(1f),
+                onClick = onNo
+            )
+        }
+    }
+}
+
+// 직접 입력 필드
+@Composable
+fun Step3Input(
+    text: String,
+    onValueChange: (String) -> Unit,
+    onConfirm: () -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = "What is your final choice?",
+            fontSize = 16.sp,
+            fontFamily = Galmuri,
+            fontWeight = FontWeight.Bold,
+            color = MainBrown
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = text,
+            onValueChange = onValueChange,
+            placeholder = { Text("Enter your choice", fontFamily = Galmuri, fontSize = 14.sp) },
+            singleLine = true,
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MainBrown,
+                unfocusedBorderColor = Color.LightGray,
+                cursorColor = MainBrown,
+                focusedTextColor = MainBrown
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        PrimaryButton(
+            text = "Confirm",
+            onClick = onConfirm
+        )
+    }
+}
+
+// 공통 버튼 컴포넌트
+@Composable
+fun PrimaryButton(
+    text: String,
+    icon: ImageVector? = null,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Button(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth().height(50.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0E0E0)), // 연한 회색
-        shape = RoundedCornerShape(25.dp) // 완전 둥글게
+        colors = ButtonDefaults.buttonColors(containerColor = MainBrown),
+        shape = RoundedCornerShape(16.dp),
+        contentPadding = PaddingValues(vertical = 12.dp),
+        modifier = modifier.fillMaxWidth()
     ) {
-        Text(
-            text = text,
-            color = Color.Black,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
-        )
+        if (icon != null) {
+            Icon(imageVector = icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        Text(text = text, fontSize = 16.sp, fontFamily = Galmuri, fontWeight = FontWeight.Bold, color = Color.White)
+    }
+}
+
+// 공통 버튼 컴포넌트 - 보조
+@Composable
+fun SecondaryButton(
+    text: String,
+    icon: ImageVector? = null,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = onClick,
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MainBrown),
+        border = androidx.compose.foundation.BorderStroke(1.5.dp, MainBrown),
+        shape = RoundedCornerShape(16.dp),
+        contentPadding = PaddingValues(vertical = 12.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        if (icon != null) {
+            Icon(imageVector = icon, contentDescription = null, tint = MainBrown, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(6.dp))
+        }
+        Text(text = text, fontSize = 14.sp, fontFamily = Galmuri, fontWeight = FontWeight.Bold)
     }
 }

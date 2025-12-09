@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.foundation.layout.android)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,4 +64,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("androidx.navigation:navigation-compose:2.7.5")
     implementation("androidx.compose.material:material-icons-extended")
+    // Retrofit (API 통신)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Gson Converter (JSON <-> Data Class 변환)
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // OkHttp (로그 확인용)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
 }

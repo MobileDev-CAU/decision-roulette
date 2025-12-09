@@ -3,7 +3,7 @@ package com.example.decisionroulette.ui.reusable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions // ⬅️ 필요
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -20,7 +20,6 @@ fun TopicField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    // ⬅️ 1. 오류 해결: keyboardOptions 파라미터를 추가했습니다.
     keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
     keyboardType: KeyboardType = KeyboardType.Text,
     keyboardActions: KeyboardActions = KeyboardActions.Default
@@ -38,13 +37,10 @@ fun TopicField(
             unfocusedIndicatorColor = Color.Gray
         ),
 
-        // ⬅️ 2. 외부에서 받은 keyboardOptions 객체를 사용합니다.
         keyboardOptions = keyboardOptions.copy(keyboardType = keyboardType),
 
-        // ⬅️ 3. 외부에서 받은 keyboardActions 객체를 사용합니다.
         keyboardActions = keyboardActions,
 
-        // Modifier를 통해 외부에서 크기 및 패딩 조정
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)

@@ -1,17 +1,10 @@
 package com.example.decisionroulette.ui.reusable
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,16 +23,10 @@ fun BackButton(
     title: String,
     onClick: () -> Unit,
 ) {
-//    Row(
-//        modifier = Modifier
-//            .fillMaxWidth() // Row가 화면 너비를 모두 차지하도록 설정
-//            .padding(top = 80.dp),
-//        verticalAlignment = Alignment.CenterVertically // 텍스트와 버튼을 수직 중앙 정렬
-//    ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 80.dp)
+            .padding(top = 40.dp)
     ) {
         TextButton(
             onClick = onClick,
@@ -51,17 +38,16 @@ fun BackButton(
         ) {
             Text(
                 text = "<",
-                fontSize = 40.sp,
+                fontSize = 25.sp,
                 fontFamily = Galmuri,
             )
         }
 
-        // 2. Title Text (가운데 정렬)
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
-            fontSize = 28.sp,
-            textAlign = TextAlign.Center, // 텍스트 자체를 중앙 정렬
+            fontSize = 25.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier.align(Alignment.Center)
         )
     }

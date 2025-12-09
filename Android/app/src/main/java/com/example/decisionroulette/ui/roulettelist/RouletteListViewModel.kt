@@ -1,0 +1,197 @@
+package com.example.decisionroulette.ui.roulettelist
+
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.decisionroulette.data.topiclist.RouletteList
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import com.example.decisionroulette.api.roulette.RouletteRepository
+import com.example.decisionroulette.ui.auth.TokenManager
+
+
+sealed interface TopicCreateUiEvent {
+    data class NavigateToCreateOption(val topicTitle: String) : TopicCreateUiEvent
+    data class NavigateToRoulette(val rouletteId: Int) : TopicCreateUiEvent
+    object NavigateToBack : TopicCreateUiEvent
+}
+
+
+class TopicCreateViewModel : ViewModel() {
+    private val repository = RouletteRepository()
+
+    // UI State는 외부에 노출되어 Composable에서 관찰
+    var uiState by mutableStateOf(TopicCreateUiState())
+        private set
+
+    // UI Event는 일회성 Side Effect를 처리하기 위해 사용
+    private val _events = Channel<TopicCreateUiEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
+
+    // 현재 입력 필드의 값
+    private val _currentInput = mutableStateOf("")
+    val currentInput: State<String> = _currentInput
+
+    // 새로 생성되는 주제의 임시 ID 카운터 (음수로 시작하여 기존 ID와 충돌 방지)
+    private var tempIdCounter = -1
+
+    var menuOpenTopicId = mutableStateOf<Int?>(null)
+        private set
+
+    init {
+        loadExistingTopics()
+    }
+
+    private fun loadExistingTopics() {
+        val userId = TokenManager.getUserId()
+        if (userId == -1) {
+            println("There is no login information")
+            return
+        }
+        viewModelScope.launch {
+            uiState = uiState.copy(isLoading = true)
+
+            val result = repository.getRouletteList(ownerId = userId)
+
+            result.onSuccess { dtoList ->
+                // DTO(RouletteDto) -> UI 모델(RouletteList) 변환
+                val mappedTopics = dtoList.map { dto ->
+                    RouletteList(
+                        rouletteId = dto.rouletteId,
+                        title = dto.title,
+                        itemCount = dto.itemCount
+                    )
+                }
+
+                // 성공 시 상태 업데이트
+                uiState = uiState.copy(
+                    existingTopics = mappedTopics,
+                    isLoading = false,
+                    error = null
+                )
+            }.onFailure { exception ->
+                // 실패 시 에러 처리
+                println("API load failed: ${exception.message}")
+                uiState = uiState.copy(
+                    isLoading = false,
+                    error = exception.message
+                )
+            }
+        }
+    }
+
+
+     //입력 필드 값 업데이트
+    fun updateCurrentInput(newText: String) {
+        _currentInput.value = newText
+    }
+
+
+     // Enter 키 입력 시 호출: 입력 값을 새 항목 버튼으로 추가합
+    fun addTopicFromInput() {
+        val topicTitle = _currentInput.value.trim()
+
+        if (topicTitle.isNotEmpty()) {
+            val newTopic = UserTopic(tempId = tempIdCounter, title = topicTitle)
+            // 임시 ID 감소
+            tempIdCounter--
+
+            // 새로운 주제 목록 업데이트
+            val updatedOptions = uiState.userCreatedTopics + newTopic
+
+            uiState = uiState.copy(userCreatedTopics = updatedOptions)
+
+            // 입력 필드 초기화
+            _currentInput.value = ""
+            // 새 주제를 추가하면 자동으로 선택
+            toggleTopicSelection(newTopic.tempId)
+        }
+    }
+
+
+     // 항목 선택/해제 로직 (단일 선택)
+    fun toggleTopicSelection(topicId: Int) {
+        val newSelectedId = if (uiState.selectedTopicId == topicId) null else topicId
+        uiState = uiState.copy(selectedTopicId = newSelectedId)
+    }
+
+    // 메뉴 열기
+    fun onMoreOptionsSelected(topicId: Int) {
+        menuOpenTopicId.value = topicId
+    }
+
+    // 메뉴 닫기
+    fun dismissMenu() {
+        menuOpenTopicId.value = null
+    }
+
+    // 룰렛 삭제
+    fun deleteTopic(topicId: Int, isExisting: Boolean) {
+        if (isExisting) {
+            viewModelScope.launch {
+                // 1. 서버에 삭제 요청
+                val result = repository.deleteRoulette(topicId)
+
+                result.onSuccess {
+                    // 2. 성공 시 로컬 리스트에서도 제거
+                    val updatedList = uiState.existingTopics.filter { it.rouletteId != topicId }
+                    uiState = uiState.copy(existingTopics = updatedList)
+                }.onFailure {
+                    println("Failed to delete: ${it.message}")
+                    // 실패 시 에러 메시지를 띄우거나 복구 로직 추가 가능
+                }
+            }
+        } else {
+            // 사용자 생성(임시) 토픽 삭제 (서버 요청 필요 없음)
+            val updatedList = uiState.userCreatedTopics.filter { it.tempId != topicId }
+            uiState = uiState.copy(userCreatedTopics = updatedList)
+        }
+
+        if (uiState.selectedTopicId == topicId) {
+            uiState = uiState.copy(selectedTopicId = null)
+        }
+
+        dismissMenu()
+    }
+
+    // Choice 버튼 클릭 시 호출
+    fun onChoiceButtonClicked() {
+        val selectedId = uiState.selectedTopicId
+
+        if (selectedId != null) {
+            // 기존 주제에서 찾기
+            val existingTopic = uiState.existingTopics.find { it.rouletteId == selectedId }
+
+            // 사용자 생성 주제에서 찾기
+            val userTopic = uiState.userCreatedTopics.find { it.tempId == selectedId }
+
+            // 기존 주제가 있다면 itemCount를 사용하고, 새 주제라면 itemCount는 0으로 간주합니다.
+            val itemCount = existingTopic?.itemCount ?: 0
+
+            val selectedTitle = existingTopic?.title ?: userTopic?.title ?: ""
+
+
+            viewModelScope.launch {
+                // 옵션이 있는 경우 (itemCount > 0): 룰렛 화면으로 이동
+                if (itemCount > 0) {
+                    _events.send(TopicCreateUiEvent.NavigateToRoulette(selectedId))                }
+                // 옵션이 없는 경우 (itemCount == 0 또는 새 주제): 옵션 생성 화면으로 이동
+                else {
+                    _events.send(TopicCreateUiEvent.NavigateToCreateOption(selectedTitle))
+                }
+            }
+        } else {
+            println("ERROR: No topic selected for option creation")
+        }
+    }
+
+    fun onBackButtonClicked() {
+        viewModelScope.launch {
+            _events.send(TopicCreateUiEvent.NavigateToBack)
+        }
+    }
+}

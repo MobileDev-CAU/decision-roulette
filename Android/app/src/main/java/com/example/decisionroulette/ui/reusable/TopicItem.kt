@@ -17,12 +17,12 @@ import androidx.compose.material.icons.filled.Delete
 @Composable
 fun TopicItem(
     topicTitle: String,
-    onNavigateClick: () -> Unit, // '>' 버튼 클릭 시 호출
-    onMenuClick: () -> Unit, //  '⋮' 버튼 클릭 시 호출
+    onNavigateClick: () -> Unit,
+    onMenuClick: () -> Unit,
     modifier: Modifier = Modifier,
     isMenuExpanded: Boolean,
     onDismissMenu: () -> Unit,
-    onDelete: () -> Unit // 삭제 메뉴 항목 클릭 시 호출
+    onDelete: () -> Unit
 ) {
     Row(
         modifier = modifier
